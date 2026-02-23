@@ -1,10 +1,10 @@
 \section{Preparación del entorno de trabajo}
 
-En esta sección se describen los requisitos hardware y software necesarios para el desarrollo del proyecto, así como las herramientas utilizadas durante su implementación.
+En esta sección se describen los requisitos hardware y software necesarios para el desarrollo del proyecto, así como la configuración del entorno de trabajo adoptado.
 
-Se detallan las dependencias del entorno backend basado en Node.js y Express, la configuración de la base de datos PostgreSQL, el uso de contenedores Docker para la orquestación de servicios y la estrategia de desarrollo adoptada.
+La aplicación se ha desarrollado siguiendo una arquitectura full-stack monolítica basada en Next.js, donde el frontend y la lógica de servidor (API Routes) conviven dentro del mismo proyecto. Para la persistencia de datos se emplea PostgreSQL, ejecutado como servicio independiente mediante contenedores Docker.
 
-Asimismo, se documenta la configuración del sistema de control de versiones y el entorno de documentación empleado para la redacción de esta memoria.
+Asimismo, se documenta la configuración del sistema de control de versiones y el entorno de documentación utilizado para la redacción de esta memoria.
 
 \subsection{Requisitos hardware}
 
@@ -12,24 +12,33 @@ El desarrollo del proyecto se realizó en dos equipos con las siguientes caracte
 
 \begin{itemize}
     \item Sistema operativo: Windows 11 64 bits
-    \item Procesador: Intel Core i5 8600K (Equipo de sobremesa) / Intel Core i5 11400H (Portátil)
+    \item Procesador: Intel Core i5 8600K (equipo de sobremesa) / Intel Core i5 11400H (portátil)
     \item Memoria RAM: 16 GB
-    \item Espacio en disco disponible: superior a 20 GB
+    \item Espacio en disco disponible: superior a 10 GB
 \end{itemize}
 
-No se requieren características hardware especiales más allá de las necesarias para ejecutar herramientas de desarrollo web modernas y contenedores Docker en caso de utilizar virtualización.
+No se requieren características hardware especiales más allá de las necesarias para ejecutar herramientas modernas de desarrollo web y contenedores Docker para la virtualización de servicios.
 
 \subsection{Requisitos software}
 
 Las herramientas utilizadas durante el desarrollo del proyecto han sido las siguientes:
+
 \subsubsection*{Entorno de desarrollo}
+
 \begin{itemize}
     \item Node.js v24.13.1
     \item npm 11.10.1 (incluido con Node.js)
-    \item Next.js 16.1.6(framework de React para el desarrollo del frontend)
-    \item React 19.x 
+    \item Next.js 16.1.6
+    \item React 19.x
+    \item PostgreSQL 16 (ejecutado en contenedor Docker)
+    \item Docker Desktop 4.x
+    \item Paquete \texttt{pg} (cliente oficial de PostgreSQL para Node.js)
 \end{itemize}
+
+Next.js permite integrar en un único proyecto tanto la interfaz de usuario como la lógica de servidor mediante su sistema de rutas y API interna. Esto elimina la necesidad de un backend independiente basado en frameworks como Express, simplificando la arquitectura general del sistema.
+
 \subsubsection*{Herramientas adicionales}
+
 \begin{itemize}
     \item Git 2.34.0.windows.1
     \item GitHub Desktop 3.5.4
@@ -38,19 +47,11 @@ Las herramientas utilizadas durante el desarrollo del proyecto han sido las sigu
     \item Strawberry Perl v5.42.0 (necesario para la ejecución de \texttt{latexmk})
 \end{itemize}
 
-% \subsubsection*{Entorno de contenedores}
-
-% Para ejecutar el entorno en una configuración basada en contenedores se requiere:
-
-% \begin{itemize}
-%     \item Docker Desktop 4.62.0 (Windows 11, 64 bits)
-%     \item Docker Compose (incluido en Docker Desktop)
-% \end{itemize}
-
 \subsection{Instalación del entorno local}
+
 \subsubsection*{Node.js y npm}
 
-Se instaló la versión LTS de Node.js desde su \href{https://nodejs.org}{sitio oficial}.
+Se instaló la versión LTS de Node.js desde su sitio oficial.  
 Tras la instalación, se verificó su correcta integración en el sistema mediante:
 
 \begin{lstlisting}[language=bash]
@@ -66,7 +67,7 @@ El proyecto se inicializó mediante el comando:
 npx create-next-app@latest nombre-proyecto
 \end{lstlisting}
 
-Este comando genera automáticamente la estructura del proyecto e instala las siguientes dependencias principales:
+Este comando genera automáticamente la estructura base del proyecto e instala las dependencias principales:
 
 \begin{itemize}
     \item next
@@ -74,37 +75,56 @@ Este comando genera automáticamente la estructura del proyecto e instala las si
     \item react-dom
 \end{itemize}
 
-Además, se configuran scripts de desarrollo y compilación en el archivo \texttt{package.json}.
+Asimismo, configura los scripts de desarrollo y compilación en el archivo \texttt{package.json}.
 
-Para iniciar el servidor de desarrollo, se ejecuta:
+Para iniciar el servidor de desarrollo se ejecuta:
+
 \begin{lstlisting}[language=bash]
 npm run dev
 \end{lstlisting}
 
-El cual queda accesible en:
+El servidor queda accesible en:
 
 \begin{center}
 \texttt{http://localhost:3000}
 \end{center}
 
+\subsubsection*{Configuración de la base de datos PostgreSQL}
 
-% \subsubsection*{PostgreSQL}
+La base de datos PostgreSQL se ejecuta mediante un contenedor Docker definido en el archivo \texttt{docker-compose.yml}, ubicado en la raíz del repositorio.
 
-% PostgreSQL puede instalarse desde su sitio oficial:
+El servicio se inicia mediante:
 
-% \begin{center}
-%     \url{https://www.postgresql.org/download/windows/}
-% \end{center}
+\begin{lstlisting}[language=bash]
+docker compose up -d
+\end{lstlisting}
 
-% La instalación incluye el servidor de base de datos y la herramienta gráfica pgAdmin para la administración.
+El servidor de base de datos queda disponible en el puerto 5432.  
+Los scripts de inicialización de la base de datos se encuentran en el directorio \texttt{db/init}, permitiendo la creación automática de tablas y datos de prueba durante la primera ejecución del contenedor.
 
-% Una vez instalado, puede verificarse su correcto funcionamiento mediante:
+Para detener el servicio se utiliza:
 
-% \begin{lstlisting}[language=bash]
-% psql --version
-% \end{lstlisting}
+\begin{lstlisting}[language=bash]
+docker compose down
+\end{lstlisting}
 
-% El servidor queda disponible por defecto en el puerto 5432.
+En caso de requerir una reinicialización completa de la base de datos (incluyendo la eliminación de volúmenes persistentes), se ejecuta:
+
+\begin{lstlisting}[language=bash]
+docker compose down -v
+\end{lstlisting}
+
+\subsubsection*{Conexión entre Next.js y PostgreSQL}
+
+La comunicación entre la aplicación y la base de datos se realiza mediante el paquete oficial \texttt{pg}, instalado con:
+
+\begin{lstlisting}[language=bash]
+npm install pg
+\end{lstlisting}
+
+La conexión se gestiona mediante un Pool reutilizable configurado a través de variables de entorno definidas en el archivo \texttt{.env.local}.  
+
+Las consultas a la base de datos se implementan dentro de las API Routes de Next.js, integrando así la capa de acceso a datos dentro del propio proyecto full-stack.
 
 \subsubsection*{Control de versiones}
 
@@ -129,52 +149,7 @@ latexmk -pdf -shell-escape main.tex
 \end{lstlisting}
 
 También es posible compilarlo mediante la función integrada en el editor.
+
 \paragraph{Configuración del PATH}
 
 Durante la instalación fue necesario añadir manualmente al \texttt{PATH} del sistema las rutas correspondientes a MiKTeX y Strawberry Perl, ya que inicialmente el comando \texttt{latexmk} no era reconocido por la terminal. Tras actualizar la variable de entorno y reiniciar la sesión, el entorno quedó correctamente configurado.
-
-% \subsection{Instalación del entorno dockerizado}
-
-% El repositorio incluye un archivo \texttt{docker-compose.yml} en la raíz del proyecto que define los servicios necesarios para la ejecución del sistema en entorno de desarrollo.
-
-% Desde la raíz del proyecto, la construcción y puesta en marcha de los contenedores se realiza mediante:
-
-% \begin{lstlisting}[language=bash]
-% docker compose up --build
-% \end{lstlisting}
-
-% Una vez iniciado, el sistema queda accesible en:
-
-% \begin{itemize}
-%     \item Backend (Express): \texttt{http://localhost:3000}
-%     \item Base de datos PostgreSQL: puerto \texttt{5432}
-% \end{itemize}
-
-% Para detener los contenedores se utiliza:
-
-% \begin{lstlisting}[language=bash]
-% docker compose down
-% \end{lstlisting}
-
-% En caso de necesitar un reinicio completo del entorno (incluyendo la reinstalación de dependencias), se eliminan los volúmenes asociados mediante:
-
-% \begin{lstlisting}[language=bash]
-% docker compose down -v
-% \end{lstlisting}
-
-% Adicionalmente, el despliegue utiliza imágenes base oficiales de Node.js y PostgreSQL (disponibles en Docker Hub) para la construcción de los contenedores de backend y base de datos.
-
-% \subsection{Estrategia de desarrollo adoptada}
-
-% Durante el desarrollo del proyecto se adoptó una estrategia híbrida con el fin de optimizar los tiempos de compilación y recarga del frontend.
-
-% Inicialmente, el sistema completo (frontend, backend y base de datos) se ejecutó mediante Docker Compose. Sin embargo, debido a la latencia introducida por el sistema de archivos compartido entre Windows y los contenedores Linux, se optó por ejecutar el frontend Angular directamente en entorno local mediante \texttt{ng serve}, manteniendo el backend y la base de datos en contenedores Docker.
-
-% Esta configuración permite:
-% \begin{itemize}
-%     \item Recarga en caliente (Hot Reload) más rápida del frontend.
-%     \item Aislamiento del backend y la base de datos.
-%     \item Mayor agilidad en el desarrollo diario.
-% \end{itemize}
-
-% Actualmente, el servicio correspondiente al frontend se encuentra comentado en el archivo \texttt{docker-compose.yml}, manteniéndose activos únicamente los servicios de backend y base de datos.
