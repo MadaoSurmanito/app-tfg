@@ -30,6 +30,8 @@ Las herramientas utilizadas durante el desarrollo del proyecto han sido las sigu
     \item npm 11.10.1 (incluido con Node.js)
     \item Next.js 16.1.6
     \item React 19.x
+    \item next-pwa 5.x (integración como Progressive Web App)
+    \item cloudflare/cloudflared (ejecutado mediante Docker para túnel HTTPS de pruebas)
     \item PostgreSQL 16 (ejecutado en contenedor Docker)
     \item Docker Desktop 4.62.0
     \item Paquete \texttt{pg} (cliente oficial de PostgreSQL para Node.js)
@@ -125,6 +127,36 @@ npm install pg
 La conexión se gestiona mediante un Pool reutilizable configurado a través de variables de entorno definidas en el archivo \texttt{.env.local}.  
 
 Las consultas a la base de datos se implementan dentro de las API Routes de Next.js, integrando así la capa de acceso a datos dentro del propio proyecto full-stack.
+
+\subsubsection*{Configuración y pruebas como Progressive Web App (PWA)}
+
+Con el objetivo de probar la aplicación en dispositivos móviles como aplicación instalable, se configuró el proyecto como Progressive Web App (PWA) mediante el paquete \texttt{next-pwa}:
+
+\begin{lstlisting}[language=bash]
+npm install next-pwa
+\end{lstlisting}
+
+Para permitir su instalación en dispositivos móviles es necesario ejecutar la aplicación en modo producción:
+
+\begin{lstlisting}[language=bash]
+npm run build
+npm run start
+\end{lstlisting}
+
+En Android, la instalación se realiza desde cualquier navegador que no sea Google Chrome mediante la opción \textit{Instalar aplicación}.  
+En iOS, la instalación debe realizarse desde Safari seleccionando \textit{Añadir a pantalla de inicio}.
+
+\subsubsection*{Túnel HTTPS para pruebas móviles}
+
+Para poder instalar la aplicación como PWA en dispositivos móviles, es necesario servirla bajo HTTPS. Durante el desarrollo se utilizó Cloudflare Tunnel ejecutado como contenedor Docker, evitando instalaciones adicionales en el sistema.
+
+El servicio se inicia mediante:
+
+\begin{lstlisting}[language=bash]
+docker compose up -d cloudflared
+\end{lstlisting}
+
+El contenedor genera una URL HTTPS temporal que permite acceder a la aplicación desde el smartphone y realizar el proceso de instalación para pruebas.
 
 \subsubsection*{Control de versiones}
 

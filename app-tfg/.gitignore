@@ -40,5 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Archivos generados por next-pwa
+public/sw.js
+public/workbox-*.js
+
 # plantilla de ejemplo
 docs-example/
