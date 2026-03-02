@@ -16,7 +16,6 @@ export const metadata = {
   title: "TFG Demo Items",
   description: "Demo de items desde PostgreSQL",
   manifest: "/manifest.webmanifest",
-  themeColor: "#0b0b0b",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
