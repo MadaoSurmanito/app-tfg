@@ -1,0 +1,76 @@
+\subsection{Situación actual y problemática}
+
+El presente proyecto se desarrolla en el contexto de la actividad comercial de un distribuidor de productos capilares profesionales que trabaja principalmente con peluquerías como clientes. La información relativa a los procesos actuales y a las problemáticas existentes ha sido obtenida a partir del proceso de captación de requisitos descrito en la Sección~\ref{sec:RequirementsCaptureMethodology}. 
+
+A partir de dicho proceso se han identificado una serie de problemas estructurales que afectan a la gestión diaria del negocio y que justifican la necesidad de desarrollar una nueva solución informática.
+\subsubsection{Complejidad operativa en la gestión de actividades}
+
+En la situación actual, el distribuidor gestiona prácticamente la totalidad de las tareas asociadas al ciclo de venta y distribución de los productos. En primer lugar, el distribuidor realiza diversas \textbf{tareas logísticas} relacionadas con la gestión y entrega de los productos:
+
+\begin{itemize}
+  \item Gestión de pedidos a la marca fabricante.
+  \item Recepción de mercancía.
+  \item Preparación y carga de pedidos en el vehículo de reparto.
+  \item Entrega directa de los productos a los establecimientos clientes.
+\end{itemize}
+
+Junto a estas actividades logísticas, el distribuidor también desarrolla \textbf{tareas de carácter comercial} orientadas al mantenimiento de la relación con los clientes y a la promoción de los productos:
+
+\begin{itemize}
+  \item Realización de visitas periódicas a las peluquerías clientes.
+  \item Asesoramiento técnico sobre el uso de los productos.
+  \item Organización de formaciones dirigidas a profesionales del sector.
+\end{itemize}
+
+Finalmente, el funcionamiento diario del negocio implica también la realización de distintas \textbf{tareas administrativas}, necesarias para el control y seguimiento de la actividad comercial:
+
+\begin{itemize}
+  \item Registro de cobros parciales o totales realizados a los clientes.
+  \item Control de deudas pendientes.
+  \item Gestión y seguimiento de albaranes.
+  \item Elaboración de informes o partes diarios de actividad.
+\end{itemize}
+
+\subsubsection{Fragmentación del sistema de información}
+
+Actualmente, estas actividades se apoyan en diversas herramientas informáticas que no se encuentran integradas entre sí. Entre ellas se utilizan:
+
+\begin{itemize}
+  \item Hojas de cálculo en Microsoft Excel para el seguimiento de información comercial.
+  \item Bases de datos locales desarrolladas en Microsoft Access para la gestión de expediciones y listados de reparto.
+  \item El software de facturación Factusol para la emisión de facturas y el control de cobros.
+  \item Materiales formativos y documentación técnica proporcionados por la marca a través de su plataforma corporativa.
+\end{itemize}
+
+El uso de múltiples herramientas independientes provoca que la información relevante del negocio se encuentre distribuida en distintos sistemas, lo que dificulta la consulta y actualización de datos. Por ejemplo, la información relacionada con pedidos, clientes, cobros o expediciones puede encontrarse almacenada en aplicaciones o documentos diferentes, obligando al usuario a realizar numerosas tareas manuales para mantener los datos actualizados.
+
+\subsubsection{Procesos manuales y repetitivos}
+
+Gran parte de los procesos actuales dependen de operaciones manuales y repetitivas. La generación de partes diarios de trabajo, el registro de cobros realizados durante las visitas o el seguimiento de productos pendientes de entrega son tareas que requieren intervención manual y que pueden resultar propensas a errores o inconsistencias.
+
+\subsubsection{Limitaciones para la escalabilidad operativa}
+
+Otra limitación del sistema actual es la dificultad para escalar o delegar determinadas tareas en otros comerciales. Al no existir una plataforma centralizada que concentre la información del negocio, gran parte del conocimiento operativo se encuentra distribuido en documentos personales o herramientas locales. Esto puede provocar problemas de continuidad en la actividad en situaciones como la ausencia del distribuidor o la incorporación de nuevos colaboradores.
+
+\subsubsection{Ausencia de herramientas digitales para los clientes}
+
+Por otro lado, las peluquerías clientes no disponen actualmente de herramientas digitales específicas que faciliten su interacción con el distribuidor. La mayoría de las gestiones relacionadas con pedidos, consultas de productos o seguimiento de tratamientos se realizan mediante comunicación directa, generalmente a través de llamadas telefónicas o aplicaciones de mensajería.
+
+\subsubsection{Necesidad de una solución integrada}
+
+Desde el punto de vista de los procesos de negocio, la actividad puede describirse como una secuencia de tareas que comienza con la generación de pedidos por parte de las peluquerías o del propio distribuidor, continúa con la preparación y distribución de los productos y finaliza con la gestión administrativa de facturación y cobros. Paralelamente, el distribuidor desarrolla actividades comerciales de asesoramiento técnico, promoción de productos y organización de formaciones dirigidas a los profesionales del sector.
+
+La existencia de múltiples herramientas desconectadas entre sí, junto con la elevada dependencia de procesos manuales, pone de manifiesto la necesidad de una solución que permita centralizar la información y digitalizar las principales actividades del negocio.
+
+\subsection{Modelado del proceso de negocio actual}
+
+A partir del análisis de la situación actual descrita en la sección anterior, es posible identificar el flujo principal de actividades que conforman el proceso de negocio del distribuidor. Dicho proceso comienza con la generación de un pedido por parte de una peluquería o durante una visita comercial, continúa con la gestión del pedido con la marca fabricante, la preparación y distribución de los productos, y finaliza con las tareas administrativas asociadas, como el registro de cobros y la actualización de la información en las herramientas utilizadas.
+
+El flujo general de este proceso se representa mediante el diagrama de actividades \cite[Chap.~5, pp.~135--144]{sommerville} mostrado en la Figura~\ref{fig:proceso_negocio_actual}. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./figures/diagrama_proceso_negocio_actual.pdf}
+    \caption{Diagrama de actividades del proceso de negocio actual}
+    \label{fig:proceso_negocio_actual}
+\end{figure}
