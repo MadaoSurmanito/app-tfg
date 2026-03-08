@@ -20,10 +20,16 @@ body {
 }
 
 .app-bg {
-  background-image: url("/fondo-profesionales.jpg");
+  background-image: url("/fondo-profesionales-PC.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+@media (max-width: 768px) {
+  .app-bg {
+    background-image: url("/fondo-profesionales-Mobile.jpg");
+  }
 }
 
 .bg-overlay {

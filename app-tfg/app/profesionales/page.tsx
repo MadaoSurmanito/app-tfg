@@ -20,10 +20,10 @@ export default function ProfessionalHomePage() {
   return (
     <>
       <header className="glass-header mb-4 rounded-2xl px-6 py-4 text-center">
-        <h1 className="text-2xl uppercase tracking-widest text-black drop-shadow-">
+        <h1 className="text-1xl uppercase tracking-widest text-black drop-shadow- text-center sm:text-3xl">
           KINESTILISTAS
         </h1>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-black/80">
+        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-black/80 drop-shadow- text-center sm:text-[15px]">
           Alta Peluquería &amp; Estética
         </p>
       </header>
@@ -32,7 +32,7 @@ export default function ProfessionalHomePage() {
         <AssistantCard />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {navItems.map((item) => (
           <MobileNavCard
             key={item.title}
