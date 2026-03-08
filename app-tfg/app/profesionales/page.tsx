@@ -1,6 +1,20 @@
+"use client";
+
 import AssistantCard from "../components/AssistantCard";
 import MobileNavCard from "../components/MobileNavCard";
-import { AgendaIcon, AppointmentIcon, CatalogIcon, ColorIcon,  OrderIcon,  PricesIcon,  ProductsIcon,  SimulatorIcon,  TrainingIcon } from "../components/IconsSVGs";
+import HeaderTitle from "../components/HeaderTitle";
+import PageTransition from "../components/PageTransition";
+import {
+  AgendaIcon,
+  AppointmentIcon,
+  CatalogIcon,
+  ColorIcon,
+  OrderIcon,
+  PricesIcon,
+  ProductsIcon,
+  SimulatorIcon,
+  TrainingIcon,
+} from "../components/IconsSVGs";
 
 // Opciones de navegación para profesionales
 const navItems = [
@@ -18,15 +32,8 @@ const navItems = [
 // Página principal para profesionales
 export default function ProfessionalHomePage() {
   return (
-    <>
-      <header className="glass-header mb-4 rounded-2xl px-6 py-4 text-center">
-        <h1 className="text-1xl uppercase tracking-widest text-black drop-shadow- text-center sm:text-3xl">
-          KINESTILISTAS
-        </h1>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-black/80 drop-shadow- text-center sm:text-[15px]">
-          Alta Peluquería &amp; Estética
-        </p>
-      </header>
+    <PageTransition>
+      <HeaderTitle title="Kinestilistas" />
 
       <div className="mb-6">
         <AssistantCard />
@@ -41,6 +48,6 @@ export default function ProfessionalHomePage() {
           />
         ))}
       </div>
-    </>
+    </PageTransition>
   );
 }
