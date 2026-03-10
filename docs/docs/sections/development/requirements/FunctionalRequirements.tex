@@ -1,6 +1,6 @@
-A continuación se detallan los requisitos funcionales identificados para el sistema.  Los requisitos funcionales describen los servicios que el sistema debe proporcionar  y el comportamiento esperado ante determinadas situaciones de uso  \cite[Chap.~4.1.1, pp.~85--87]{sommerville}. 
+A continuación se detallan los requisitos funcionales identificados para el sistema.  Los requisitos funcionales describen los servicios que el sistema debe proporcionar  y el comportamiento esperado ante determinadas situaciones de uso  \cite[Chap.~4.1.1, pp.~85--87]{sommerville}.
 
-La identificación de los requisitos funcionales se ha realizado mediante identificadores únicos que permiten su referencia y trazabilidad a lo largo del documento. Esta práctica sigue las recomendaciones del estándar ISO/IEC/IEEE 29148 para la ingeniería de requisitos, que establece que cada requisito debe contar con un identificador único que facilite su seguimiento y gestión dentro de la especificación \cite{ieee29148}. 
+La identificación de los requisitos funcionales se ha realizado mediante identificadores únicos que permiten su referencia y trazabilidad a lo largo del documento. Esta práctica sigue las recomendaciones del estándar ISO/IEC/IEEE 29148 para la ingeniería de requisitos, que establece que cada requisito debe contar con un identificador único que facilite su seguimiento y gestión dentro de la especificación \cite{ieee29148}.
 
 Con el objetivo de facilitar la comprensión del sistema y organizar las funcionalidades de forma coherente, los requisitos se han agrupado en módulos funcionales que representan las principales áreas de operación del sistema. Estos se describen a continuación, junto con los requisitos funcionales asociados a cada uno de ellos.
 
@@ -180,39 +180,56 @@ Este módulo agrupa las funcionalidades relacionadas con la gestión del proceso
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M5. Gestión interna de peluquerías}
+\subsection{M5. Gestión técnica del salón y seguimiento de servicios}
 % ------------------------------------------------------------------------------
 
-Este módulo agrupa las funcionalidades destinadas a facilitar la gestión interna del salón por parte de las peluquerías usuarias del sistema. Su objetivo es proporcionar herramientas que permitan organizar la actividad diaria del establecimiento, gestionar las citas y los profesionales del equipo, así como registrar información técnica asociada a los servicios realizados a los clientes finales.
+Este módulo agrupa las funcionalidades destinadas a registrar y consultar información técnica sobre los servicios realizados en las peluquerías clientes del sistema. Su objetivo es permitir a los profesionales del salón llevar un seguimiento estructurado de los trabajos realizados a sus clientes, especialmente aquellos relacionados con productos de la marca, facilitando la consulta de historiales técnicos y el análisis del uso de productos.
 
-\subsubsection{RF-M5-01 Gestión de clientes del salón y seguimiento técnico}
+\subsubsection{RF-M5-01 Gestión de fichas de clientes del salón}
 
 \begin{itemize}
-    \item El sistema debe permitir registrar información básica de los clientes del salón necesaria para la gestión de citas y servicios.
-    \item El sistema debe permitir asociar a cada cliente los servicios o tratamientos realizados en el salón.
-    \item El sistema debe permitir almacenar información técnica relevante asociada a dichos servicios, como fórmulas de coloración utilizadas, productos utilizados o tratamientos aplicados.
-    \item El sistema debe permitir consultar el historial de servicios y tratamientos asociados a cada cliente para facilitar el seguimiento de trabajos técnicos previos.
+    \item El sistema debe permitir registrar y gestionar fichas de clientes del salón.
+    \item Cada ficha de cliente debe permitir almacenar información básica necesaria para su identificación dentro del salón.
+    \item El sistema debe permitir consultar y actualizar la información registrada de cada cliente.
 \end{itemize}
 
-\subsubsection{RF-M5-02 Gestión de agenda y citas}
-
-\textbf {DUDA:  Si el objetivo del sistema es aumentar la fidelización de los clientes profesionales, ¿tiene sentido incluir funcionalidades de gestión de citas para los clientes finales del salón? Está claro que esto puede ser un valor añadido para las peluquerías, pero no sé si es un requisito imprescindible o si se podría plantear como una funcionalidad adicional a desarrollar en una fase posterior. El único motivo por el que queremos información de los clientes finales es para poder registrar los servicios realizados a cada uno de ellos asociados a la marca para su posterior seguimiento y análisis de datos.}
+\subsubsection{RF-M5-02 Registro de servicios realizados}
 
 \begin{itemize}
-    \item El sistema debe permitir gestionar una agenda de trabajo para la peluquería.
-    \item El sistema debe permitir registrar y consultar citas asociadas a servicios del salón.
-    \item El sistema debe permitir asignar cada cita a un profesional del equipo y a un intervalo temporal determinado.
-    \item El sistema debe permitir visualizar la planificación de citas de forma organizada para facilitar la gestión del trabajo diario.
+    \item El sistema debe permitir registrar los servicios o tratamientos realizados a los clientes del salón.
+    \item Cada servicio registrado debe poder asociarse a un cliente determinado.
+    \item El sistema debe permitir registrar información adicional relacionada con el servicio, como fecha de realización o tipo de tratamiento aplicado.
 \end{itemize}
 
-\subsubsection{RF-M5-03 Gestión de profesionales del salón}
-
-\textbf {DUDA: Podríamos plantear la ficha de cliente como la de los hospitales, sin necesidad de que haya profesionales asociados a cada cliente.}
+\subsubsection{RF-M5-03 Registro de información técnica de tratamientos}
 
 \begin{itemize}
-    \item El sistema debe permitir registrar y gestionar los profesionales o empleados asociados a una peluquería.
-    \item El sistema debe permitir asignar citas, servicios o tareas a los distintos profesionales del equipo.
-    \item El sistema debe permitir consultar la actividad o servicios realizados por cada profesional.
+    \item El sistema debe permitir almacenar información técnica asociada a los servicios realizados.
+    \item Esta información podrá incluir datos como fórmulas de coloración utilizadas, productos aplicados o combinaciones de productos empleadas durante el tratamiento.
+\end{itemize}
+
+\subsubsection{RF-M5-04 Consulta del historial técnico del cliente}
+
+\begin{itemize}
+    \item El sistema debe permitir consultar el historial de servicios realizados a cada cliente del salón.
+    \item El historial debe mostrar la información técnica asociada a cada tratamiento previamente registrado.
+    \item El sistema debe facilitar la consulta de trabajos técnicos previos para apoyar la toma de decisiones en tratamientos futuros.
+\end{itemize}
+
+\subsubsection{RF-M5-05 Seguimiento del uso de productos}
+
+\begin{itemize}
+    \item El sistema debe permitir registrar los productos utilizados en los servicios realizados en el salón.
+    \item El sistema debe permitir consultar el uso de productos en los distintos servicios registrados.
+    \item Esta información podrá utilizarse para analizar el uso de productos de la marca en los tratamientos realizados por las peluquerías.
+\end{itemize}
+
+\subsubsection{RF-M5-06 Sugerencia de productos basada en tratamientos previos}
+
+\begin{itemize}
+    \item El sistema debe permitir mostrar sugerencias de productos o referencias relacionadas con los tratamientos previamente registrados para un cliente del salón.
+    \item Estas sugerencias deberán generarse a partir del historial técnico almacenado, teniendo en cuenta los productos utilizados y los servicios realizados con anterioridad.
+    \item El sistema debe presentar dichas sugerencias como apoyo a la consulta profesional, sin sustituir el criterio técnico del usuario.
 \end{itemize}
 
 % ------------------------------------------------------------------------------
