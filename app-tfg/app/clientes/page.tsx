@@ -16,7 +16,7 @@ import {
   TrainingIcon,
 } from "../components/IconsSVGs";
 
-// Opciones de navegación para profesionales
+// Opciones de navegación para clientes
 const navItems = [
   { title: "Coloración", icon: <ColorIcon className="h-6 w-6" /> },
   { title: "Catálogos", icon: <CatalogIcon className="h-6 w-6" /> },
@@ -30,7 +30,7 @@ const navItems = [
 ];
 
 // Página principal para profesionales
-export default function ProfessionalHomePage() {
+export default function ClientsHome() {
   return (
     <PageTransition>
       <HeaderTitle title="Kinestilistas" />

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -15,17 +15,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
 	title: "Kinestilistas",
 	description: "Aplicación profesional para peluquerías",
-
-	// necesario para que Android detecte la PWA
+	// Necesario para que la aplicación sea reconocida como PWA y funcione correctamente en dispositivos móviles
 	manifest: "/manifest.webmanifest",
-
-	// configuración específica para iOS / iPadOS
+	// Configuración para PWA y Apple Web App
 	appleWebApp: {
 		capable: true,
 		statusBarStyle: "default",
 		title: "Kinestilistas",
 	},
-
 	icons: {
 		icon: [
 			{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -35,7 +32,14 @@ export const metadata: Metadata = {
 	},
 };
 
-// Layout raíz de la aplicación que envuelve a todas las páginas y componentes
+// Configuración de viewport para asegurar que la aplicación se vea bien en dispositivos móviles
+export const viewport: Viewport = {
+	width: "device-width",
+	initialScale: 1,
+	viewportFit: "cover",
+};
+
+// Layout raíz que envuelve toda la aplicación
 export default function RootLayout({
 	children,
 }: {
