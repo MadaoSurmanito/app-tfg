@@ -43,7 +43,6 @@ export default function LoginPage() {
 	return (
 		<main className="app-bg min-h-[100svh] w-full px-4 py-4 text-slate-800">
 			<HeaderTitle title="Acceso clientes" noGlass />
-
 			<div className="mx-auto mt-6 w-full max-w-sm">
 				<form
 					onSubmit={handleSubmit}
@@ -80,6 +79,17 @@ export default function LoginPage() {
 
 					{error && <p className="text-center text-sm text-red-600">{error}</p>}
 				</form>
+			</div>
+			<div className="mx-auto mt-6 w-full max-w-sm text-center">
+				<p className="text-sm text-slate-600">
+					¿Nuevo cliente?{" "}
+					<a
+						href="/register"
+						className="font-semibold text-black hover:underline"
+					>
+						Solicita aquí tu acceso.
+					</a>
+				</p>
 			</div>
 		</main>
 	);
