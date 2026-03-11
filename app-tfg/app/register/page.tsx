@@ -26,8 +26,9 @@ export default function RegisterPage() {
 		const name = String(formData.get("name") ?? "").trim();
 		const company = String(formData.get("company") ?? "").trim();
 		const phone = String(formData.get("phone") ?? "").trim();
-
-		if (!email || !name || !company) {
+		const password = String(formData.get("password") ?? "");
+		
+		if (!email || !name || !company || !password) {
 			setError("Por favor, completa todos los campos requeridos");
 			setLoading(false);
 			return;
@@ -37,7 +38,7 @@ export default function RegisterPage() {
 			const response = await fetch("/api/auth/register-request", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email, name, company, phone }),
+				body: JSON.stringify({ email, name, company, phone, password }),
 			});
 
 			const data = await response.json();
@@ -104,6 +105,15 @@ export default function RegisterPage() {
 						type="tel"
 						placeholder="Teléfono"
 						autoComplete="tel"
+						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					/>
+
+					<input
+						name="password"
+						type="password"
+						placeholder="Contraseña"
+						required
+						minLength={4}
 						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 					/>
 

@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS user_requests (
   email TEXT NOT NULL,
   company TEXT NOT NULL,
   phone TEXT,
+  password_hash TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pendiente' CHECK (status IN ('pendiente', 'aprobada', 'rechazada')),
   requested_at TIMESTAMP NOT NULL DEFAULT NOW(),
   reviewed_at TIMESTAMP,

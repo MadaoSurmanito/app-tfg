@@ -301,3 +301,26 @@ export function LeftArrowIcon({
 		</svg>
 	);
 }
+
+// Icono de solicitudes de registro
+export function RegisterRequestsIcon({
+	className = "w-6 h-6",
+}: {
+	className?: string;
+}) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a3 3 0 013-3h9a3 3 0 013 3v1zM17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2m14-10a3.001 3.001 0 11-6.002-.001A3.001 3.001 0 0117 11z"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}

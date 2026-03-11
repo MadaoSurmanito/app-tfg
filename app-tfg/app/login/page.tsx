@@ -12,22 +12,26 @@ export default function LoginPage() {
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+		setError("");
 
 		const formData = new FormData(e.currentTarget);
-		const email = String(formData.get("email") ?? "").trim();
+		const identifier = String(formData.get("identifier") ?? "").trim();
 		const password = String(formData.get("password") ?? "");
 
+		// Validación básica de campos
 		const result = await signIn("credentials", {
-			email,
+			identifier,
 			password,
 			redirect: false,
 		});
 
+		// Si hay un error en la autenticación, se muestra un mensaje de error al usuario
 		if (result?.error) {
-			setError("Correo o contraseña incorrectos");
+			setError("Correo, teléfono, usuario o contraseña incorrectos");
 			return;
 		}
 
+		// Si la autenticación es correcta, se redirige al usuario a la página correspondiente según su rol
 		const userResult = await fetch("/api/auth/session");
 		const userData = await userResult.json();
 
@@ -53,10 +57,9 @@ export default function LoginPage() {
 					</h2>
 
 					<input
-						name="email"
-						type="email"
-						placeholder="Correo electrónico"
-						autoComplete="email"
+						name="identifier"
+						type="text"
+						placeholder="Correo, teléfono o usuario"
 						required
 						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 					/>

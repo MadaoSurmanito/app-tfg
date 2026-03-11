@@ -1,7 +1,7 @@
 "use client";
 
 import AssistantCard from "../components/AssistantCard";
-import MobileNavCard from "../components/MobileNavCard";
+import NavCard from "../components/NavCard";
 import HeaderTitle from "../components/HeaderTitle";
 import PageTransition from "../components/PageTransition";
 import {
@@ -41,10 +41,11 @@ export default function ClientsHome() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {navItems.map((item) => (
-          <MobileNavCard
+          <NavCard
             key={item.title}
             title={item.title}
             icon={item.icon}
+            href="#"
           />
         ))}
       </div>

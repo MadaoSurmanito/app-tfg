@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { pool } from "@/app/lib/db";
+import bcrypt from "bcryptjs";
 
 type RegisterRequestBody = {
 	email?: string;
 	name?: string;
 	company?: string;
 	phone?: string;
+	password?: string;
 };
 
 const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -21,9 +23,9 @@ export async function POST(request: Request) {
 		const name = String(body.name ?? "").trim();
 		const company = String(body.company ?? "").trim();
 		const phone = String(body.phone ?? "").trim();
+		const password = String(body.password ?? "");
 
-		// 1) Campos obligatorios
-		if (!email || !name || !company) {
+		if (!email || !name || !company || !password) {
 			return NextResponse.json(
 				{ message: "Faltan campos obligatorios" },
 				{ status: 400 },
@@ -31,11 +33,12 @@ export async function POST(request: Request) {
 		}
 
 		// 2) Longitudes máximas (para evitar abusos y errores)
-		const maxLengths = { name: 120, company: 120, phone: 30 };
+		const maxLengths = { name: 120, company: 120, phone: 30, password: 100 };
 		const fieldLabels = {
 			name: "El nombre",
 			company: "El nombre de la empresa",
 			phone: "El teléfono",
+			password: "La contraseña",
 		};
 
 		for (const [field, max] of Object.entries(maxLengths)) {
@@ -55,7 +58,7 @@ export async function POST(request: Request) {
 				? "correo electrónico"
 				: "teléfono";
 			return NextResponse.json(
-				{ message: `El ${field} no es válido` },
+				{ message: `El ${field} no tiene un formato válido` },
 				{ status: 400 },
 			);
 		}
@@ -103,7 +106,9 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// 7) Insertar la solicitud
+		// 7) Si todo es correcto, insertar la solicitud en la base de datos
+		const passwordHash = await bcrypt.hash(password, 10);
+
 		await pool.query(
 			`
 				INSERT INTO user_requests (
@@ -111,12 +116,13 @@ export async function POST(request: Request) {
 					email,
 					company,
 					phone,
+					password_hash,
 					status,
 					requested_at
 				)
-				VALUES ($1, $2, $3, $4, 'pendiente', NOW())
+				VALUES ($1, $2, $3, $4, $5, 'pendiente', NOW())
 			`,
-			[name, email, company, phone || null],
+			[name, email, company, phone || null, passwordHash],
 		);
 
 		return NextResponse.json(

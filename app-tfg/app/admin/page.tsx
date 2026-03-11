@@ -2,10 +2,29 @@
 
 import { useState } from "react";
 import HeaderTitle from "../components/HeaderTitle";
+import AssistantCard from "../components/AssistantCard";
+import NavCard from "../components/NavCard";
+import PageTransition from "../components/PageTransition";
+import { RegisterRequestsIcon } from "../components/IconsSVGs";
+
+// Opciones de navegación para administradores
+const navItems = [
+	{ title: "Solicitudes de registro", icon: <RegisterRequestsIcon className="h-6 w-6" />, href: "/admin/solicitudes" },
+];
 
 // Página de inicio para el admin panel.
 export default function AdminHome() {
 	const [leaving, setLeaving] = useState(false);
 
-	return <HeaderTitle title="Página de administración" />;
+	return (
+		<PageTransition>
+			<HeaderTitle title="Kinestilistas" />
+
+			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+				{navItems.map((item) => (
+					<NavCard key={item.title} title={item.title} icon={item.icon} href={item.href} />
+				))}
+			</div>
+		</PageTransition>
+	);
 }

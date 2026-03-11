@@ -13,6 +13,7 @@ declare module "next-auth" {
 			role: string;
 			name?: string | null;
 			email?: string | null;
+			phone?: string | null;
 			image?: string | null;
 		};
 	}
@@ -36,27 +37,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 		Credentials({
 			// Definimos los campos que esperamos en las credenciales
 			credentials: {
-				email: {},
+				identifier: {}, // email, phone, o name
 				password: {},
 			},
 			// La función authorize se encarga de verificar las credenciales y devolver el usuario si son válidas
 			async authorize(credentials) {
 				try {
-					// Validamos que se hayan proporcionado email y password
-					const email = String(credentials?.email ?? "")
+					// Validamos que se hayan proporcionado las credenciales necesarias
+					const identifier = String(credentials?.identifier ?? "")
 						.trim()
 						.toLowerCase();
 					const password = String(credentials?.password ?? "");
 
-					if (!email || !password) {
+					if (!identifier || !password) {
 						console.log("[login] faltan credenciales");
+						console.log("[login] identifier:", identifier);
+						console.log("[login] password:", password ? "provided" : "missing");
 						return null;
 					}
 
-					// Buscamos el usuario en la base de datos por su email
+					// Buscamos el usuario por email, phone o name
 					const result = await pool.query(
-						"SELECT id, email, password_hash, role FROM users WHERE email = $1 LIMIT 1",
-						[email],
+						"SELECT id, email, password_hash, role, image_url FROM users WHERE LOWER(email) = $1 OR LOWER(phone) = $1 OR LOWER(name) = $1 LIMIT 1",
+						[identifier],
 					);
 
 					const user = result.rows[0];
