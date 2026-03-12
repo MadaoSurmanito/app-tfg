@@ -3,9 +3,9 @@ services:
     image: postgres:16
     container_name: kinestilistas_db
     environment:
-      POSTGRES_USER: demo
-      POSTGRES_PASSWORD: demo
-      POSTGRES_DB: demo
+      POSTGRES_USER: kin
+      POSTGRES_PASSWORD: kin
+      POSTGRES_DB: kin
     ports:
       - "5432:5432"
     volumes:

@@ -23,6 +23,9 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
 	interface JWT {
 		role?: string;
+		phone?: string | null;
+		name?: string | null;
+		image?: string | null;
 	}
 }
 
@@ -57,8 +60,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 					}
 
 					// Buscamos el usuario por email, phone o name
+					// Se utilizan consultas parametrizadas ($1) para evitar SQL injections
 					const result = await pool.query(
-						"SELECT id, email, password_hash, role, image_url FROM users WHERE LOWER(email) = $1 OR LOWER(phone) = $1 OR LOWER(name) = $1 LIMIT 1",
+						`SELECT id, email, phone, name, password_hash, role, image_url
+						 FROM users
+						 WHERE LOWER(email) = $1 OR LOWER(phone) = $1 OR LOWER(name) = $1
+						 LIMIT 1`,
 						[identifier],
 					);
 
@@ -82,8 +89,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 					return {
 						id: String(user.id),
 						email: user.email,
+						phone: user.phone,
 						role: user.role,
-						name: user.email,
+						name: user.name,
 						image: user.image_url,
 					};
 				} catch (error) {
@@ -101,7 +109,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 	callbacks: {
 		// El callback jwt se llama cada vez que se crea o actualiza el token JWT. Aquí añadimos el role al token.
 		async jwt({ token, user }) {
-			if (user && "role" in user) token.role = user.role as string;
+			if (user) {
+				if ("role" in user) token.role = user.role as string;
+				if ("phone" in user) token.phone = user.phone as string | null;
+				if ("name" in user) token.name = user.name as string | null;
+				if ("image" in user) token.image = user.image as string | null;
+			}
 			return token;
 		},
 		// El callback session se llama cada vez que se obtiene la sesión. Aquí añadimos el id y el role del usuario a la sesión.
@@ -109,6 +122,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 			if (session.user) {
 				session.user.id = token.sub ?? "";
 				session.user.role = typeof token.role === "string" ? token.role : "";
+				session.user.phone =
+					typeof token.phone === "string" ? token.phone : null;
+				session.user.name = typeof token.name === "string" ? token.name : null;
+				session.user.image =
+					typeof token.image === "string" ? token.image : null;
 			}
 			return session;
 		},
