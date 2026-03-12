@@ -46,47 +46,47 @@ export default function SolicitudReviewCard({
 
 	return (
 		<div className="mx-auto mt-6 w-full max-w-3xl">
-			<div className="rounded-2xl bg-white p-6 shadow-md">
-				<h2 className="text-xl font-semibold text-slate-800">{title}</h2>
+			<div className="glass-card rounded-2xl p-6">
+				<h2 className="text-xl font-semibold text-black">{title}</h2>
 
-				<p className="mt-2 text-sm text-slate-600">{description}</p>
+				<p className="mt-2 text-sm text-black/80">{description}</p>
 
 				<div className="mt-6 grid gap-4 sm:grid-cols-2">
-					<div className="rounded-xl bg-slate-50 p-4">
-						<p className="text-xs font-medium uppercase text-slate-500">
+					<div className="glass-section rounded-xl p-4">
+						<p className="text-xs font-medium uppercase text-black/70">
 							Nombre
 						</p>
-						<p className="mt-1 text-sm text-slate-800">{solicitud.name}</p>
+						<p className="mt-1 text-sm text-black">{solicitud.name}</p>
 					</div>
 
-					<div className="rounded-xl bg-slate-50 p-4">
-						<p className="text-xs font-medium uppercase text-slate-500">
+					<div className="glass-section rounded-xl p-4">
+						<p className="text-xs font-medium uppercase text-black/70">
 							Correo
 						</p>
-						<p className="mt-1 text-sm text-slate-800">{solicitud.email}</p>
+						<p className="mt-1 text-sm text-black">{solicitud.email}</p>
 					</div>
 
-					<div className="rounded-xl bg-slate-50 p-4">
-						<p className="text-xs font-medium uppercase text-slate-500">
+					<div className="glass-section rounded-xl p-4">
+						<p className="text-xs font-medium uppercase text-black/70">
 							Empresa
 						</p>
-						<p className="mt-1 text-sm text-slate-800">{solicitud.company}</p>
+						<p className="mt-1 text-sm text-black">{solicitud.company}</p>
 					</div>
 
-					<div className="rounded-xl bg-slate-50 p-4">
-						<p className="text-xs font-medium uppercase text-slate-500">
+					<div className="glass-section rounded-xl p-4">
+						<p className="text-xs font-medium uppercase text-black/70">
 							Teléfono
 						</p>
-						<p className="mt-1 text-sm text-slate-800">
+						<p className="mt-1 text-sm text-black">
 							{solicitud.phone || "-"}
 						</p>
 					</div>
 
-					<div className="rounded-xl bg-slate-50 p-4 sm:col-span-2">
-						<p className="text-xs font-medium uppercase text-slate-500">
+					<div className="glass-section rounded-xl p-4 sm:col-span-2">
+						<p className="text-xs font-medium uppercase text-black/70">
 							Fecha de solicitud
 						</p>
-						<p className="mt-1 text-sm text-slate-800">
+						<p className="mt-1 text-sm text-black">
 							{formatFecha(solicitud.requested_at)}
 						</p>
 					</div>
@@ -96,7 +96,7 @@ export default function SolicitudReviewCard({
 					<form action={actionHref} method="POST" className="mt-6">
 						<label
 							htmlFor="rejection_reason"
-							className="mb-2 block text-sm font-medium text-slate-700"
+							className="mb-2 block text-sm font-medium text-black/85"
 						>
 							Motivo del rechazo
 						</label>
@@ -106,7 +106,7 @@ export default function SolicitudReviewCard({
 							name="rejection_reason"
 							rows={4}
 							placeholder="Escriba aquí el motivo del rechazo..."
-							className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-black"
+							className="glass-input w-full rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
 						/>
 
 						<div className="mt-6 flex flex-wrap gap-3">
@@ -119,7 +119,7 @@ export default function SolicitudReviewCard({
 
 							<Link
 								href="/admin/solicitudes"
-								className="rounded-lg bg-slate-200 px-4 py-2 font-medium text-slate-800 transition hover:bg-slate-300"
+								className="glass-section rounded-lg px-4 py-2 font-medium text-black transition hover:bg-white/15"
 							>
 								Cancelar
 							</Link>
@@ -138,7 +138,7 @@ export default function SolicitudReviewCard({
 
 						<Link
 							href="/admin/solicitudes"
-							className="rounded-lg bg-slate-200 px-4 py-2 font-medium text-slate-800 transition hover:bg-slate-300"
+							className="glass-section rounded-lg px-4 py-2 font-medium text-black transition hover:bg-white/15"
 						>
 							Cancelar
 						</Link>

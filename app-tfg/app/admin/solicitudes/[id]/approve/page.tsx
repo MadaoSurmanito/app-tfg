@@ -43,7 +43,7 @@ export default async function ApproveSolicitudPage({ params }: Props) {
 
 	return (
 		<>
-			<HeaderTitle title="Aprobar solicitud" noGlass />
+			<HeaderTitle title="Aprobar solicitud" />
 
 			<SolicitudReviewCard
 				title="¿Desea aprobar a este usuario?"

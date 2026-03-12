@@ -4,8 +4,10 @@ import { useState } from "react";
 import HeaderTitle from "../components/HeaderTitle";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import PageTransition from "../components/PageTransition";
 
 export default function RegisterPage() {
+	const [leaving, setLeaving] = useState(false);
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -64,8 +66,11 @@ export default function RegisterPage() {
 
 	return (
 		<main className="app-bg min-h-[100svh] w-full px-4 py-4 text-slate-800">
-			<HeaderTitle title="Solicitar acceso" noGlass />
-
+			<HeaderTitle title="KinEstilistas" />
+			<PageTransition
+											isLeaving={leaving}
+											className="mx-auto max-w-2xl rounded-2xl p-6 text-center"
+										>
 			<div className="mx-auto mt-6 w-full max-w-sm">
 				<form
 					onSubmit={handleSubmit}
@@ -144,6 +149,7 @@ export default function RegisterPage() {
 					</Link>
 				</p>
 			</div>
+			</PageTransition>
 		</main>
 	);
 }

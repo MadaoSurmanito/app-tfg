@@ -13,14 +13,18 @@ export async function POST(request: Request, { params }: Props) {
 	const session = await auth();
 
 	if (!session?.user || session.user.role !== "admin") {
-		return NextResponse.redirect(new URL("/login", process.env.AUTH_URL ?? "http://localhost:3000"));
+		return NextResponse.redirect(
+			new URL("/login", process.env.AUTH_URL ?? "http://localhost:3000"),
+		);
 	}
 
 	const { id } = await params;
 
 	try {
 		const formData = await request.formData();
-		const rejectionReason = String(formData.get("rejection_reason") ?? "").trim();
+		const rejectionReason = String(
+			formData.get("rejection_reason") ?? "",
+		).trim();
 
 		const result = await pool.query(
 			`
@@ -40,18 +44,27 @@ export async function POST(request: Request, { params }: Props) {
 
 		if ((result.rowCount ?? 0) === 0) {
 			return NextResponse.redirect(
-				new URL("/admin/solicitudes?error=no-encontrada", process.env.AUTH_URL ?? "http://localhost:3000"),
+				new URL(
+					"/admin/solicitudes?error=no-encontrada",
+					process.env.AUTH_URL ?? "http://localhost:3000",
+				),
 			);
 		}
 
 		return NextResponse.redirect(
-			new URL("/admin/solicitudes?success=rechazada", process.env.AUTH_URL ?? "http://localhost:3000"),
+			new URL(
+				"/admin/solicitudes?success=rechazada",
+				process.env.AUTH_URL ?? "http://localhost:3000",
+			),
 		);
 	} catch (error) {
 		console.error("Error al rechazar solicitud:", error);
 
 		return NextResponse.redirect(
-			new URL("/admin/solicitudes?error=server", process.env.AUTH_URL ?? "http://localhost:3000"),
+			new URL(
+				"/admin/solicitudes?error=server",
+				process.env.AUTH_URL ?? "http://localhost:3000",
+			),
 		);
 	}
 }

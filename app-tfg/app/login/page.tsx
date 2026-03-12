@@ -4,9 +4,12 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import HeaderTitle from "../components/HeaderTitle";
 import { useRouter } from "next/navigation";
+import PageTransition from "../components/PageTransition";
 
 // esta función se encarga de manejar el envío del formulario, se encarga de recoger los datos del formulario, enviarlos a la API de autenticación y manejar la respuesta de la API
 export default function LoginPage() {
+	
+	const [leaving, setLeaving] = useState(false);
 	const [error, setError] = useState("");
 	const router = useRouter();
 
@@ -46,7 +49,11 @@ export default function LoginPage() {
 
 	return (
 		<main className="app-bg min-h-[100svh] w-full px-4 py-4 text-slate-800">
-			<HeaderTitle title="Acceso clientes" noGlass />
+			<HeaderTitle title="KinEstilistas" />
+			 <PageTransition
+								isLeaving={leaving}
+								className="mx-auto max-w-2xl rounded-2xl p-6 text-center"
+							>
 			<div className="mx-auto mt-6 w-full max-w-sm">
 				<form
 					onSubmit={handleSubmit}
@@ -94,6 +101,7 @@ export default function LoginPage() {
 					</a>
 				</p>
 			</div>
+			</PageTransition>
 		</main>
 	);
 }

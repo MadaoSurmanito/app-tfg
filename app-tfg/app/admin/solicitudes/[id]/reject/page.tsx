@@ -43,7 +43,7 @@ export default async function RejectSolicitudPage({ params }: Props) {
 
 	return (
 		<>
-			<HeaderTitle title="Rechazar solicitud" noGlass />
+			<HeaderTitle title="Rechazar solicitud" />
 
 			<SolicitudReviewCard
 				title="¿Desea rechazar esta solicitud?"

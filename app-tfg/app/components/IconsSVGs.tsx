@@ -324,3 +324,236 @@ export function RegisterRequestsIcon({
 		</svg>
 	);
 }
+
+// Icono de clientes
+export function ClientsIcon({ className = "w-6 h-6" }: { className?: string }) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M16 21v-1a4 4 0 00-4-4H7a4 4 0 00-4 4v1"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M9.5 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M17 8a3 3 0 010 6"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M20 21v-1a4 4 0 00-3-3.87"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}
+
+// Icono de visitas
+export function VisitsIcon({ className = "w-6 h-6" }: { className?: string }) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M9 15l2 2 4-4"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}
+
+// Icono de rutas
+export function RouteIcon({ className = "w-6 h-6" }: { className?: string }) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M9 19a2 2 0 100-4 2 2 0 000 4z"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M18 9a2 2 0 100-4 2 2 0 000 4z"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M11 17c2.5 0 2-4 4.5-4S18 11 18 9"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M7 19H5a2 2 0 01-2-2v-2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}
+
+// Icono de actividad comercial
+export function ActivityIcon({
+	className = "w-6 h-6",
+}: {
+	className?: string;
+}) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M3 12h4l2-4 4 8 2-4h6"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M4 19h16"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}
+
+// Icono de cobros
+export function PaymentsIcon({
+	className = "w-6 h-6",
+}: {
+	className?: string;
+}) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<rect
+				x="3"
+				y="6"
+				width="18"
+				height="12"
+				rx="2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M3 10h18"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M15.5 15a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}
+
+// Icono de promociones
+export function PromotionsIcon({
+	className = "w-6 h-6",
+}: {
+	className?: string;
+}) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M8 8h8l-8 8h8"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M7 7h.01M17 17h.01"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1.5"
+			/>
+			<path
+				d="M6 6l12 12"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}
+
+// Icono de informes
+export function ReportsIcon({ className = "w-6 h-6" }: { className?: string }) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M7 17V10m5 7V7m5 10v-4"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M5 21h14"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+			<path
+				d="M4 4h16v16"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}

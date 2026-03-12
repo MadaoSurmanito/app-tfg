@@ -12,18 +12,22 @@ export default function Home() {
 		<main className="app-bg flex min-h-screen w-full flex-col text-slate-800">
 			<div className="bg-overlay fixed inset-0 -z-10" />
 			<section className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-				<HeaderTitle title="Bienvenido a Kinestilistas" />
+				<HeaderTitle title="Kinestilistas" />
 
 				<PageTransition
 					isLeaving={leaving}
 					className="glass-card mx-auto max-w-2xl rounded-2xl p-6 text-center"
 				>
-					<p className="mb-4 text-lg text-gray-700">
-						Kinestilistas es tu aplicación profesional para peluquerías,
-						diseñada para ayudarte a gestionar tu negocio de manera eficiente y
-						ofrecer una experiencia excepcional a tus clientes.
+					<h2 className="text-2xl font-bold text-black">
+						¡Bienvenido a Kinestilistas! 
+					</h2>
+					<p className="mt-4 mb-4 text-lg text-gray-700 bg-white/50 rounded-lg p-4" >
+						La plataforma definitiva para llevar tu
+						peluquería al siguiente nivel. Ya seas un profesional buscando
+						optimizar tu negocio o un cliente deseando descubrir todo lo que
+						ofrecemos, estás en el lugar correcto.
 					</p>
-					<p className="mb-6 text-lg text-gray-700">
+					<p className="mt-4 mb-4 text-lg text-gray-700 bg-white/50 rounded-lg p-4s">
 						Explora nuestras funcionalidades y descubre cómo Kinestilistas puede
 						transformar tu peluquería.
 					</p>

@@ -13,7 +13,9 @@ export async function POST(_: Request, { params }: Props) {
 	const session = await auth();
 
 	if (!session?.user || session.user.role !== "admin") {
-		return NextResponse.redirect(new URL("/login", process.env.AUTH_URL ?? "http://localhost:3000"));
+		return NextResponse.redirect(
+			new URL("/login", process.env.AUTH_URL ?? "http://localhost:3000"),
+		);
 	}
 
 	const { id } = await params;
@@ -37,14 +39,20 @@ export async function POST(_: Request, { params }: Props) {
 		if (!solicitud) {
 			await client.query("ROLLBACK");
 			return NextResponse.redirect(
-				new URL("/admin/solicitudes?error=no-encontrada", process.env.AUTH_URL ?? "http://localhost:3000"),
+				new URL(
+					"/admin/solicitudes?error=no-encontrada",
+					process.env.AUTH_URL ?? "http://localhost:3000",
+				),
 			);
 		}
 
 		if (solicitud.status !== "pendiente") {
 			await client.query("ROLLBACK");
 			return NextResponse.redirect(
-				new URL("/admin/solicitudes?error=ya-revisada", process.env.AUTH_URL ?? "http://localhost:3000"),
+				new URL(
+					"/admin/solicitudes?error=ya-revisada",
+					process.env.AUTH_URL ?? "http://localhost:3000",
+				),
 			);
 		}
 
@@ -61,7 +69,10 @@ export async function POST(_: Request, { params }: Props) {
 		if ((existingUser.rowCount ?? 0) > 0) {
 			await client.query("ROLLBACK");
 			return NextResponse.redirect(
-				new URL("/admin/solicitudes?error=usuario-existe", process.env.AUTH_URL ?? "http://localhost:3000"),
+				new URL(
+					"/admin/solicitudes?error=usuario-existe",
+					process.env.AUTH_URL ?? "http://localhost:3000",
+				),
 			);
 		}
 
@@ -108,14 +119,20 @@ export async function POST(_: Request, { params }: Props) {
 		await client.query("COMMIT");
 
 		return NextResponse.redirect(
-			new URL("/admin/solicitudes?success=aprobada", process.env.AUTH_URL ?? "http://localhost:3000"),
+			new URL(
+				"/admin/solicitudes?success=aprobada",
+				process.env.AUTH_URL ?? "http://localhost:3000",
+			),
 		);
 	} catch (error) {
 		await client.query("ROLLBACK");
 		console.error("Error al aprobar solicitud:", error);
 
 		return NextResponse.redirect(
-			new URL("/admin/solicitudes?error=server", process.env.AUTH_URL ?? "http://localhost:3000"),
+			new URL(
+				"/admin/solicitudes?error=server",
+				process.env.AUTH_URL ?? "http://localhost:3000",
+			),
 		);
 	} finally {
 		client.release();
