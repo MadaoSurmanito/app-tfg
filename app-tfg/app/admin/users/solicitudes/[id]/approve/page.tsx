@@ -38,7 +38,7 @@ export default async function ApproveSolicitudPage({ params }: Props) {
 	}
 
 	if (solicitud.status !== "pendiente") {
-		redirect("/admin/solicitudes");
+		redirect("/admin/users/solicitudes");
 	}
 
 	return (
@@ -50,7 +50,7 @@ export default async function ApproveSolicitudPage({ params }: Props) {
 				description="Revise los datos antes de confirmar la aprobación."
 				solicitud={solicitud}
 				actionLabel="Confirmar aprobación"
-				actionHref={`/api/admin/solicitudes/${solicitud.id}/approve`}
+				actionHref={`/api/admin/users/solicitudes/${solicitud.id}/approve`}
 				actionColor="green"
 			/>
 		</>

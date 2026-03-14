@@ -68,7 +68,7 @@ export default async function SolicitudesPage() {
 				<div className="flex gap-2">
 					<a
 						className="rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600"
-						href={`/admin/solicitudes/${solicitud.id}/approve`}
+						href={`/admin/users/solicitudes/${solicitud.id}/approve`}
 					>
 						Aprobar
 					</a>

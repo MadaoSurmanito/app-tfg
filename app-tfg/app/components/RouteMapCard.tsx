@@ -7,27 +7,26 @@ type RouteMapCardProps = {
 	mapSrc?: string;
 };
 
-// ===== DATOS DE PRUEBA EDITABLES =====
-// const ORIGIN = "Escuela Superior de Ingenieria Puerto Real Cadiz";
+const ORIGIN = "Escuela Superior de Ingenieria Puerto Real Cadiz";
 
-// const STOPS = [
-// 	"Universidad de Cadiz Puerto Real",
-// 	"San Fernando Cadiz",
-// 	"Chiclana de la Frontera Cadiz",
-// 	"Puerto de Santa Maria Cadiz",
-// 	"Rota Cadiz",
-// 	"Jerez de la Frontera Cadiz",
-// ];
+const STOPS = [
+	"Universidad de Cadiz Puerto Real",
+	"San Fernando Cadiz",
+	"Chiclana de la Frontera Cadiz",
+	"Puerto de Santa Maria Cadiz",
+	"Rota Cadiz",
+	"Jerez de la Frontera Cadiz",
+];
 
-// const DESTINATION = ORIGIN;
+const DESTINATION = ORIGIN;
 
-// const waypoints = STOPS.join("|");
+const waypoints = STOPS.join("|");
 
-// const defaultMapSrc = `https://www.google.com/maps/embed/v1/directions?key=${
-// 	process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY
-// }&origin=${encodeURIComponent(ORIGIN)}&destination=${encodeURIComponent(
-// 	DESTINATION,
-// )}&waypoints=${encodeURIComponent(waypoints)}&mode=driving`;
+const defaultMapSrc = `https://www.google.com/maps/embed/v1/directions?key=${
+	process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY
+}&origin=${encodeURIComponent(ORIGIN)}&destination=${encodeURIComponent(
+	DESTINATION,
+)}&waypoints=${encodeURIComponent(waypoints)}&mode=driving`;
 
 export default function RouteMapCard({
 	title = "Ruta diaria",

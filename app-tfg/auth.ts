@@ -85,7 +85,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 						return null;
 					}
 
-					// Si las credenciales son válidas, devolvemos un objeto con la información del usuario que queremos incluir en el JWT y la sesión
+					// Si las credenciales son válidas:
+					// Actualizamos el campo last_login del usuario en la base de datos para registrar la última vez que se autenticó
+					await pool.query(
+						`UPDATE users SET last_login = NOW() WHERE id = $1`,
+						[user.id],
+					);
+
+					// devolvemos un objeto con la información del usuario que queremos incluir en el JWT y la sesión
 					return {
 						id: String(user.id),
 						email: user.email,

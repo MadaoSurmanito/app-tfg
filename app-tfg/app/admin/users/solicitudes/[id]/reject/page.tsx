@@ -38,7 +38,7 @@ export default async function RejectSolicitudPage({ params }: Props) {
 	}
 
 	if (solicitud.status !== "pendiente") {
-		redirect("/admin/solicitudes");
+		redirect("/admin/users/solicitudes");
 	}
 
 	return (
@@ -50,7 +50,7 @@ export default async function RejectSolicitudPage({ params }: Props) {
 				description="Puede indicar un motivo para dejar constancia de la decisión."
 				solicitud={solicitud}
 				actionLabel="Confirmar rechazo"
-				actionHref={`/api/admin/solicitudes/${solicitud.id}/reject`}
+				actionHref={`/api/admin/users/solicitudes/${solicitud.id}/reject`}
 				actionColor="red"
 				showRejectionReason
 			/>

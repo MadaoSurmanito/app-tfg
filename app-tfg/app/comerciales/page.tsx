@@ -106,7 +106,7 @@ export default function ComercialesHome() {
 	return (
 		<PageTransition>
 			<RouteMapCard />
-			
+
 			<div className="space-y-6">
 				{sections.map((section) => (
 					<section

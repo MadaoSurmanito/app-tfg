@@ -7,8 +7,10 @@ CREATE TABLE IF NOT EXISTS users (
   phone TEXT,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'comercial' CHECK (role IN ('admin', 'cliente', 'comercial')),
+  status TEXT NOT NULL DEFAULT 'activo' CHECK (status IN ('activo', 'inactivo', 'bloqueado')),
   image_url TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  last_login TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   /* Validación para asegurar que el company no esté vacío si el usuario es cliente */
   CHECK (
     (
@@ -17,6 +19,15 @@ CREATE TABLE IF NOT EXISTS users (
       AND company <> ''
     )
     OR role IN ('admin', 'comercial')
+  ),
+  /* Validación para asegurar que el teléfono tenga un formato válido si se proporciona */
+  CHECK (
+    phone IS NULL
+    OR phone ~ '^\+?[1-9]\d{1,14}$'
+  ),
+  /* Validación para asegurar que el correo electrónico tenga un formato válido */
+  CHECK (
+    email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
   )
 );
 
@@ -33,22 +44,25 @@ CREATE TABLE IF NOT EXISTS user_requests (
   company TEXT NOT NULL,
   phone TEXT,
   password_hash TEXT NOT NULL,
+  requested_role TEXT NOT NULL CHECK (requested_role IN ('cliente', 'comercial')),
   status TEXT NOT NULL DEFAULT 'pendiente' CHECK (status IN ('pendiente', 'aprobada', 'rechazada')),
   requested_at TIMESTAMP NOT NULL DEFAULT NOW(),
   reviewed_at TIMESTAMP,
   /* Por ahora solo va a revisar el admin, pero por si acaso en el futuro se quiere que otro rol pueda revisar */
   reviewed_by UUID REFERENCES users(id),
   rejection_reason TEXT,
-  approved_user_id UUID REFERENCES users(id)
+  approved_user_id UUID REFERENCES users(id),
   /* Validación para asegurar que el teléfono tenga un formato válido si se proporciona */
   CHECK (
     phone IS NULL
     OR phone ~ '^\+?[1-9]\d{1,14}$'
-  )
+  ),
   /* Validación para asegurar que el correo electrónico tenga un formato válido */
   CHECK (
     email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
-  )
+  ),
+  /* Validación para asegurar que el company no esté vacío */
+  CHECK (company <> ''),
   /* Validación para asegurar que los campos relacionados con el estado de la solicitud sean consistentes */
   /* La solicitud debe estar en estado 'pendiente' si no ha sido revisada */
   CHECK (
@@ -65,6 +79,7 @@ CREATE TABLE IF NOT EXISTS user_requests (
       AND reviewed_at IS NOT NULL
       AND reviewed_by IS NOT NULL
       AND approved_user_id IS NOT NULL
+      AND rejection_reason IS NULL
     )
     /* La solicitud debe estar en estado 'rechazada' si ha sido revisada y rechazada */
     OR (

@@ -1,0 +1,49 @@
+"use client";
+
+import { useState } from "react";
+import HeaderTitle from "../../components/HeaderTitle";
+import AssistantCard from "../../components/AssistantCard";
+import NavCard from "../../components/NavCard";
+import PageTransition from "../../components/PageTransition";
+import { RegisterRequestsIcon, ClientsIcon } from "../../components/IconsSVGs";
+
+// Opciones de navegación para la gestión de usuarios en el admin panel
+const navItems = [
+	{
+		title: "Solicitudes de registro",
+		icon: <RegisterRequestsIcon className="h-6 w-6" />,
+		href: "/admin/users/solicitudes",
+	},
+    {
+        title: "Lista de usuarios",
+        icon: <ClientsIcon className="h-6 w-6" />,
+        href: "/admin/users/usuarios",
+    },
+    {
+        title: "Registrar nuevo usuario",
+        icon: <ClientsIcon className="h-6 w-6" />,
+        href: "/admin/users/registrar",
+    }
+];
+
+// Página de inicio para el admin panel.
+export default function AdminHome() {
+	const [leaving, setLeaving] = useState(false);
+
+	return (
+		<PageTransition>
+			<HeaderTitle title="Kinestilistas" />
+
+			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+				{navItems.map((item) => (
+					<NavCard
+						key={item.title}
+						title={item.title}
+						icon={item.icon}
+						href={item.href}
+					/>
+				))}
+			</div>
+		</PageTransition>
+	);
+}
