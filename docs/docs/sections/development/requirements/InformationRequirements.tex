@@ -287,7 +287,7 @@ Los datos asociados a una referencia de color incluyen:
 
 \subsection{M4. Pedidos, entregas y cobros}
 
-Este módulo gestiona la información relacionada con el proceso comercial de venta de productos, desde la creación de pedidos hasta el seguimiento de su entrega y el registro de los cobros asociados. Su objetivo es permitir un control estructurado de las operaciones comerciales realizadas con los clientes profesionales, así como de los importes pendientes o abonados.
+Este módulo gestiona la información relacionada con el proceso comercial de venta de productos, desde la creación de pedidos hasta el seguimiento de su entrega y el registro de los cobros asociados. Su objetivo es permitir un control estructurado de las operaciones comerciales realizadas con los clientes profesionales, así como del estado de los pedidos, las incidencias de entrega y los importes pendientes o abonados.
 
 \subsubsection*{Pedido}
 
@@ -303,8 +303,6 @@ Los datos asociados a un pedido incluyen:
     \item Estado del pedido.
     \item Importe total del pedido.
     \item Observaciones asociadas al pedido.
-    \item Modalidad de entrega seleccionada.
-    \item Fecha prevista de entrega.
     \item Fecha de última actualización del pedido.
 \end{itemize}
 
@@ -326,7 +324,7 @@ Los datos asociados a una línea de pedido incluyen:
 
 \subsubsection*{Entrega}
 
-El sistema debe almacenar la información relativa a la entrega asociada a cada pedido. Esta información permite conocer cómo debe realizarse la entrega, su estado y las incidencias producidas durante el proceso.
+El sistema debe almacenar la información relativa a la entrega asociada a cada pedido. Esta información permite conocer la modalidad de entrega seleccionada, su estado, las fechas previstas o reales asociadas al proceso y las incidencias producidas durante la entrega.
 
 Los datos asociados a una entrega incluyen:
 
@@ -343,7 +341,7 @@ Los datos asociados a una entrega incluyen:
 
 \subsubsection*{Incidencia de entrega}
 
-El sistema debe permitir registrar incidencias asociadas a una entrega. Estas incidencias permiten documentar problemas detectados durante el proceso de entrega, así como productos pendientes de servir u otras situaciones relevantes.
+El sistema debe permitir registrar incidencias asociadas a una entrega. Estas incidencias permiten documentar problemas detectados durante el proceso de entrega, productos pendientes de servir, entregas parciales u otras situaciones relevantes para el seguimiento logístico del pedido.
 
 Los datos asociados a una incidencia de entrega incluyen:
 

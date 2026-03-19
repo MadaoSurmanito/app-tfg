@@ -699,9 +699,7 @@ La clase \textit{Pedido} representa cada solicitud de compra realizada por un cl
           El estado de un pedido solo puede tomar valores definidos por el sistema.
     \item \textbf{RT-O3 — Importe total coherente}
           Todo pedido debe disponer de un importe total coherente con la suma de sus líneas de pedido.
-    \item \textbf{RT-O4 — Modalidad de entrega obligatoria}
-          Todo pedido debe registrar una modalidad de entrega válida.
-    \item \textbf{RT-O5 — Coherencia temporal del pedido}
+    \item \textbf{RT-O4 — Coherencia temporal del pedido}
           Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del pedido.
 \end{itemize}
 
@@ -741,7 +739,7 @@ La clase \textit{Línea de pedido} representa cada uno de los productos incluido
 
 \subsubsection{Clase Entrega}
 
-La clase \textit{Entrega} representa la información asociada al proceso de suministro de un pedido. Permite registrar la modalidad de entrega, su estado y las fechas previstas o reales asociadas al envío o reparto.
+La clase \textit{Entrega} representa la información asociada al proceso de suministro de un pedido. Permite registrar la modalidad de entrega, su estado, las fechas previstas o reales asociadas al reparto y la información necesaria para el seguimiento logístico de la entrega.
 
 \textbf{Atributos}
 
@@ -777,6 +775,8 @@ La clase \textit{Entrega} representa la información asociada al proceso de sumi
           Si la modalidad de entrega corresponde a reparto directo, debe registrarse el usuario responsable de la entrega.
     \item \textbf{RT-D5 — Coherencia temporal de la entrega}
           Si existe una fecha real de entrega, esta debe ser posterior o igual a la fecha prevista de entrega, cuando esta exista.
+      \item \textbf{RT-D6 — Unicidad de la entrega por pedido}
+            Un mismo pedido no debe estar asociado a más de una entrega dentro del sistema.
 \end{itemize}
 
 \subsubsection{Clase Incidencia de entrega}
@@ -809,6 +809,8 @@ La clase \textit{Incidencia de entrega} representa los problemas o situaciones e
           Toda incidencia debe registrar un tipo definido por el sistema.
     \item \textbf{RT-DI3 — Estado válido de la incidencia}
           El estado de una incidencia solo puede tomar valores definidos por el sistema.
+          \item \textbf{RT-DI4 — Registro de situaciones logísticas relevantes}
+      Las incidencias de entrega podrán utilizarse para documentar productos pendientes de servir, entregas parciales u otras incidencias relevantes del proceso logístico.
 \end{itemize}
 
 \subsubsection{Clase Cobro}
@@ -847,6 +849,8 @@ La clase \textit{Cobro} representa cada uno de los pagos registrados por parte d
           Todo cobro debe registrar un importe válido y mayor que cero.
     \item \textbf{RT-PY4 — Método válido de cobro}
           Todo cobro debe registrar un método de cobro definido por el sistema.
+      \item \textbf{RT-PY5 — Coherencia entre cobro y contexto asociado}
+            Si un cobro se asocia a un pedido o a una entrega, el cliente asociado al cobro debe corresponder con el cliente relacionado con dicho pedido o entrega.
 \end{itemize}
 
 \subsection{Modelo conceptual de datos M5}
