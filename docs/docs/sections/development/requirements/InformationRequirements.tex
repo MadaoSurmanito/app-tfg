@@ -113,11 +113,11 @@ Los datos asociados a un registro de acceso incluyen:
 
 \subsection{M2. Gestión comercial y clientes}
 
-Este módulo gestiona la información relacionada con los clientes del sistema y con la actividad comercial desarrollada por los agentes comerciales. Su objetivo es centralizar la información relevante sobre las peluquerías clientes, facilitar el trabajo de los agentes comerciales durante sus visitas y permitir el seguimiento de la actividad comercial realizada.
+Este módulo gestiona la información relacionada con los clientes del sistema y con la actividad comercial desarrollada por los agentes comerciales. Su objetivo es centralizar la información relevante sobre las peluquerías clientes, facilitar el trabajo de los agentes comerciales durante sus visitas, permitir el seguimiento de la actividad comercial realizada y dar soporte a la planificación de rutas comerciales mediante la consulta de la información de contacto y localización de los clientes.
 
 \subsubsection*{Cliente}
 
-El sistema debe almacenar la información básica de cada cliente profesional atendido por el distribuidor. Esta información permite identificar cada establecimiento, registrar los datos comerciales relevantes y mantener la relación entre la peluquería como entidad de negocio y su cuenta de acceso en la plataforma.
+El sistema debe almacenar la información básica de cada cliente profesional atendido por el distribuidor. Esta información permite identificar cada establecimiento, registrar los datos comerciales relevantes, mantener la relación entre la peluquería como entidad de negocio y su cuenta de acceso en la plataforma, y facilitar al agente comercial la consulta de los datos de contacto y localización necesarios para la planificación de visitas y rutas comerciales.
 
 Los datos asociados a un cliente incluyen:
 
@@ -136,6 +136,8 @@ Los datos asociados a un cliente incluyen:
     \item Fecha de última actualización de la información del cliente.
 \end{itemize}
 
+Esta información podrá ser utilizada por el sistema para mostrar al comercial los datos necesarios para localizar al cliente durante la planificación y ejecución de rutas comerciales.
+
 \subsubsection*{Visita comercial}
 
 El sistema debe permitir registrar las visitas comerciales realizadas por los agentes a los clientes profesionales. Estas visitas permiten documentar la actividad comercial y registrar observaciones o resultados obtenidos durante la interacción con el cliente.
@@ -152,9 +154,11 @@ Los datos asociados a una visita comercial incluyen:
     \item Resultado o conclusión de la visita.
 \end{itemize}
 
+Esta información podrá ser utilizada por el sistema para mostrar al comercial los datos necesarios para localizar al cliente durante la planificación y ejecución de rutas comerciales.
+
 \subsubsection*{Ruta comercial}
 
-El sistema debe permitir organizar las rutas de trabajo de los agentes comerciales. Una ruta representa la planificación de visitas que un comercial debe realizar durante una jornada o recorrido determinado.
+El sistema debe permitir organizar las rutas de trabajo de los agentes comerciales. Una ruta representa la planificación de visitas que un comercial debe realizar durante una jornada o recorrido determinado. Para ello, el sistema debe permitir consultar la información de contacto y localización de los clientes incluidos en la ruta y servir de apoyo a la generación de indicaciones de navegación mediante servicios externos.
 
 Los datos asociados a una ruta comercial incluyen:
 
@@ -169,7 +173,7 @@ Los datos asociados a una ruta comercial incluyen:
 
 \subsubsection*{Visita en ruta}
 
-El sistema debe permitir registrar las visitas que forman parte de una ruta comercial concreta. Esta información permite definir los clientes incluidos en la ruta y el orden en el que deben visitarse.
+El sistema debe permitir registrar las visitas que forman parte de una ruta comercial concreta. Esta información permite definir las visitas comerciales incluidas en la ruta y el orden previsto en el que deben realizarse, facilitando así la organización del recorrido comercial diario.
 
 Los datos asociados a una visita dentro de una ruta incluyen:
 

@@ -287,7 +287,7 @@ La \autoref{fig:mcd-m2} muestra el modelo conceptual correspondiente al módulo 
 
 \subsubsection{Clase Cliente}
 
-La clase \textit{Cliente} representa a cada establecimiento profesional atendido por el distribuidor. En ella se almacena la información necesaria para identificar al cliente como entidad comercial, registrar los datos propios del establecimiento y mantener su vinculación con el usuario de acceso correspondiente dentro del sistema.
+La clase \textit{Cliente} representa a cada establecimiento profesional atendido por el distribuidor. En ella se almacena la información necesaria para identificar al cliente como entidad comercial, registrar los datos propios del establecimiento, mantener su vinculación con el usuario de acceso correspondiente dentro del sistema y facilitar la consulta de la información de contacto y localización necesaria para la planificación de visitas y rutas comerciales.
 
 \textbf{Atributos}
 
@@ -339,7 +339,7 @@ La clase \textit{Cliente} representa a cada establecimiento profesional atendido
 
 \subsubsection{Clase Visita comercial}
 
-La clase \textit{Visita comercial} representa cada visita planificada o realizada por un agente comercial a un cliente profesional. Permite registrar tanto la planificación previa de la visita como la información obtenida tras su realización.
+La clase \textit{Visita comercial} representa cada visita planificada o realizada por un agente comercial a un cliente profesional. Permite registrar tanto la planificación previa de la visita como la información obtenida tras su realización, así como formar parte del historial comercial consultable asociado a cada cliente.
 
 \textbf{Atributos}
 
@@ -369,11 +369,13 @@ La clase \textit{Visita comercial} representa cada visita planificada o realizad
           El estado de una visita solo puede tomar valores definidos por el sistema.
     \item \textbf{RT-V3 — Resultado asociado a visitas realizadas}
           Solo deben registrarse resultados de visita cuando esta haya sido efectivamente realizada.
+    \item \textbf{RT-V4 — Integración de la visita en el historial comercial}
+      Toda visita comercial asociada a un cliente debe poder ser considerada parte de su historial comercial dentro del sistema.
 \end{itemize}
 
 \subsubsection{Clase Ruta comercial}
 
-La clase \textit{Ruta comercial} representa la planificación de trabajo de un agente comercial para una jornada o recorrido determinado. Permite organizar el conjunto de visitas que debe realizar un comercial en una fecha concreta.
+La clase \textit{Ruta comercial} representa la planificación de trabajo de un agente comercial para una jornada o recorrido determinado. Permite organizar el conjunto de visitas que debe realizar un comercial en una fecha concreta y sirve de base para consultar la información de contacto y localización de los clientes incluidos en la ruta y apoyar la obtención de indicaciones de navegación mediante servicios externos.
 
 \textbf{Atributos}
 
@@ -429,6 +431,10 @@ La clase \textit{Visita en ruta} representa la inclusión de una visita comercia
           Toda visita incluida en una ruta debe tener un orden de visita definido.
     \item \textbf{RT-VR3 — Unicidad de visita en una ruta}
           Una misma visita comercial no debe aparecer más de una vez dentro de la misma ruta.
+    \item \textbf{RT-VR4 — Unicidad del orden dentro de la ruta}
+      No deben existir dos visitas distintas con el mismo orden previsto dentro de una misma ruta comercial.
+    \item \textbf{RT-VR5 — Coherencia entre ruta y visita}
+      Toda visita incluida en una ruta comercial debe estar asociada al mismo usuario comercial responsable de dicha ruta.
 \end{itemize}
 
 \subsection{Modelo conceptual de datos M3}
