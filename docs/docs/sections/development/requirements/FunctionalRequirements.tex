@@ -149,14 +149,9 @@ Este módulo agrupa las funcionalidades relacionadas con la gestión del proceso
     \item El sistema debe permitir consultar el estado y el historial de pedidos asociados a cada cliente.
 \end{itemize}
 
-\subsubsection{RF-M4-02 Condiciones comerciales y descuentos}
 
-\begin{itemize}
-    \item El sistema debe permitir aplicar condiciones comerciales definidas por el distribuidor, como descuentos o condiciones específicas por cliente.
-    \item El sistema debe permitir reflejar dichas condiciones durante el proceso de creación del pedido.
-\end{itemize}
 
-\subsubsection{RF-M4-03 Gestión de entregas}
+\subsubsection{RF-M4-02 Gestión de entregas}
 
 \begin{itemize}
     \item El sistema debe permitir definir la modalidad de entrega asociada a cada pedido.
@@ -164,7 +159,7 @@ Este módulo agrupa las funcionalidades relacionadas con la gestión del proceso
     \item \textbf{El sistema debe permitir consultar el estado de entrega del pedido y registrar incidencias o productos pendientes de servir.}
 \end{itemize}
 
-\subsubsection{RF-M4-04 Registro de cobros}
+\subsubsection{RF-M4-03 Registro de cobros}
 \textbf{DUDA: necesito más información sobre cómo se gestionan los cobros actualmente para definir mejor este requisito y el siguiente.}
 \begin{itemize}
     \item El sistema debe permitir registrar cobros asociados a pedidos o albaranes.
@@ -172,7 +167,7 @@ Este módulo agrupa las funcionalidades relacionadas con la gestión del proceso
     \item El sistema debe permitir consultar el importe pendiente de pago asociado a cada cliente o pedido.
 \end{itemize}
 
-\subsubsection{RF-M4-05 Consulta de estado de cuenta}
+\subsubsection{RF-M4-04 Consulta de estado de cuenta}
 
 \begin{itemize}
     \item El sistema debe permitir consultar el estado de cuenta de cada cliente profesional.
@@ -231,7 +226,6 @@ Este módulo agrupa las funcionalidades destinadas a registrar y consultar infor
     \item Estas sugerencias deberán generarse a partir del historial técnico almacenado, teniendo en cuenta los productos utilizados y los servicios realizados con anterioridad.
     \item El sistema debe presentar dichas sugerencias como apoyo a la consulta profesional, sin sustituir el criterio técnico del usuario.
 \end{itemize}
-
 % ------------------------------------------------------------------------------
 \subsection{M6. Promociones, notificaciones y formaciones}
 % ------------------------------------------------------------------------------
@@ -242,27 +236,29 @@ Este módulo agrupa las funcionalidades relacionadas con la comunicación entre 
 
 \begin{itemize}
     \item El sistema debe permitir al distribuidor administrador crear y gestionar promociones comerciales dirigidas a los clientes profesionales.
-    \item El sistema debe permitir asociar dichas promociones a productos, líneas de producto o periodos de tiempo determinados.
+    \item El sistema debe permitir asociar dichas promociones a productos, líneas de producto, clientes específicos o periodos de tiempo determinados.
+    \item El sistema debe permitir definir condiciones promocionales tales como descuentos, ventajas comerciales u ofertas especiales aplicables durante un periodo determinado.
     \item El sistema debe permitir mostrar las promociones activas a los usuarios autorizados dentro de la aplicación.
+    \item El sistema debe permitir que las promociones aplicables puedan ser consideradas durante el proceso de creación de pedidos.
 \end{itemize}
 
 \subsubsection{RF-M6-02 Envío de notificaciones y recordatorios}
 
 \begin{itemize}
-    \item El sistema debe permitir enviar notificaciones o avisos a los usuarios del sistema relacionados con eventos relevantes, como promociones, pedidos o visitas comerciales.
+    \item El sistema debe permitir generar y enviar notificaciones o avisos a los usuarios del sistema relacionados con eventos relevantes de la aplicación.
+    \item Entre estos eventos podrán incluirse promociones activas, pedidos realizados, cambios en el estado de los pedidos o visitas comerciales programadas.
     \item El sistema debe permitir programar recordatorios asociados a determinadas acciones o eventos del sistema.
     \item Las notificaciones deberán mostrarse dentro de la aplicación y podrán utilizar mecanismos de aviso compatibles con el dispositivo del usuario.
 \end{itemize}
 
 \subsubsection{RF-M6-03 Gestión de formaciones}
-\textbf {DUDA: Hay que profundizar bastante sobre esto}
-\begin{itemize}
-    \item El sistema debe permitir publicar y gestionar actividades formativas dirigidas a los clientes profesionales.
-    \item El sistema debe permitir mostrar un calendario o listado de formaciones disponibles.
-    \item El sistema debe permitir consultar la información asociada a cada formación, como fecha, ubicación o contenido de la actividad.
-\end{itemize}
 
-% ------------------------------------------------------------------------------
+\begin{itemize}
+    \item El sistema debe permitir al distribuidor administrador publicar y gestionar actividades formativas dirigidas a los clientes profesionales.
+    \item El sistema debe permitir mostrar un calendario o listado de formaciones disponibles para los usuarios autorizados.
+    \item El sistema debe permitir consultar la información asociada a cada formación, incluyendo fecha, ubicación, descripción o contenido de la actividad.
+    \item El sistema debe permitir actualizar o desactivar las formaciones publicadas cuando sea necesario.
+\end{itemize}------------------------------------------------------------------------------
 \subsection{M7. Administración e integraciones}
 % ------------------------------------------------------------------------------
 
@@ -310,10 +306,10 @@ Este módulo agrupa las funcionalidades destinadas a la administración general 
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M8. Funcionalidades futuras}
+\subsection{M8. Funcionalidades adicionales}
 % ------------------------------------------------------------------------------
 
-Este módulo recoge un conjunto de funcionalidades identificadas durante el proceso de análisis de requisitos que, aunque no forman parte del alcance principal del sistema en su primera versión, se consideran posibles líneas de evolución futura de la plataforma. Estas funcionalidades buscan ampliar el valor de la aplicación para los clientes profesionales mediante el uso de tecnologías avanzadas y nuevas herramientas de apoyo al trabajo del peluquero.
+Este módulo recoge un conjunto de funcionalidades identificadas durante el proceso de análisis de requisitos que por ellas solas no forman parte de ningún módulo principal. Estas funcionalidades buscan ampliar el valor de la aplicación para los clientes mediante el uso de tecnologías avanzadas y nuevas herramientas de apoyo al trabajo del peluquero.
 
 \subsubsection{RF-M8-01 Asistente inteligente de recomendación de tratamientos}
 

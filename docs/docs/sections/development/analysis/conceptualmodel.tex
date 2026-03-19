@@ -1,0 +1,1422 @@
+A partir de los requisitos de información definidos en la \autoref{sec:InformationRequirements}, se ha
+elaborado el modelo conceptual de datos correspondiente. Este modelo describe las principales entidades de información que intervienen en la gestión de
+usuarios del sistema, así como sus atributos y relaciones.
+
+Para mayor legibilidad, el modelo conceptual se representa mediante varios diagramas de clases UML separados por módulos. En ellos se se identifican las clases del dominio, los atributos que describen la información gestionada y las relaciones existentes entre dichas clases.
+
+\subsection{Modelo conceptual de datos M1}
+La \autoref{fig:mcd-m1} muestra el modelo conceptual correspondiente al módulo de gestión de acceso, alta y autorización de usuarios.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M1_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M1.}
+%     \label{fig:mcd-m1}
+% \end{figure}
+
+\subsubsection{Clase Usuario}
+
+La clase \textit{Usuario} representa a cada persona o entidad con acceso al sistema. En ella se almacena la información necesaria para identificar al usuario, gestionar su autenticación y determinar su rol dentro de la aplicación.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único del usuario.
+    \item \textit{email}
+          Dirección de correo electrónico utilizada para la autenticación.
+    \item \textit{password\_hash}
+          Contraseña cifrada del usuario.
+    \item \textit{name}
+          Nombre completo del usuario.
+    \item \textit{phone}
+          Número de teléfono de contacto.
+    \item \textit{company}
+          Empresa o entidad a la que pertenece el usuario.
+    \item \textit{role}
+          Rol asignado al usuario dentro del sistema.
+    \item \textit{status}
+          Estado actual de la cuenta de usuario.
+    \item \textit{profile\_image\_url}
+          Dirección de la imagen de perfil del usuario.
+    \item \textit{last\_login\_at}
+          Fecha y hora del último acceso al sistema.
+    \item \textit{created\_at}
+          Fecha de creación de la cuenta.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la información del usuario.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-U1 — Email único}
+          Cada usuario debe tener una dirección de correo electrónico única dentro del sistema.
+    \item \textbf{RT-U2 — Rol obligatorio}
+          Todo usuario debe tener asignado un rol válido dentro del sistema.
+    \item \textbf{RT-U3 — Estado válido de usuario}
+          El estado de un usuario solo puede tomar valores definidos por el sistema.
+    \item \textbf{RT-U4 — Acceso solo para usuarios activos}
+          Un usuario únicamente puede autenticarse en el sistema si su estado es \textit{active}.
+    \item \textbf{RT-U5 — Empresa obligatoria para clientes}
+          Si un usuario tiene asignado el rol cliente, el atributo \textit{company} no puede ser nulo ni vacío.
+    \item \textbf{RT-U6 — Fecha de creación obligatoria}
+          Todo usuario debe registrar la fecha de creación de la cuenta.
+    \item \textbf{RT-U7 — Consistencia temporal del último acceso}
+          Si el atributo \textit{last\_login\_at} tiene valor, este debe ser posterior o igual a la fecha de creación de la cuenta.
+
+\end{itemize}
+
+\subsubsection{Clase Rol}
+
+La clase \textit{Rol} define los distintos perfiles de acceso existentes en el sistema. Los roles permiten determinar las funcionalidades a las que puede acceder cada usuario.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador del rol.
+    \item \textit{code}
+          Código identificativo del rol.
+    \item \textit{name}
+          Nombre del rol.
+    \item \textit{description}
+          Descripción del rol.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-RO1 — Identificador único de rol}
+          Cada rol del sistema debe tener un identificador único, así como un código y un nombre únicos.
+
+\end{itemize}
+
+\subsubsection{Clase Solicitud de registro}
+
+La clase \textit{Solicitud de registro} representa las solicitudes de alta realizadas por usuarios que desean acceder al sistema y que deben ser revisadas por un administrador.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador de la solicitud.
+    \item \textit{email}
+          Correo electrónico del solicitante.
+    \item \textit{password\_hash}
+          Contraseña cifrada propuesta por el solicitante.
+    \item \textit{name}
+          Nombre del solicitante.
+    \item \textit{phone}
+          Teléfono de contacto.
+    \item \textit{company}
+          Empresa asociada al solicitante.
+    \item \textit{requested\_role}
+          Rol solicitado por el usuario.
+    \item \textit{status}
+          Estado actual de la solicitud.
+    \item \textit{request\_source}
+          Origen de la solicitud de registro.
+    \item \textit{requested\_at}
+          Fecha en la que se realiza la solicitud.
+    \item \textit{reviewed\_at}
+          Fecha en la que se revisa la solicitud.
+    \item \textit{reviewed\_by}
+          Usuario que revisa la solicitud.
+    \item \textit{rejection\_reason}
+          Motivo del rechazo de la solicitud.
+    \item \textit{created\_user}
+          Usuario creado a partir de la solicitud aprobada.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-R1 — Estado obligatorio en solicitudes de registro}
+          Toda solicitud de registro debe tener un estado definido.
+    \item \textbf{RT-R2 — Solicitudes pendientes no revisadas}
+          Si una solicitud de registro tiene estado \textit{pending}, no puede existir información de revisión asociada.
+    \item \textbf{RT-R3 — Solicitudes revisadas deben registrar revisión}
+          Si una solicitud tiene estado \textit{approved} o \textit{rejected}, debe registrarse la información de revisión correspondiente.
+    \item \textbf{RT-R4 — Motivo obligatorio en solicitudes rechazadas}
+          Si una solicitud de registro es rechazada, debe registrarse el motivo del rechazo.
+    \item \textbf{RT-R5 — Creación de usuario tras aprobación}
+          Si una solicitud de registro es aprobada, debe generarse una cuenta de usuario asociada.
+    \item \textbf{RT-R6 — Rol solicitado válido}
+          El rol solicitado en una solicitud de registro debe corresponder a uno de los roles existentes en el sistema.
+
+\end{itemize}
+
+\subsubsection{Clase Registro de administración de usuarios}
+
+Esta clase permite registrar las acciones administrativas realizadas sobre las cuentas de usuario, proporcionando trazabilidad sobre los cambios efectuados en el sistema.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador del registro.
+    \item \textit{target\_user}
+          Usuario sobre el que se realiza la acción.
+    \item \textit{performed\_by}
+          Usuario que realiza la acción administrativa.
+    \item \textit{action\_type}
+          Tipo de acción administrativa realizada.
+    \item \textit{previous\_status}
+          Estado previo del usuario.
+    \item \textit{new\_status}
+          Nuevo estado del usuario.
+    \item \textit{previous\_role}
+          Rol previo del usuario.
+    \item \textit{new\_role}
+          Nuevo rol asignado al usuario.
+    \item \textit{reason}
+          Motivo de la acción administrativa.
+    \item \textit{notes}
+          Información adicional asociada a la acción.
+    \item \textit{created\_at}
+          Fecha en la que se registra la acción.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-L1 — Acción administrativa obligatoria}
+          Todo registro debe indicar el tipo de acción realizada.
+    \item \textbf{RT-L2 — Usuario objetivo obligatorio}
+          Toda acción administrativa debe referirse a un usuario existente en el sistema.
+    \item \textbf{RT-L3 — Actor de la acción obligatorio}
+          Toda acción administrativa debe registrar el usuario que realizó la acción.
+    \item \textbf{RT-L4 — Consistencia en cambios de rol}
+          Si la acción corresponde a un cambio de rol, deben registrarse el rol anterior y el nuevo rol.
+    \item \textbf{RT-L5 — Consistencia en cambios de estado}
+          Si la acción corresponde a un cambio de estado, deben registrarse el estado anterior y el nuevo estado.
+    \item \textbf{RT-G3 — Registro obligatorio de acciones administrativas}
+          Toda acción administrativa que modifique el estado o el rol de un usuario debe quedar registrada.
+
+\end{itemize}
+
+\subsubsection{Clase Registro de acceso}
+
+La clase \textit{Registro de acceso} almacena los eventos relacionados con el acceso al sistema, incluyendo intentos de autenticación, creación de sesiones y eventos de cierre o expiración.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador del registro de acceso.
+    \item \textit{user}
+          Usuario asociado al evento de acceso.
+    \item \textit{email\_attempted}
+          Correo electrónico utilizado en el intento de acceso.
+    \item \textit{event\_type}
+          Tipo de evento de acceso.
+    \item \textit{result}
+          Resultado del intento de acceso.
+    \item \textit{failure\_reason}
+          Motivo del fallo en caso de error.
+    \item \textit{session\_token}
+          Identificador de la sesión asociada.
+    \item \textit{ip\_address}
+          Dirección IP desde la que se realizó el acceso.
+    \item \textit{user\_agent}
+          Información del navegador o dispositivo utilizado.
+    \item \textit{created\_at}
+          Fecha y hora del evento de acceso.
+    \item \textit{revoked\_at}
+          Fecha de revocación de la sesión.
+    \item \textit{expires\_at}
+          Fecha de expiración de la sesión.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-A1 — Todo registro de acceso debe tener tipo de evento}
+          Cada registro debe indicar el tipo de evento correspondiente.
+    \item \textbf{RT-A2 — Todo registro de acceso debe tener resultado}
+          Cada registro debe indicar el resultado del evento.
+    \item \textbf{RT-A3 — Todo registro de acceso debe registrar fecha y hora}
+          Cada registro debe contener el instante en que se produjo el evento.
+    \item \textbf{RT-A4 — Los eventos fallidos deben registrar el motivo}
+          Si el resultado de un evento es fallido, debe registrarse el motivo.
+    \item \textbf{RT-A5 — Los eventos de login correcto pueden generar sesión}
+          Si el evento corresponde a un acceso correcto, el sistema puede registrar una sesión.
+    \item \textbf{RT-A6 — Los eventos de revocación deben referirse a una sesión}
+          Los eventos de revocación deben asociarse a una sesión.
+    \item \textbf{RT-A7 — Los eventos de expiración deben referirse a una sesión}
+          Los eventos de expiración deben asociarse a una sesión.
+    \item \textbf{RT-A8 — Coherencia entre usuario y credencial intentada}
+          Debe existir al menos un identificador de usuario o un correo utilizado en el intento de acceso.
+    \item \textbf{RT-A9 — Coherencia temporal de expiración}
+          Si existe una fecha de expiración de sesión, esta debe ser posterior al evento.
+    \item \textbf{RT-A10 — Coherencia temporal de revocación}
+          Si existe una fecha de revocación, esta debe ser posterior o igual al evento.
+    \item \textbf{RT-A11 — Los eventos de cierre o invalidación deben asociarse a una sesión}
+          Los eventos de cierre, revocación o expiración deben estar asociados a una sesión.
+    \item \textbf{RT-G2 — Invalidación de sesiones en usuarios bloqueados}
+          Si el estado de un usuario pasa a \textit{blocked}, cualquier sesión activa debe ser invalidada.
+
+\end{itemize}
+
+\subsection{Modelo conceptual de datos M2}
+
+La \autoref{fig:mcd-m2} muestra el modelo conceptual correspondiente al módulo de gestión comercial y clientes.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M2_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M2.}
+%     \label{fig:mcd-m2}
+% \end{figure}
+
+\subsubsection{Clase Cliente}
+
+La clase \textit{Cliente} representa a cada establecimiento profesional atendido por el distribuidor. En ella se almacena la información necesaria para identificar al cliente como entidad comercial, registrar los datos propios del establecimiento y mantener su vinculación con el usuario de acceso correspondiente dentro del sistema.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único del cliente.
+    \item \textit{name}
+          Nombre del establecimiento o peluquería.
+    \item \textit{contact\_name}
+          Nombre de la persona de contacto del establecimiento.
+    \item \textit{address}
+          Dirección del establecimiento.
+    \item \textit{city}
+          Localidad o ciudad del cliente.
+    \item \textit{postal\_code}
+          Código postal del establecimiento.
+    \item \textit{province}
+          Provincia o zona geográfica del cliente.
+    \item \textit{assigned\_commercial}
+          Usuario comercial responsable del cliente.
+    \item \textit{linked\_user}
+          Usuario asociado al cliente dentro del sistema.
+    \item \textit{notes}
+          Observaciones o notas comerciales asociadas al cliente.
+    \item \textit{created\_at}
+          Fecha de creación del registro del cliente.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la información del cliente.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-C1 — Identificación obligatoria del cliente}
+          Todo cliente debe disponer de información suficiente para su identificación dentro del sistema.
+    \item \textbf{RT-C2 — Comercial responsable válido}
+          Todo cliente debe estar asociado a un usuario válido del sistema que actúe como comercial responsable.
+    \item \textbf{RT-C3 — Vinculación obligatoria con usuario}
+          Todo cliente debe estar asociado a un único usuario del sistema que represente su cuenta de acceso a la plataforma.
+    \item \textbf{RT-C4 — Correspondencia entre cliente y usuario cliente}
+          Todo usuario con rol cliente debe corresponder a una única entidad \textit{Cliente} dentro del sistema.
+    \item \textbf{RT-C5 — Coherencia temporal del registro del cliente}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del cliente.
+
+\end{itemize}
+
+\subsubsection{Clase Visita comercial}
+
+La clase \textit{Visita comercial} representa cada visita planificada o realizada por un agente comercial a un cliente profesional. Permite registrar tanto la planificación previa de la visita como la información obtenida tras su realización.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la visita.
+    \item \textit{client}
+          Cliente asociado a la visita.
+    \item \textit{commercial}
+          Usuario comercial que realiza la visita.
+    \item \textit{scheduled\_at}
+          Fecha y hora previstas para la visita.
+    \item \textit{status}
+          Estado de la visita.
+    \item \textit{notes}
+          Observaciones registradas durante la visita.
+    \item \textit{result}
+          Resultado o conclusión de la visita.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-V1 — Asociación obligatoria de la visita}
+          Toda visita comercial debe estar asociada a un cliente y a un usuario comercial.
+    \item \textbf{RT-V2 — Estado válido de la visita}
+          El estado de una visita solo puede tomar valores definidos por el sistema.
+    \item \textbf{RT-V3 — Resultado asociado a visitas realizadas}
+          Solo deben registrarse resultados de visita cuando esta haya sido efectivamente realizada.
+\end{itemize}
+
+\subsubsection{Clase Ruta comercial}
+
+La clase \textit{Ruta comercial} representa la planificación de trabajo de un agente comercial para una jornada o recorrido determinado. Permite organizar el conjunto de visitas que debe realizar un comercial en una fecha concreta.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la ruta.
+    \item \textit{commercial}
+          Usuario comercial responsable de la ruta.
+    \item \textit{route\_date}
+          Fecha de la ruta comercial.
+    \item \textit{name}
+          Nombre o descripción de la ruta.
+    \item \textit{status}
+          Estado de la ruta.
+    \item \textit{created\_at}
+          Fecha de creación de la ruta.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-RC1 — Comercial obligatorio en la ruta}
+          Toda ruta comercial debe estar asociada a un usuario comercial responsable.
+    \item \textbf{RT-RC2 — Fecha obligatoria de la ruta}
+          Toda ruta comercial debe estar asociada a una fecha de planificación.
+    \item \textbf{RT-RC3 — Estado válido de la ruta}
+          El estado de una ruta solo puede tomar valores definidos por el sistema.
+\end{itemize}
+
+\subsubsection{Clase Visita en ruta}
+
+La clase \textit{Visita en ruta} representa la inclusión de una visita comercial concreta dentro de una ruta comercial. Su finalidad es permitir definir la composición de la ruta y el orden previsto de las visitas.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único del registro.
+    \item \textit{route}
+          Ruta comercial a la que pertenece la visita.
+    \item \textit{visit}
+          Visita comercial incluida en la ruta.
+    \item \textit{visit\_order}
+          Orden previsto de la visita dentro de la ruta.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-VR1 — Asociación obligatoria de visita en ruta}
+          Toda visita en ruta debe estar asociada a una ruta comercial y a una visita comercial existentes.
+    \item \textbf{RT-VR2 — Orden de visita válido}
+          Toda visita incluida en una ruta debe tener un orden de visita definido.
+    \item \textbf{RT-VR3 — Unicidad de visita en una ruta}
+          Una misma visita comercial no debe aparecer más de una vez dentro de la misma ruta.
+\end{itemize}
+
+\subsection{Modelo conceptual de datos M3}
+
+La \autoref{fig:mcd-m3} muestra el modelo conceptual correspondiente al módulo de catálogo, productos y coloración.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M3_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M3.}
+%     \label{fig:mcd-m3}
+% \end{figure}
+
+\subsubsection{Clase Producto}
+
+La clase \textit{Producto} representa cada uno de los artículos profesionales incluidos en el catálogo del sistema. En ella se almacena la información necesaria para identificar el producto, clasificarlo comercialmente y mostrar sus características principales a los usuarios.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único del producto.
+    \item \textit{name}
+          Nombre del producto.
+    \item \textit{reference}
+          Referencia comercial del producto.
+    \item \textit{description}
+          Descripción general del producto.
+    \item \textit{category}
+          Categoría o familia a la que pertenece el producto.
+    \item \textit{product\_line}
+          Línea comercial asociada al producto.
+    \item \textit{image\_url}
+          Imagen principal del producto.
+    \item \textit{technical\_info}
+          Información técnica o modo de aplicación del producto.
+    \item \textit{status}
+          Estado del producto dentro del catálogo.
+    \item \textit{created\_at}
+          Fecha de creación del registro del producto.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la información del producto.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-P1 — Referencia única de producto}
+          Cada producto debe disponer de una referencia comercial única dentro del catálogo.
+    \item \textbf{RT-P2 — Clasificación obligatoria del producto}
+          Todo producto debe estar asociado a una categoría y a una línea comercial válidas dentro del sistema.
+    \item \textbf{RT-P3 — Estado válido de producto}
+          El estado de un producto solo puede tomar valores definidos por el sistema.
+    \item \textbf{RT-P4 — Coherencia temporal del producto}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del producto.
+\end{itemize}
+
+\subsubsection{Clase Categoría de producto}
+
+La clase \textit{Categoría de producto} representa la clasificación general de los productos del catálogo. Su finalidad es estructurar la oferta comercial en grupos amplios que faciliten la navegación y consulta de la información.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la categoría.
+    \item \textit{name}
+          Nombre de la categoría.
+    \item \textit{description}
+          Descripción de la categoría.
+    \item \textit{display\_order}
+          Orden o posición de visualización de la categoría.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-PC1 — Nombre único de categoría}
+          Cada categoría de producto debe tener un nombre único dentro del sistema.
+    \item \textbf{RT-PC2 — Orden de visualización válido}
+          El orden de visualización de una categoría debe permitir su correcta organización dentro del catálogo.
+\end{itemize}
+
+\subsubsection{Clase Línea comercial}
+
+La clase \textit{Línea comercial} representa las agrupaciones comerciales específicas en las que se organizan los productos del catálogo. Estas líneas permiten estructurar la oferta de productos según la lógica comercial del distribuidor o de la marca.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la línea comercial.
+    \item \textit{name}
+          Nombre de la línea comercial.
+    \item \textit{description}
+          Descripción de la línea comercial.
+    \item \textit{category}
+          Categoría asociada a la línea comercial.
+    \item \textit{image\_url}
+          Imagen o recurso gráfico representativo de la línea.
+    \item \textit{display\_order}
+          Orden o posición de visualización.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-PL1 — Nombre único de línea comercial}
+          Cada línea comercial debe disponer de un nombre único dentro del sistema.
+    \item \textbf{RT-PL2 — Asociación obligatoria a categoría}
+          Toda línea comercial debe estar asociada a una categoría válida del catálogo.
+    \item \textbf{RT-PL3 — Orden de visualización válido}
+          El orden de visualización de una línea comercial debe permitir su correcta organización dentro del catálogo.
+\end{itemize}
+
+\subsubsection{Clase Recurso de apoyo}
+
+La clase \textit{Recurso de apoyo} representa la documentación y materiales complementarios asociados al catálogo, tales como fichas técnicas, catálogos comerciales o materiales formativos.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único del recurso.
+    \item \textit{title}
+          Título o nombre del recurso.
+    \item \textit{description}
+          Descripción del recurso.
+    \item \textit{resource\_type}
+          Tipo de recurso.
+    \item \textit{resource\_url}
+          Ubicación o enlace al recurso.
+    \item \textit{product}
+          Producto asociado al recurso, en caso de existir.
+    \item \textit{product\_line}
+          Línea comercial asociada al recurso, en caso de existir.
+    \item \textit{created\_at}
+          Fecha de creación del recurso.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-RA1 — Identificación obligatoria del recurso}
+          Todo recurso de apoyo debe disponer de información suficiente para su identificación dentro del sistema.
+    \item \textbf{RT-RA2 — Asociación contextual del recurso}
+          Todo recurso de apoyo debe estar vinculado, al menos, a un producto o a una línea comercial.
+    \item \textbf{RT-RA3 — Tipo válido de recurso}
+          El tipo de recurso solo puede tomar valores definidos por el sistema.
+\end{itemize}
+
+\subsubsection{Clase Carta de color}
+
+La clase \textit{Carta de color} representa cada una de las cartas cromáticas asociadas a las líneas de coloración disponibles en el catálogo. Permite agrupar y organizar las referencias de color comercializadas por la marca.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la carta de color.
+    \item \textit{name}
+          Nombre de la carta de color.
+    \item \textit{description}
+          Descripción general de la carta.
+    \item \textit{product\_line}
+          Línea comercial asociada a la carta de color.
+    \item \textit{image\_url}
+          Imagen o recurso visual principal de la carta.
+    \item \textit{created\_at}
+          Fecha de creación del registro de la carta.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la carta.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-CC1 — Asociación obligatoria de la carta}
+          Toda carta de color debe estar asociada a una línea comercial válida del sistema.
+    \item \textbf{RT-CC2 — Nombre identificativo de la carta}
+          Toda carta de color debe disponer de un nombre que permita su identificación dentro del catálogo.
+    \item \textbf{RT-CC3 — Coherencia temporal de la carta}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación de la carta.
+\end{itemize}
+
+\subsubsection{Clase Referencia de color}
+
+La clase \textit{Referencia de color} representa cada uno de los tonos o referencias individuales que forman parte de una carta de color. Su finalidad es permitir la consulta estructurada de tonos según la nomenclatura comercial utilizada por la marca.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la referencia de color.
+    \item \textit{color\_chart}
+          Carta de color asociada.
+    \item \textit{code}
+          Código o nomenclatura comercial del tono.
+    \item \textit{name}
+          Nombre o denominación del tono.
+    \item \textit{description}
+          Descripción del tono.
+    \item \textit{image\_url}
+          Imagen o muestra visual asociada al tono.
+    \item \textit{display\_order}
+          Orden o posición dentro de la carta.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-CR1 — Asociación obligatoria a carta de color}
+          Toda referencia de color debe pertenecer a una carta de color válida dentro del sistema.
+    \item \textbf{RT-CR2 — Código identificativo del tono}
+          Cada referencia de color debe disponer de un código o nomenclatura comercial que permita su identificación.
+    \item \textbf{RT-CR3 — Orden de visualización válido}
+          El orden de visualización de una referencia debe permitir su correcta organización dentro de la carta de color.
+\end{itemize}
+
+\subsection{Modelo conceptual de datos M4}
+
+La \autoref{fig:mcd-m4} muestra el modelo conceptual correspondiente al módulo de pedidos, entregas y cobros.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M4_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M4.}
+%     \label{fig:mcd-m4}
+% \end{figure}
+
+\subsubsection{Clase Pedido}
+
+La clase \textit{Pedido} representa cada solicitud de compra realizada por un cliente profesional o por un usuario autorizado en su nombre. En ella se almacena la información general necesaria para identificar el pedido, relacionarlo con el cliente correspondiente y conocer su estado dentro del proceso comercial.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único del pedido.
+    \item \textit{client}
+          Cliente asociado al pedido.
+    \item \textit{created\_by}
+          Usuario que registra el pedido.
+    \item \textit{created\_at}
+          Fecha de creación del pedido.
+    \item \textit{status}
+          Estado actual del pedido.
+    \item \textit{total\_amount}
+          Importe total del pedido.
+    \item \textit{notes}
+          Observaciones asociadas al pedido.
+    \item \textit{updated\_at}
+          Fecha de última actualización del pedido.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-O1 — Asociación obligatoria del pedido}
+          Todo pedido debe estar asociado a un cliente existente y a un usuario válido que lo registre.
+    \item \textbf{RT-O2 — Estado válido del pedido}
+          El estado de un pedido solo puede tomar valores definidos por el sistema.
+    \item \textbf{RT-O3 — Importe total coherente}
+          Todo pedido debe disponer de un importe total coherente con la suma de sus líneas de pedido.
+    \item \textbf{RT-O4 — Modalidad de entrega obligatoria}
+          Todo pedido debe registrar una modalidad de entrega válida.
+    \item \textbf{RT-O5 — Coherencia temporal del pedido}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del pedido.
+\end{itemize}
+
+\subsubsection{Clase Línea de pedido}
+
+La clase \textit{Línea de pedido} representa cada uno de los productos incluidos en un pedido. Su finalidad es detallar la composición del pedido, las cantidades solicitadas y las condiciones económicas aplicadas en cada línea.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la línea de pedido.
+    \item \textit{order}
+          Pedido asociado a la línea.
+    \item \textit{product}
+          Producto incluido en la línea de pedido.
+    \item \textit{quantity}
+          Cantidad solicitada del producto.
+    \item \textit{unit\_price}
+          Precio unitario aplicado.
+    \item \textit{discount\_amount}
+          Descuento aplicado a la línea, en caso de existir.
+    \item \textit{line\_amount}
+          Importe total de la línea.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-OL1 — Asociación obligatoria de la línea}
+          Toda línea de pedido debe estar asociada a un pedido y a un producto existentes.
+    \item \textbf{RT-OL2 — Cantidad válida}
+          Toda línea de pedido debe registrar una cantidad solicitada válida y mayor que cero.
+    \item \textbf{RT-OL3 — Importe coherente de línea}
+          El importe total de la línea debe ser coherente con la cantidad, el precio unitario y el descuento aplicado.
+\end{itemize}
+
+\subsubsection{Clase Entrega}
+
+La clase \textit{Entrega} representa la información asociada al proceso de suministro de un pedido. Permite registrar la modalidad de entrega, su estado y las fechas previstas o reales asociadas al envío o reparto.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la entrega.
+    \item \textit{order}
+          Pedido asociado a la entrega.
+    \item \textit{delivery\_method}
+          Modalidad de entrega.
+    \item \textit{responsible\_user}
+          Usuario responsable de la entrega, en caso de entrega directa.
+    \item \textit{status}
+          Estado actual de la entrega.
+    \item \textit{expected\_delivery\_at}
+          Fecha prevista de entrega.
+    \item \textit{delivered\_at}
+          Fecha real de entrega.
+    \item \textit{notes}
+          Observaciones asociadas a la entrega.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-D1 — Asociación obligatoria de la entrega}
+          Toda entrega debe estar asociada a un pedido existente.
+    \item \textbf{RT-D2 — Modalidad válida de entrega}
+          Toda entrega debe registrar una modalidad de entrega definida por el sistema.
+    \item \textbf{RT-D3 — Estado válido de la entrega}
+          El estado de una entrega solo puede tomar valores definidos por el sistema.
+    \item \textbf{RT-D4 — Responsable en entrega directa}
+          Si la modalidad de entrega corresponde a reparto directo, debe registrarse el usuario responsable de la entrega.
+    \item \textbf{RT-D5 — Coherencia temporal de la entrega}
+          Si existe una fecha real de entrega, esta debe ser posterior o igual a la fecha prevista de entrega, cuando esta exista.
+\end{itemize}
+
+\subsubsection{Clase Incidencia de entrega}
+
+La clase \textit{Incidencia de entrega} representa los problemas o situaciones excepcionales detectadas durante el proceso de entrega. Su finalidad es documentar incidencias logísticas, productos pendientes de servir u otras anomalías relacionadas con la entrega.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único de la incidencia.
+    \item \textit{delivery}
+          Entrega asociada a la incidencia.
+    \item \textit{incident\_type}
+          Tipo de incidencia registrada.
+    \item \textit{description}
+          Descripción de la incidencia.
+    \item \textit{created\_at}
+          Fecha de registro de la incidencia.
+    \item \textit{status}
+          Estado de la incidencia.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-DI1 — Asociación obligatoria de la incidencia}
+          Toda incidencia de entrega debe estar asociada a una entrega existente.
+    \item \textbf{RT-DI2 — Tipo válido de incidencia}
+          Toda incidencia debe registrar un tipo definido por el sistema.
+    \item \textbf{RT-DI3 — Estado válido de la incidencia}
+          El estado de una incidencia solo puede tomar valores definidos por el sistema.
+\end{itemize}
+
+\subsubsection{Clase Cobro}
+
+La clase \textit{Cobro} representa cada uno de los pagos registrados por parte de los clientes profesionales. Permite reflejar cobros totales o parciales y mantener el seguimiento económico asociado a pedidos o entregas.
+
+\textbf{Atributos}
+
+\begin{itemize}
+    \item \textit{id}
+          Identificador único del cobro.
+    \item \textit{client}
+          Cliente asociado al cobro.
+    \item \textit{order}
+          Pedido asociado al cobro, en caso de existir.
+    \item \textit{delivery}
+          Entrega asociada al cobro, en caso de existir.
+    \item \textit{payment\_at}
+          Fecha del cobro.
+    \item \textit{amount}
+          Importe cobrado.
+    \item \textit{payment\_method}
+          Método de cobro.
+    \item \textit{notes}
+          Observaciones asociadas al cobro.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+    \item \textbf{RT-PY1 — Cliente obligatorio en el cobro}
+          Todo cobro debe estar asociado a un cliente existente.
+    \item \textbf{RT-PY2 — Asociación contextual del cobro}
+          Todo cobro debe estar asociado, al menos, a un pedido o a una entrega.
+    \item \textbf{RT-PY3 — Importe válido de cobro}
+          Todo cobro debe registrar un importe válido y mayor que cero.
+    \item \textbf{RT-PY4 — Método válido de cobro}
+          Todo cobro debe registrar un método de cobro definido por el sistema.
+\end{itemize}
+
+\subsection{Modelo conceptual de datos M5}
+
+La \autoref{fig:mcd-m5} muestra el modelo conceptual correspondiente al módulo de gestión técnica del salón y seguimiento de servicios.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M5_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M5.}
+%     \label{fig:mcd-m5}
+% \end{figure}
+
+\subsubsection{Clase Cliente del salón}
+
+La clase \textit{Cliente del salón} representa a los clientes finales atendidos dentro de una peluquería profesional registrada en el sistema. Su finalidad es permitir registrar información básica de identificación y mantener un historial técnico de los servicios realizados a cada cliente.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único del cliente del salón.
+    \item \textit{name}
+          Nombre del cliente del salón.
+    \item \textit{phone}
+          Teléfono de contacto del cliente del salón.
+    \item \textit{notes}
+          Observaciones generales asociadas al cliente.
+    \item \textit{created\_at}
+          Fecha de creación del registro.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la información.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-SC1 — Asociación obligatoria a cliente profesional}
+          Todo cliente del salón debe estar asociado a un cliente profesional existente.
+    \item \textbf{RT-SC2 — Nombre obligatorio}
+          Todo cliente del salón debe registrar un nombre identificativo.
+    \item \textbf{RT-SC3 — Coherencia temporal del registro}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del registro.
+
+\end{itemize}
+
+\subsubsection{Clase Servicio realizado}
+
+La clase \textit{Servicio realizado} representa cada servicio o tratamiento técnico realizado a un cliente del salón. Permite documentar los trabajos efectuados y mantener un historial técnico asociado a cada cliente.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único del servicio realizado.
+    \item \textit{salon\_client}
+          Cliente del salón al que se aplica el servicio.
+    \item \textit{client}
+          Cliente profesional o peluquería donde se realiza el servicio.
+    \item \textit{performed\_by}
+          Usuario que registra o realiza el servicio.
+    \item \textit{service\_date}
+          Fecha en la que se realiza el servicio.
+    \item \textit{service\_type}
+          Tipo de servicio o tratamiento aplicado.
+    \item \textit{result\_description}
+          Descripción del resultado o trabajo realizado.
+    \item \textit{notes}
+          Observaciones generales asociadas al servicio.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-S1 — Asociación obligatoria del servicio}
+          Todo servicio debe estar asociado a un cliente del salón existente.
+    \item \textbf{RT-S2 — Peluquería obligatoria}
+          Todo servicio debe registrarse en el contexto de un cliente profesional o peluquería existente.
+    \item \textbf{RT-S3 — Fecha obligatoria del servicio}
+          Todo servicio realizado debe registrar la fecha en la que se llevó a cabo.
+    \item \textbf{RT-S4 — Tipo de servicio válido}
+          El tipo de servicio debe pertenecer al conjunto de tipos definidos por el sistema.
+
+\end{itemize}
+
+\subsubsection{Clase Ficha técnica del servicio}
+
+La clase \textit{Ficha técnica del servicio} almacena la información técnica detallada asociada a un servicio realizado. Permite documentar fórmulas de coloración, combinaciones de productos y otros datos relevantes para el seguimiento técnico de tratamientos capilares.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la ficha técnica.
+    \item \textit{service}
+          Servicio realizado al que pertenece la ficha técnica.
+    \item \textit{technical\_description}
+          Descripción técnica del tratamiento realizado.
+    \item \textit{formula}
+          Fórmula o combinación de productos utilizada en el tratamiento.
+    \item \textit{technical\_notes}
+          Observaciones técnicas adicionales.
+    \item \textit{created\_at}
+          Fecha de creación de la ficha técnica.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la ficha técnica.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-ST1 — Asociación obligatoria de ficha técnica}
+          Toda ficha técnica debe estar asociada a un servicio realizado existente.
+    \item \textbf{RT-ST2 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación de la ficha técnica.
+
+\end{itemize}
+
+\subsubsection{Clase Producto utilizado en servicio}
+
+La clase \textit{Producto utilizado en servicio} permite registrar los productos del catálogo que han sido utilizados durante la realización de un servicio técnico en el salón.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador del registro de uso de producto.
+    \item \textit{service}
+          Servicio realizado en el que se utiliza el producto.
+    \item \textit{product}
+          Producto utilizado en el servicio.
+    \item \textit{quantity}
+          Cantidad utilizada del producto.
+    \item \textit{notes}
+          Observaciones asociadas al uso del producto.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-SP1 — Asociación obligatoria del uso de producto}
+          Todo registro de producto utilizado debe estar asociado a un servicio realizado existente.
+    \item \textbf{RT-SP2 — Producto válido}
+          Todo producto utilizado debe corresponder a un producto existente en el catálogo del sistema.
+    \item \textbf{RT-SP3 — Cantidad válida}
+          Si se registra la cantidad utilizada de un producto, esta debe ser mayor que cero.
+
+\end{itemize}
+
+\subsubsection{Clase Sugerencia de producto}
+
+La clase \textit{Sugerencia de producto} permite registrar recomendaciones de productos generadas a partir del historial técnico de un cliente del salón. Estas sugerencias se muestran como apoyo a la consulta profesional del peluquero.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la sugerencia.
+    \item \textit{salon\_client}
+          Cliente del salón asociado a la sugerencia.
+    \item \textit{product}
+          Producto sugerido.
+    \item \textit{reason}
+          Motivo o justificación de la sugerencia.
+    \item \textit{created\_at}
+          Fecha en la que se genera la sugerencia.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-PS1 — Asociación obligatoria de la sugerencia}
+          Toda sugerencia de producto debe estar asociada a un cliente del salón existente.
+    \item \textbf{RT-PS2 — Producto válido en sugerencia}
+          Todo producto sugerido debe corresponder a un producto existente en el catálogo del sistema.
+
+\end{itemize}
+
+\subsection{Modelo conceptual de datos M6}
+
+La \autoref{fig:mcd-m6} muestra el modelo conceptual correspondiente al módulo de promociones, notificaciones y formaciones.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M6_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M6.}
+%     \label{fig:mcd-m6}
+% \end{figure}
+
+\subsubsection{Clase Promoción}
+
+La clase \textit{Promoción} representa las ofertas o condiciones comerciales definidas por el distribuidor y dirigidas a los clientes profesionales. Permite gestionar descuentos, ventajas comerciales y campañas promocionales dentro de un periodo de vigencia determinado.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la promoción.
+    \item \textit{title}
+          Nombre o título de la promoción.
+    \item \textit{description}
+          Descripción de la promoción.
+    \item \textit{promotion\_type}
+          Tipo de promoción definida.
+    \item \textit{value}
+          Valor o beneficio asociado a la promoción.
+    \item \textit{product}
+          Producto asociado a la promoción, cuando corresponda.
+    \item \textit{client}
+          Cliente profesional al que se dirige la promoción, cuando corresponda.
+    \item \textit{valid\_from}
+          Fecha de inicio de vigencia.
+    \item \textit{valid\_to}
+          Fecha de fin de vigencia.
+    \item \textit{status}
+          Estado actual de la promoción.
+    \item \textit{created\_at}
+          Fecha de creación de la promoción.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la promoción.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-PR1 — Tipo válido de promoción}
+          El tipo de promoción debe pertenecer al conjunto de tipos definidos por el sistema.
+    \item \textbf{RT-PR2 — Vigencia coherente}
+          Si la promoción tiene fecha de fin, esta debe ser posterior o igual a la fecha de inicio.
+    \item \textbf{RT-PR3 — Estado válido}
+          El estado de la promoción solo puede tomar valores definidos por el sistema.
+
+\end{itemize}
+
+\subsubsection{Clase Notificación}
+
+La clase \textit{Notificación} representa los avisos o mensajes generados por el sistema y dirigidos a los usuarios. Permite informar sobre eventos relevantes como promociones, pedidos o actividades del sistema.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la notificación.
+    \item \textit{user}
+          Usuario destinatario de la notificación.
+    \item \textit{title}
+          Título de la notificación.
+    \item \textit{message}
+          Contenido del mensaje.
+    \item \textit{type}
+          Tipo de notificación.
+    \item \textit{is\_read}
+          Indica si la notificación ha sido leída.
+    \item \textit{read\_at}
+          Fecha de lectura de la notificación.
+    \item \textit{created\_at}
+          Fecha de creación de la notificación.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-N1 — Usuario obligatorio}
+          Toda notificación debe estar asociada a un usuario existente.
+    \item \textbf{RT-N2 — Tipo válido de notificación}
+          El tipo de notificación debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-N3 — Coherencia de lectura}
+          Si la notificación está marcada como leída, debe existir una fecha de lectura asociada.
+
+\end{itemize}
+
+\subsubsection{Clase Recordatorio}
+
+La clase \textit{Recordatorio} representa avisos programados asociados a eventos o acciones relevantes del sistema. Permite notificar a los usuarios en momentos determinados.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único del recordatorio.
+    \item \textit{user}
+          Usuario destinatario del recordatorio.
+    \item \textit{title}
+          Título o descripción breve del recordatorio.
+    \item \textit{message}
+          Contenido del recordatorio.
+    \item \textit{scheduled\_at}
+          Fecha y hora programada para el recordatorio.
+    \item \textit{status}
+          Estado del recordatorio.
+    \item \textit{created\_at}
+          Fecha de creación del recordatorio.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-RM1 — Usuario obligatorio}
+          Todo recordatorio debe estar asociado a un usuario existente.
+    \item \textbf{RT-RM2 — Fecha programada obligatoria}
+          Todo recordatorio debe tener una fecha programada válida.
+    \item \textbf{RT-RM3 — Estado válido}
+          El estado del recordatorio debe pertenecer al conjunto definido por el sistema.
+
+\end{itemize}
+
+\subsubsection{Clase Formación}
+
+La clase \textit{Formación} representa las actividades formativas ofrecidas por el distribuidor a los clientes profesionales. Permite gestionar eventos formativos y su información asociada.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la formación.
+    \item \textit{title}
+          Nombre de la formación.
+    \item \textit{description}
+          Descripción de la actividad formativa.
+    \item \textit{scheduled\_at}
+          Fecha y hora de celebración.
+    \item \textit{location}
+          Ubicación o modalidad de la formación.
+    \item \textit{content}
+          Información adicional o contenido de la formación.
+    \item \textit{status}
+          Estado de la formación.
+    \item \textit{created\_at}
+          Fecha de creación del registro.
+    \item \textit{updated\_at}
+          Fecha de última actualización.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-F1 — Fecha obligatoria}
+          Toda formación debe tener una fecha de celebración definida.
+    \item \textbf{RT-F2 — Estado válido}
+          El estado de la formación debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-F3 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación.
+
+\end{itemize}
+
+\subsection{Modelo conceptual de datos M7}
+
+La \autoref{fig:mcd-m7} muestra el modelo conceptual correspondiente al módulo de administración e integraciones.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/MCD/M7_ModeloConceptual.pdf}
+%     \caption{Modelo conceptual de datos del módulo M7.}
+%     \label{fig:mcd-m7}
+% \end{figure}
+
+\subsubsection{Clase Configuración del sistema}
+
+La clase \textit{Configuración del sistema} representa los parámetros generales de configuración de la aplicación. Permite almacenar valores configurables que afectan al comportamiento del sistema sin necesidad de modificar la lógica interna.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la configuración.
+    \item \textit{key}
+          Clave o nombre del parámetro de configuración.
+    \item \textit{value}
+          Valor asociado al parámetro.
+    \item \textit{description}
+          Descripción de la configuración.
+    \item \textit{created\_at}
+          Fecha de creación del registro.
+    \item \textit{updated\_at}
+          Fecha de última actualización.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-CF1 — Clave única de configuración}
+          Cada parámetro de configuración debe tener una clave única dentro del sistema.
+    \item \textbf{RT-CF2 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación.
+
+\end{itemize}
+
+\subsubsection{Clase Integración externa}
+
+La clase \textit{Integración externa} representa las conexiones con herramientas o servicios externos utilizados por el distribuidor, como sistemas de mensajería, plataformas de navegación o sistemas de gestión empresarial.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la integración.
+    \item \textit{name}
+          Nombre de la integración.
+    \item \textit{integration\_type}
+          Tipo de integración o servicio externo.
+    \item \textit{description}
+          Descripción de la integración.
+    \item \textit{status}
+          Estado de la integración.
+    \item \textit{config}
+          Información de configuración o conexión.
+    \item \textit{created\_at}
+          Fecha de creación del registro.
+    \item \textit{updated\_at}
+          Fecha de última actualización.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-IN1 — Tipo válido de integración}
+          El tipo de integración debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-IN2 — Estado válido}
+          El estado de la integración debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-IN3 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación.
+
+\end{itemize}
+
+\subsubsection{Clase Operación de integración}
+
+La clase \textit{Operación de integración} representa cada ejecución de intercambio de información entre el sistema y un servicio externo. Permite registrar sincronizaciones, exportaciones o importaciones realizadas.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la operación.
+    \item \textit{integration}
+          Integración externa asociada.
+    \item \textit{operation\_type}
+          Tipo de operación realizada.
+    \item \textit{data\_type}
+          Tipo de información intercambiada.
+    \item \textit{executed\_at}
+          Fecha y hora de ejecución.
+    \item \textit{status}
+          Estado de la operación.
+    \item \textit{result}
+          Resultado o mensaje asociado a la operación.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-IO1 — Asociación obligatoria}
+          Toda operación debe estar asociada a una integración existente.
+    \item \textbf{RT-IO2 — Tipo válido de operación}
+          El tipo de operación debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-IO3 — Estado válido}
+          El estado de la operación debe pertenecer al conjunto definido por el sistema.
+
+\end{itemize}
+
+\subsubsection{Clase Propuesta de pedido a proveedor}
+
+La clase \textit{Propuesta de pedido a proveedor} representa las propuestas generadas para la reposición de productos al proveedor, basadas en la actividad comercial registrada o en la planificación del distribuidor.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la propuesta.
+    \item \textit{generated\_by}
+          Usuario que genera la propuesta.
+    \item \textit{generated\_at}
+          Fecha de generación de la propuesta.
+    \item \textit{status}
+          Estado de la propuesta.
+    \item \textit{total\_amount}
+          Importe total estimado del pedido.
+    \item \textit{total\_units}
+          Número total de unidades incluidas.
+    \item \textit{notes}
+          Observaciones generales.
+    \item \textit{updated\_at}
+          Fecha de última actualización.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-PP1 — Estado válido de propuesta}
+          El estado de la propuesta debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-PP2 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de generación.
+
+\end{itemize}
+
+\subsubsection{Clase Línea de propuesta de pedido a proveedor}
+
+La clase \textit{Línea de propuesta de pedido a proveedor} representa cada uno de los productos incluidos en una propuesta de reposición. Su estructura refleja la información utilizada en las hojas de pedido reales del distribuidor.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador de la línea de propuesta.
+    \item \textit{proposal}
+          Propuesta de pedido asociada.
+    \item \textit{product}
+          Producto incluido en la propuesta.
+    \item \textit{reference}
+          Referencia del producto.
+    \item \textit{description}
+          Descripción del producto.
+    \item \textit{category}
+          Categoría del producto.
+    \item \textit{quantity}
+          Cantidad propuesta.
+    \item \textit{unit\_price}
+          Precio unitario.
+    \item \textit{line\_amount}
+          Importe total de la línea.
+    \item \textit{reason}
+          Motivo o criterio de reposición.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-PPL1 — Asociación obligatoria}
+          Toda línea de propuesta debe estar asociada a una propuesta existente.
+    \item \textbf{RT-PPL2 — Producto válido}
+          Todo producto debe corresponder a un producto existente en el catálogo.
+
+    \item \textbf{RT-PPL3 — Cantidad válida}
+          La cantidad propuesta debe ser mayor que cero.
+    \item \textbf{RT-PPL4 — Importe coherente}
+          El importe de la línea debe ser coherente con la cantidad y el precio unitario.
+
+\end{itemize}
