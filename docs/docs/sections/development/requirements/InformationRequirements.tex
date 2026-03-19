@@ -472,9 +472,9 @@ Para cada sugerencia de producto el sistema debe registrar:
 
 \subsection{M6. Promociones, notificaciones y formaciones}
 
-El módulo de promociones, notificaciones y formaciones gestiona la información relacionada con la comunicación entre el distribuidor y las peluquerías usuarias del sistema. Su objetivo es permitir la difusión de promociones comerciales, el envío de avisos y recordatorios relevantes y la gestión de actividades formativas dirigidas a los clientes profesionales.
+El módulo de promociones, notificaciones y formaciones gestiona la información relacionada con la comunicación entre el distribuidor y las peluquerías usuarias del sistema. Su objetivo es permitir la difusión de promociones comerciales, la segmentación de clientes mediante categorías, el envío de avisos y recordatorios relevantes y la gestión de actividades formativas dirigidas a los clientes profesionales.
 
-La información gestionada por este módulo permite mostrar promociones activas, registrar notificaciones relacionadas con eventos importantes del sistema y mantener un catálogo de formaciones disponibles para los usuarios autorizados.
+La información gestionada por este módulo permite mostrar promociones activas, asociarlas a categorías de clientes, registrar notificaciones relacionadas con eventos importantes del sistema, programar recordatorios y mantener un catálogo de formaciones disponibles junto con la posible inscripción de usuarios autorizados.
 
 \subsubsection*{Promoción}
 
@@ -494,8 +494,39 @@ Para cada promoción el sistema debe registrar:
     \item Producto asociado, cuando corresponda.
     \item Línea de producto asociada, cuando corresponda.
     \item Cliente asociado, cuando corresponda.
+    \item Categoría de clientes asociada, cuando corresponda.
     \item Fecha de creación de la promoción.
     \item Fecha de última actualización de la promoción.
+\end{itemize}
+
+\subsubsection*{Categoría de cliente}
+
+El sistema debe permitir almacenar categorías de clientes utilizadas para segmentar a las peluquerías usuarias del sistema en función de criterios comerciales o de uso definidos por el distribuidor.
+
+Para cada categoría de cliente el sistema debe registrar:
+
+\begin{itemize}
+    \item Identificador de la categoría.
+    \item Nombre de la categoría.
+    \item Descripción de la categoría, en caso de existir.
+    \item Criterios o condiciones asociados a la categoría, cuando corresponda.
+    \item Fecha de creación de la categoría.
+    \item Fecha de última actualización de la categoría.
+\end{itemize}
+
+\subsubsection*{Categoría de cliente}
+
+El sistema debe permitir almacenar categorías de clientes utilizadas para segmentar a las peluquerías usuarias del sistema en función de criterios comerciales o de uso definidos por el distribuidor.
+
+Para cada categoría de cliente el sistema debe registrar:
+
+\begin{itemize}
+    \item Identificador de la categoría.
+    \item Nombre de la categoría.
+    \item Descripción de la categoría, en caso de existir.
+    \item Criterios o condiciones asociados a la categoría, cuando corresponda.
+    \item Fecha de creación de la categoría.
+    \item Fecha de última actualización de la categoría.
 \end{itemize}
 
 \subsubsection*{Notificación}
@@ -510,14 +541,16 @@ Para cada notificación el sistema debe registrar:
     \item Título de la notificación.
     \item Contenido o mensaje de la notificación.
     \item Tipo de notificación.
+    \item Canal de notificación utilizado.
     \item Fecha y hora de creación de la notificación.
+    \item Fecha y hora de envío, cuando corresponda.
     \item Estado de lectura de la notificación.
     \item Fecha de lectura, cuando corresponda.
 \end{itemize}
 
 \subsubsection*{Recordatorio}
 
-El sistema debe permitir almacenar recordatorios asociados a eventos o acciones relevantes del sistema.
+El sistema debe permitir almacenar recordatorios asociados a eventos o acciones relevantes del sistema, como visitas comerciales programadas o fechas de entrega de pedidos.
 
 Para cada recordatorio el sistema debe registrar:
 
@@ -547,6 +580,21 @@ Para cada formación el sistema debe registrar:
     \item Estado de la formación.
     \item Fecha de creación del registro de formación.
     \item Fecha de última actualización de la formación.
+\end{itemize}
+
+\subsubsection*{Inscripción a formación}
+
+El sistema debe permitir registrar la inscripción de usuarios autorizados a las actividades formativas publicadas por el distribuidor.
+
+Para cada inscripción a formación el sistema debe registrar:
+
+\begin{itemize}
+    \item Identificador de la inscripción.
+    \item Formación asociada.
+    \item Usuario inscrito.
+    \item Fecha de inscripción.
+    \item Estado de la inscripción.
+    \item Observaciones asociadas a la inscripción, cuando corresponda.
 \end{itemize}
 
 \subsection{M7. Administración e integraciones}

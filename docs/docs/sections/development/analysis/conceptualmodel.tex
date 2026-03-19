@@ -1099,7 +1099,7 @@ La \autoref{fig:mcd-m6} muestra el modelo conceptual correspondiente al módulo 
 
 \subsubsection{Clase Promoción}
 
-La clase \textit{Promoción} representa las ofertas o condiciones comerciales definidas por el distribuidor y dirigidas a los clientes profesionales. Permite gestionar descuentos, ventajas comerciales y campañas promocionales dentro de un periodo de vigencia determinado.
+La clase \textit{Promoción} representa las ofertas o condiciones comerciales definidas por el distribuidor y dirigidas a los clientes profesionales. Permite gestionar descuentos, ventajas comerciales y campañas promocionales dentro de un periodo de vigencia determinado, así como asociarlas a productos, clientes concretos o categorías de clientes.
 
 \textbf{Atributos}
 
@@ -1115,10 +1115,6 @@ La clase \textit{Promoción} representa las ofertas o condiciones comerciales de
           Tipo de promoción definida.
     \item \textit{value}
           Valor o beneficio asociado a la promoción.
-    \item \textit{product}
-          Producto asociado a la promoción, cuando corresponda.
-    \item \textit{client}
-          Cliente profesional al que se dirige la promoción, cuando corresponda.
     \item \textit{valid\_from}
           Fecha de inicio de vigencia.
     \item \textit{valid\_to}
@@ -1142,12 +1138,82 @@ La clase \textit{Promoción} representa las ofertas o condiciones comerciales de
           Si la promoción tiene fecha de fin, esta debe ser posterior o igual a la fecha de inicio.
     \item \textbf{RT-PR3 — Estado válido}
           El estado de la promoción solo puede tomar valores definidos por el sistema.
+    \item \textbf{RT-PR4 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación de la promoción.
+
+\end{itemize}
+
+\subsubsection{Clase Categoría de cliente}
+
+La clase \textit{Categoría de cliente} representa los grupos o segmentos comerciales definidos por el distribuidor para clasificar a las peluquerías usuarias del sistema. Su finalidad es permitir segmentar clientes y asociar promociones específicas a determinados conjuntos de clientes.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la categoría.
+    \item \textit{name}
+          Nombre de la categoría.
+    \item \textit{description}
+          Descripción de la categoría, en caso de existir.
+    \item \textit{criteria}
+          Criterios o condiciones asociados a la categoría, cuando corresponda.
+    \item \textit{created\_at}
+          Fecha de creación de la categoría.
+    \item \textit{updated\_at}
+          Fecha de última actualización de la categoría.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-CC1 — Nombre obligatorio}
+          Toda categoría de cliente debe disponer de un nombre identificativo.
+    \item \textbf{RT-CC2 — Coherencia temporal}
+          Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación de la categoría.
+
+\end{itemize}
+
+\subsubsection{Clase Asignación de cliente a categoría}
+
+La clase \textit{Asignación de cliente a categoría} representa la pertenencia de un cliente profesional a una categoría comercial determinada. Permite gestionar clasificaciones manuales o automáticas y utilizarlas para segmentar promociones u otras acciones comerciales.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la asignación.
+    \item \textit{client}
+          Cliente profesional asociado.
+    \item \textit{client\_category}
+          Categoría asignada al cliente.
+    \item \textit{assigned\_at}
+          Fecha de asignación.
+    \item \textit{assignment\_type}
+          Tipo u origen de la asignación, cuando corresponda.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-CA1 — Asociación obligatoria de la asignación}
+          Toda asignación debe estar asociada a un cliente profesional existente y a una categoría de cliente existente.
+    \item \textbf{RT-CA2 — Unicidad de asignación}
+          Un mismo cliente no debe aparecer más de una vez en la misma categoría.
+    \item \textbf{RT-CA3 — Fecha obligatoria de asignación}
+          Toda asignación debe registrar una fecha válida de asignación.
 
 \end{itemize}
 
 \subsubsection{Clase Notificación}
 
-La clase \textit{Notificación} representa los avisos o mensajes generados por el sistema y dirigidos a los usuarios. Permite informar sobre eventos relevantes como promociones, pedidos o actividades del sistema.
+La clase \textit{Notificación} representa los avisos o mensajes generados por el sistema y dirigidos a los usuarios. Permite informar sobre eventos relevantes como promociones, pedidos, recordatorios o actividades del sistema, tanto dentro de la aplicación como mediante canales externos compatibles.
 
 \textbf{Atributos}
 
@@ -1163,12 +1229,16 @@ La clase \textit{Notificación} representa los avisos o mensajes generados por e
           Contenido del mensaje.
     \item \textit{type}
           Tipo de notificación.
+    \item \textit{channel}
+          Canal utilizado para la notificación.
     \item \textit{is\_read}
           Indica si la notificación ha sido leída.
     \item \textit{read\_at}
           Fecha de lectura de la notificación.
     \item \textit{created\_at}
           Fecha de creación de la notificación.
+    \item \textit{sent\_at}
+          Fecha y hora de envío de la notificación, cuando corresponda.
 
 \end{itemize}
 
@@ -1182,12 +1252,16 @@ La clase \textit{Notificación} representa los avisos o mensajes generados por e
           El tipo de notificación debe pertenecer al conjunto definido por el sistema.
     \item \textbf{RT-N3 — Coherencia de lectura}
           Si la notificación está marcada como leída, debe existir una fecha de lectura asociada.
+    \item \textbf{RT-N4 — Canal válido de notificación}
+          El canal de notificación debe pertenecer al conjunto de canales definidos por el sistema.
+    \item \textbf{RT-N5 — Coherencia temporal del envío}
+          Si el atributo \textit{sent\_at} tiene valor, este debe ser posterior o igual a la fecha de creación de la notificación.
 
 \end{itemize}
 
 \subsubsection{Clase Recordatorio}
 
-La clase \textit{Recordatorio} representa avisos programados asociados a eventos o acciones relevantes del sistema. Permite notificar a los usuarios en momentos determinados.
+La clase \textit{Recordatorio} representa avisos programados asociados a eventos o acciones relevantes del sistema. Permite notificar a los usuarios en momentos determinados, por ejemplo ante visitas comerciales programadas o fechas previstas de entrega.
 
 \textbf{Atributos}
 
@@ -1220,6 +1294,8 @@ La clase \textit{Recordatorio} representa avisos programados asociados a eventos
           Todo recordatorio debe tener una fecha programada válida.
     \item \textbf{RT-RM3 — Estado válido}
           El estado del recordatorio debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-RM4 — Aplicación a eventos relevantes}
+          Los recordatorios deberán estar asociados a acciones o eventos relevantes del sistema.
 
 \end{itemize}
 
@@ -1262,6 +1338,42 @@ La clase \textit{Formación} representa las actividades formativas ofrecidas por
           El estado de la formación debe pertenecer al conjunto definido por el sistema.
     \item \textbf{RT-F3 — Coherencia temporal}
           Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación.
+
+\end{itemize}
+
+\subsubsection{Clase Inscripción a formación}
+
+La clase \textit{Inscripción a formación} representa la participación solicitada o registrada de un usuario en una actividad formativa publicada por el distribuidor. Su finalidad es permitir gestionar la asistencia a formaciones y aplicar criterios de autorización cuando corresponda.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único de la inscripción.
+    \item \textit{training}
+          Formación asociada.
+    \item \textit{user}
+          Usuario inscrito.
+    \item \textit{registered\_at}
+          Fecha de inscripción.
+    \item \textit{status}
+          Estado de la inscripción.
+    \item \textit{notes}
+          Observaciones asociadas a la inscripción, cuando corresponda.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-EN1 — Asociación obligatoria de la inscripción}
+          Toda inscripción debe estar asociada a una formación existente y a un usuario existente.
+    \item \textbf{RT-EN2 — Estado válido de la inscripción}
+          El estado de la inscripción debe pertenecer al conjunto definido por el sistema.
+    \item \textbf{RT-EN3 — Unicidad de inscripción}
+          Un mismo usuario no debe aparecer más de una vez inscrito en la misma formación.
 
 \end{itemize}
 
