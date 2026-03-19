@@ -878,6 +878,8 @@ La clase \textit{Cliente del salón} representa a los clientes finales atendidos
           Nombre del cliente del salón.
     \item \textit{phone}
           Teléfono de contacto del cliente del salón.
+    \item \textit{email}
+          Correo electrónico de contacto del cliente del salón.
     \item \textit{notes}
           Observaciones generales asociadas al cliente.
     \item \textit{created\_at}
@@ -885,6 +887,45 @@ La clase \textit{Cliente del salón} representa a los clientes finales atendidos
     \item \textit{updated\_at}
           Fecha de última actualización de la información.
 
+\end{itemize}
+
+\subsubsection{Clase Correo técnico generado}
+
+La clase \textit{Correo técnico generado} representa cada comunicación electrónica elaborada a partir de la ficha técnica y del historial técnico de un cliente del salón. Su finalidad es permitir generar mensajes personalizados que incluyan tratamientos realizados, productos utilizados, sugerencias de producto y otra información relevante para la comunicación profesional con el cliente.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+    \item \textit{id}
+          Identificador único del correo generado.
+    \item \textit{salon\_client}
+          Cliente del salón destinatario del correo.
+    \item \textit{recipient\_email}
+          Dirección de correo electrónico a la que se dirige el mensaje.
+    \item \textit{subject}
+          Asunto del correo generado.
+    \item \textit{body}
+          Contenido del correo, incluyendo la información técnica o comercial incorporada.
+    \item \textit{created\_at}
+          Fecha y hora de generación del correo.
+    \item \textit{sent\_at}
+          Fecha y hora de envío del correo, en caso de haberse realizado.
+
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+
+    \item \textbf{RT-EM1 — Asociación obligatoria del correo}
+          Todo correo generado debe estar asociado a un cliente del salón existente.
+    \item \textbf{RT-EM2 — Destinatario válido}
+          Todo correo generado debe registrar una dirección de correo electrónico válida como destinatario.
+    \item \textbf{RT-EM3 — Coherencia temporal del correo}
+          Si el atributo \textit{sent\_at} tiene valor, este debe ser posterior o igual a la fecha de generación del correo.
+    \item \textbf{RT-EM4 — Personalización previa al envío}
+          El contenido del correo podrá ser revisado y personalizado por el profesional del salón antes de su envío.
 \end{itemize}
 
 \textbf{Restricciones textuales}
@@ -897,7 +938,8 @@ La clase \textit{Cliente del salón} representa a los clientes finales atendidos
           Todo cliente del salón debe registrar un nombre identificativo.
     \item \textbf{RT-SC3 — Coherencia temporal del registro}
           Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del registro.
-
+    \item \textbf{RT-SC4 — Correo electrónico utilizable para comunicaciones}
+          Si se desea generar o enviar un correo electrónico al cliente del salón, este debe disponer de una dirección de correo electrónico registrada válida.
 \end{itemize}
 
 \subsubsection{Clase Servicio realizado}
@@ -912,8 +954,6 @@ La clase \textit{Servicio realizado} representa cada servicio o tratamiento téc
           Identificador único del servicio realizado.
     \item \textit{salon\_client}
           Cliente del salón al que se aplica el servicio.
-    \item \textit{client}
-          Cliente profesional o peluquería donde se realiza el servicio.
     \item \textit{performed\_by}
           Usuario que registra o realiza el servicio.
     \item \textit{service\_date}
@@ -933,8 +973,8 @@ La clase \textit{Servicio realizado} representa cada servicio o tratamiento téc
 
     \item \textbf{RT-S1 — Asociación obligatoria del servicio}
           Todo servicio debe estar asociado a un cliente del salón existente.
-    \item \textbf{RT-S2 — Peluquería obligatoria}
-          Todo servicio debe registrarse en el contexto de un cliente profesional o peluquería existente.
+    \item \textbf{RT-S2 — Coherencia del contexto del servicio}
+          Todo servicio realizado debe quedar asociado indirectamente a una peluquería existente a través del cliente del salón al que pertenece.
     \item \textbf{RT-S3 — Fecha obligatoria del servicio}
           Todo servicio realizado debe registrar la fecha en la que se llevó a cabo.
     \item \textbf{RT-S4 — Tipo de servicio válido}
@@ -1009,7 +1049,8 @@ La clase \textit{Producto utilizado en servicio} permite registrar los productos
           Todo producto utilizado debe corresponder a un producto existente en el catálogo del sistema.
     \item \textbf{RT-SP3 — Cantidad válida}
           Si se registra la cantidad utilizada de un producto, esta debe ser mayor que cero.
-
+    \item \textbf{RT-SP4 — Coherencia del uso de productos con el servicio}
+          Todo producto registrado como utilizado debe corresponder a un servicio técnico existente y formar parte del historial técnico del cliente del salón asociado a dicho servicio.
 \end{itemize}
 
 \subsubsection{Clase Sugerencia de producto}
@@ -1041,7 +1082,8 @@ La clase \textit{Sugerencia de producto} permite registrar recomendaciones de pr
           Toda sugerencia de producto debe estar asociada a un cliente del salón existente.
     \item \textbf{RT-PS2 — Producto válido en sugerencia}
           Todo producto sugerido debe corresponder a un producto existente en el catálogo del sistema.
-
+    \item \textbf{RT-PS3 — Uso informativo de la sugerencia}
+          Las sugerencias de producto deben utilizarse como apoyo a la consulta profesional y podrán incorporarse a comunicaciones personalizadas dirigidas al cliente del salón, sin sustituir el criterio técnico del usuario.
 \end{itemize}
 
 \subsection{Modelo conceptual de datos M6}

@@ -373,9 +373,9 @@ Los datos asociados a un cobro incluyen:
 
 \subsection{M5. Gestión técnica del salón y seguimiento de servicios}
 
-El módulo de gestión técnica del salón y seguimiento de servicios gestiona la información relacionada con los clientes finales atendidos en las peluquerías, los servicios realizados y la información técnica asociada a dichos tratamientos. Su objetivo es permitir a los profesionales del salón mantener un historial estructurado de los trabajos realizados, así como registrar los productos utilizados y consultar la evolución técnica de cada cliente.
+El módulo de gestión técnica del salón y seguimiento de servicios gestiona la información relacionada con los clientes finales atendidos en las peluquerías, los servicios realizados y la información técnica asociada a dichos tratamientos. Su objetivo es permitir a los profesionales del salón mantener un historial estructurado de los trabajos realizados, registrar los productos utilizados, consultar la evolución técnica de cada cliente y facilitar la generación de comunicaciones personalizadas dirigidas a dichos clientes a partir de la información técnica registrada.
 
-La información gestionada por este módulo permite documentar los servicios realizados en el salón, registrar fórmulas y productos empleados y facilitar la consulta de tratamientos previos como apoyo a futuros trabajos técnicos.
+La información gestionada por este módulo permite documentar los servicios realizados en el salón, registrar fórmulas y productos empleados, facilitar la consulta de tratamientos previos como apoyo a futuros trabajos técnicos y apoyar la elaboración de correos personalizados basados en el historial técnico del cliente del salón.
 
 \subsubsection*{Cliente del salón}
 
@@ -388,9 +388,25 @@ Para cada cliente del salón el sistema debe registrar:
     \item Cliente profesional o peluquería a la que pertenece.
     \item Nombre del cliente del salón.
     \item Teléfono de contacto, en caso de registrarse.
+    \item Correo electrónico de contacto, en caso de registrarse.
     \item Observaciones generales asociadas al cliente.
     \item Fecha de creación del registro.
     \item Fecha de última actualización de la información.
+\end{itemize}
+
+\subsubsection*{Correo generado a partir de la ficha técnica}
+
+El sistema debe permitir generar correos electrónicos dirigidos a los clientes del salón a partir de la información registrada en su ficha técnica. Estos correos podrán incluir información relevante sobre tratamientos realizados, productos utilizados, sugerencias basadas en el historial técnico del cliente y promociones que el profesional del salón desee comunicar.
+
+Para cada correo generado el sistema debe poder gestionar:
+
+\begin{itemize}
+    \item Cliente del salón destinatario del correo.
+    \item Dirección de correo electrónico del destinatario.
+    \item Asunto del correo.
+    \item Contenido generado a partir de la información técnica registrada.
+    \item Contenido personalizado por el profesional antes del envío.
+    \item Fecha y hora de generación del correo, en caso de registrarse.
 \end{itemize}
 
 \subsubsection*{Servicio realizado}
