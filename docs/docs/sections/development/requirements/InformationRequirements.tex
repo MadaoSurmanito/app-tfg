@@ -129,6 +129,7 @@ Los datos asociados a un cliente incluyen:
     \item Identificador del cliente.
     \item Nombre del establecimiento o peluquería.
     \item Nombre de la persona de contacto.
+    \item Identificador fiscal del cliente, cuando corresponda.
     \item Dirección del establecimiento.
     \item Localidad o ciudad.
     \item Código postal.
@@ -210,6 +211,8 @@ Los datos asociados a un producto incluyen:
     \item Imagen principal del producto.
     \item Información técnica o modo de aplicación.
     \item Estado del producto dentro del catálogo.
+    \item Precio base del producto.
+    \item Proveedor asociado al producto, cuando corresponda.
     \item Fecha de creación del registro del producto.
     \item Fecha de última actualización de la información del producto.
 \end{itemize}
@@ -330,6 +333,19 @@ Los datos asociados a una línea de pedido incluyen:
     \item Importe total de la línea.
 \end{itemize}
 
+\subsubsection*{Concepto adicional de pedido}
+
+El sistema debe permitir registrar elementos económicos adicionales asociados a un pedido que no correspondan directamente a productos del catálogo, como gastos, ajustes o servicios complementarios.
+
+Los datos asociados incluyen:
+
+\begin{itemize}
+    \item Identificador del concepto.
+    \item Pedido asociado.
+    \item Descripción del concepto.
+    \item Importe asociado.
+\end{itemize}
+
 \subsubsection*{Entrega}
 
 El sistema debe almacenar la información relativa a la entrega asociada a cada pedido. Esta información permite conocer la modalidad de entrega seleccionada, su estado, las fechas previstas o reales asociadas al proceso y las incidencias producidas durante la entrega.
@@ -344,6 +360,8 @@ Los datos asociados a una entrega incluyen:
     \item Estado de la entrega.
     \item Fecha prevista de entrega.
     \item Fecha real de entrega.
+    \item Número de bultos o cajas asociados a la entrega, cuando corresponda.
+    \item Importe de contrareembolso, cuando corresponda.
     \item Observaciones de la entrega.
 \end{itemize}
 

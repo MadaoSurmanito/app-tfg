@@ -303,6 +303,8 @@ La clase \textit{Cliente} representa a cada establecimiento profesional atendido
             Nombre del establecimiento o peluquería.
       \item \textit{contact\_name}
             Nombre de la persona de contacto del establecimiento.
+      \item \textit{tax\_id}
+            Identificador fiscal del cliente.
       \item \textit{address}
             Dirección del establecimiento.
       \item \textit{city}
@@ -338,6 +340,8 @@ La clase \textit{Cliente} representa a cada establecimiento profesional atendido
             Todo usuario con rol cliente debe corresponder a una única entidad \textit{Cliente} dentro del sistema.
       \item \textbf{RT-C5 — Coherencia temporal del registro del cliente}
             Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del cliente.
+      \item \textbf{RT-C6 — Identificación fiscal consistente}
+            Si un cliente dispone de un identificador fiscal, este debe ser válido.
 
 \end{itemize}
 
@@ -479,6 +483,10 @@ La clase \textit{Producto} representa cada uno de los artículos profesionales i
             Información técnica o modo de aplicación del producto.
       \item \textit{status}
             Estado del producto dentro del catálogo.
+      \item \textit{base\_price}
+            Precio base del producto.
+      \item \textit{supplier}
+            Proveedor asociado al producto, cuando corresponda.
       \item \textit{created\_at}
             Fecha de creación del registro del producto.
       \item \textit{updated\_at}
@@ -732,6 +740,7 @@ La clase \textit{Línea de pedido} representa cada uno de los productos incluido
             Descuento aplicado a la línea, en caso de existir.
       \item \textit{line\_amount}
             Importe total de la línea.
+            
 \end{itemize}
 
 \textbf{Restricciones textuales}
@@ -743,6 +752,25 @@ La clase \textit{Línea de pedido} representa cada uno de los productos incluido
             Toda línea de pedido debe registrar una cantidad solicitada válida y mayor que cero.
       \item \textbf{RT-OL3 — Importe coherente de línea}
             El importe total de la línea debe ser coherente con la cantidad, el precio unitario y el descuento aplicado.
+\end{itemize}
+
+\subsubsection{Clase Concepto adicional de pedido}
+
+La clase \textit{Concepto adicional de pedido} representa elementos económicos asociados a un pedido que no corresponden directamente a productos del catálogo.
+
+\textbf{Atributos}
+
+\begin{itemize}
+
+      \item \textit{id}
+            Identificador del concepto.
+      \item \textit{order}
+            Pedido asociado.
+      \item \textit{description}
+            Descripción del concepto.
+      \item \textit{amount}
+            Importe asociado.
+
 \end{itemize}
 
 \subsubsection{Clase Entrega}
@@ -766,6 +794,10 @@ La clase \textit{Entrega} representa la información asociada al proceso de sumi
             Fecha prevista de entrega.
       \item \textit{delivered\_at}
             Fecha real de entrega.
+      \item \textit{packages\_count}
+            Número de bultos o cajas asociados a la entrega.
+      \item \textit{cash\_on\_delivery\_amount}
+            Importe de contrareembolso asociado.
       \item \textit{notes}
             Observaciones asociadas a la entrega.
 \end{itemize}
