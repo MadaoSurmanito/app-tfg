@@ -4,7 +4,9 @@ A diferencia de los requisitos funcionales, que describen los servicios que el s
 
 Con el objetivo de mantener la coherencia con la organización del sistema, los requisitos de información se presentan agrupados por módulos funcionales.
 
+% ------------------------------------------------------------------------------
 \subsection{M1. Gestión de acceso, alta y autorización de usuarios}
+% ------------------------------------------------------------------------------
 
 Este módulo gestiona la información necesaria para identificar a los usuarios del sistema, administrar sus permisos de acceso y registrar las actividades
 relacionadas con la autenticación y la gestión de cuentas.
@@ -111,7 +113,9 @@ Los datos asociados a un registro de acceso incluyen:
     \item Fecha de expiración de la sesión.
 \end{itemize}
 
+% ------------------------------------------------------------------------------
 \subsection{M2. Gestión comercial y clientes}
+% ------------------------------------------------------------------------------
 
 Este módulo gestiona la información relacionada con los clientes del sistema y con la actividad comercial desarrollada por los agentes comerciales. Su objetivo es centralizar la información relevante sobre las peluquerías clientes, facilitar el trabajo de los agentes comerciales durante sus visitas, permitir el seguimiento de la actividad comercial realizada y dar soporte a la planificación de rutas comerciales mediante la consulta de la información de contacto y localización de los clientes.
 
@@ -184,7 +188,9 @@ Los datos asociados a una visita dentro de una ruta incluyen:
     \item Orden previsto de la visita dentro de la ruta.
 \end{itemize}
 
+% ------------------------------------------------------------------------------
 \subsection{M3. Catálogo, productos y coloración}
+% ------------------------------------------------------------------------------
 
 Este módulo gestiona la información relacionada con el catálogo de productos profesionales comercializados por el distribuidor. Su objetivo es permitir la consulta estructurada de los productos, sus características comerciales y técnicas, así como de los recursos de apoyo y de las referencias específicas asociadas a los procesos de coloración capilar.
 
@@ -285,7 +291,9 @@ Los datos asociados a una referencia de color incluyen:
     \item Orden o posición dentro de la carta.
 \end{itemize}
 
+% ------------------------------------------------------------------------------
 \subsection{M4. Pedidos, entregas y cobros}
+% ------------------------------------------------------------------------------
 
 Este módulo gestiona la información relacionada con el proceso comercial de venta de productos, desde la creación de pedidos hasta el seguimiento de su entrega y el registro de los cobros asociados. Su objetivo es permitir un control estructurado de las operaciones comerciales realizadas con los clientes profesionales, así como del estado de los pedidos, las incidencias de entrega y los importes pendientes o abonados.
 
@@ -371,7 +379,9 @@ Los datos asociados a un cobro incluyen:
     \item Observaciones asociadas al cobro.
 \end{itemize}
 
+% ------------------------------------------------------------------------------
 \subsection{M5. Gestión técnica del salón y seguimiento de servicios}
+% ------------------------------------------------------------------------------
 
 El módulo de gestión técnica del salón y seguimiento de servicios gestiona la información relacionada con los clientes finales atendidos en las peluquerías, los servicios realizados y la información técnica asociada a dichos tratamientos. Su objetivo es permitir a los profesionales del salón mantener un historial estructurado de los trabajos realizados, registrar los productos utilizados, consultar la evolución técnica de cada cliente y facilitar la generación de comunicaciones personalizadas dirigidas a dichos clientes a partir de la información técnica registrada.
 
@@ -470,7 +480,9 @@ Para cada sugerencia de producto el sistema debe registrar:
     \item Fecha de generación de la sugerencia.
 \end{itemize}
 
+% ------------------------------------------------------------------------------
 \subsection{M6. Promociones, notificaciones y formaciones}
+% ------------------------------------------------------------------------------
 
 El módulo de promociones, notificaciones y formaciones gestiona la información relacionada con la comunicación entre el distribuidor y las peluquerías usuarias del sistema. Su objetivo es permitir la difusión de promociones comerciales, la segmentación de clientes mediante categorías, el envío de avisos y recordatorios relevantes y la gestión de actividades formativas dirigidas a los clientes profesionales.
 
@@ -597,7 +609,9 @@ Para cada inscripción a formación el sistema debe registrar:
     \item Observaciones asociadas a la inscripción, cuando corresponda.
 \end{itemize}
 
+% ------------------------------------------------------------------------------
 \subsection{M7. Administración e integraciones}
+% ------------------------------------------------------------------------------
 
 El módulo de administración e integraciones gestiona la información necesaria para la configuración general del sistema, la consulta de información operativa y la relación con herramientas o servicios externos utilizados en la actividad del distribuidor. Su objetivo es facilitar las tareas de administración, permitir la generación de información de apoyo a la toma de decisiones y soportar el intercambio de datos con sistemas externos.
 
@@ -691,4 +705,93 @@ Para cada línea de propuesta el sistema debe registrar:
     \item Importe total de la línea.
     \item Motivo o criterio de reposición utilizado (consumo histórico, rotación, reposición manual, etc.).
 
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{M8. Funcionalidades adicionales}
+% ------------------------------------------------------------------------------
+
+Este módulo recoge un conjunto de funcionalidades identificadas durante el proceso de análisis de requisitos que, por su carácter complementario, no forman parte de ninguno de los módulos principales del sistema. Su objetivo es ampliar el valor de la aplicación mediante herramientas avanzadas de apoyo al trabajo del profesional y nuevas funcionalidades orientadas tanto a la atención al cliente como a la operativa comercial.
+
+La información asociada a este módulo podrá utilizarse para apoyar la recomendación de tratamientos, la simulación visual de resultados, el reconocimiento de productos mediante cámara y la reserva online de citas por parte de clientes finales. Dado su carácter evolutivo, estas funcionalidades podrán incorporarse en versiones posteriores del sistema.
+
+\subsubsection*{Consulta de recomendación de tratamientos}
+
+El sistema podrá permitir registrar consultas de recomendación de tratamientos realizadas por los profesionales a partir de determinadas características técnicas del cabello del cliente.
+
+Para cada consulta de recomendación el sistema podrá registrar:
+
+\begin{itemize}
+    \item Identificador de la consulta.
+    \item Usuario profesional que realiza la consulta.
+    \item Cliente del salón asociado, cuando corresponda.
+    \item Tipo de cabello.
+    \item Estado o condición del cabello.
+    \item Tratamientos previos relevantes, cuando se indiquen.
+    \item Observaciones o parámetros técnicos adicionales, cuando correspondan.
+    \item Fecha de realización de la consulta.
+\end{itemize}
+
+\subsubsection*{Recomendación de tratamiento}
+
+El sistema podrá almacenar las recomendaciones generadas a partir de una consulta de recomendación de tratamientos. Estas recomendaciones podrán incluir productos o combinaciones de tratamientos disponibles en el catálogo.
+
+Para cada recomendación de tratamiento el sistema podrá registrar:
+
+\begin{itemize}
+    \item Identificador de la recomendación.
+    \item Consulta de recomendación asociada.
+    \item Producto recomendado, cuando corresponda.
+    \item Descripción o justificación de la recomendación.
+    \item Nivel de relevancia o prioridad de la sugerencia, cuando corresponda.
+    \item Fecha de generación de la recomendación.
+\end{itemize}
+
+\subsubsection*{Simulación de coloración}
+
+El sistema podrá permitir registrar simulaciones visuales realizadas para previsualizar posibles cambios coloración capilar.
+
+Para cada simulación el sistema podrá registrar:
+
+\begin{itemize}
+    \item Identificador de la simulación.
+    \item Imagen utilizada para la simulación, cuando se conserve.
+    \item Descripción del cambio simulado.
+    \item Resultado generado o referencia al resultado visual obtenido.
+    \item Fecha de realización de la simulación.
+\end{itemize}
+
+\subsubsection*{Reconocimiento de producto mediante cámara}
+
+El sistema podrá permitir registrar operaciones de reconocimiento de productos realizadas a partir de imágenes o códigos de barras capturados con la cámara del dispositivo.
+
+Para cada operación de reconocimiento el sistema podrá registrar:
+
+\begin{itemize}
+    \item Identificador de la operación de reconocimiento.
+    \item Usuario que realiza la operación.
+    \item Imagen capturada o referencia al recurso utilizado, cuando corresponda.
+    \item Código de barras detectado, cuando corresponda.
+    \item Producto identificado, cuando se obtenga coincidencia.
+    \item Finalidad de la operación, como consulta o apoyo a pedido.
+    \item Fecha y hora de la operación.
+\end{itemize}
+
+\subsubsection*{Reserva online}
+
+El sistema podrá permitir registrar solicitudes de cita realizadas por clientes finales de una peluquería usuaria del sistema.
+
+Para cada reserva online el sistema podrá registrar:
+
+\begin{itemize}
+    \item Identificador de la reserva.
+    \item Cliente profesional o peluquería a la que se dirige la reserva.
+    \item Cliente final que solicita la cita.
+    \item Nombre de la persona que realiza la reserva.
+    \item Teléfono o correo electrónico de contacto.
+    \item Fecha y hora solicitadas para la cita.
+    \item Servicio solicitado, cuando corresponda.
+    \item Observaciones asociadas a la reserva, cuando existan.
+    \item Estado de la reserva.
+    \item Fecha de creación de la solicitud.
 \end{itemize}
