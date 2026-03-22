@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "node-pg-migrate",
+    "migrate:create": "node-pg-migrate create",
+    "migrate:up": "dotenv -e .env -- node-pg-migrate up",
+    "migrate:down": "dotenv -e .env -- node-pg-migrate down"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -23,8 +27,10 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "node-pg-migrate": "^8.0.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
