@@ -2,14 +2,9 @@ En esta sección se describen los requisitos de gestión de información (datos)
 
 A diferencia de los requisitos funcionales, que describen los servicios que el sistema proporciona, los requisitos de información definen las estructuras de datos necesarias para soportar dichos servicios. La definición detallada de las relaciones entre estos datos y de sus restricciones de integridad se abordará posteriormente en el modelo conceptual de datos.
 
-Con el objetivo de mantener la coherencia con la organización del sistema, los requisitos de información se presentan agrupados por módulos funcionales.
-
 % ------------------------------------------------------------------------------
-\subsection{M1. Gestión de acceso, alta y autorización de usuarios}
+\subsection{RI-M1}
 % ------------------------------------------------------------------------------
-
-Este módulo gestiona la información necesaria para identificar a los usuarios del sistema, administrar sus permisos de acceso y registrar las actividades
-relacionadas con la autenticación y la gestión de cuentas.
 
 \subsubsection*{Usuario}
 
@@ -114,10 +109,8 @@ Los datos asociados a un registro de acceso incluyen:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M2. Gestión comercial y clientes}
+\subsection{RI-M2}
 % ------------------------------------------------------------------------------
-
-Este módulo gestiona la información relacionada con los clientes del sistema y con la actividad comercial desarrollada por los agentes comerciales. Su objetivo es centralizar la información relevante sobre las peluquerías clientes, facilitar el trabajo de los agentes comerciales durante sus visitas, permitir el seguimiento de la actividad comercial realizada y dar soporte a la planificación de rutas comerciales mediante la consulta de la información de contacto y localización de los clientes.
 
 \subsubsection*{Cliente}
 
@@ -190,10 +183,8 @@ Los datos asociados a una visita dentro de una ruta incluyen:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M3. Catálogo, productos y coloración}
+\subsection{RI-M3}
 % ------------------------------------------------------------------------------
-
-Este módulo gestiona la información relacionada con el catálogo de productos profesionales comercializados por el distribuidor. Su objetivo es permitir la consulta estructurada de los productos, sus características comerciales y técnicas, así como de los recursos de apoyo y de las referencias específicas asociadas a los procesos de coloración capilar.
 
 \subsubsection*{Producto}
 
@@ -295,10 +286,8 @@ Los datos asociados a una referencia de color incluyen:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M4. Pedidos, entregas y cobros}
+\subsection{RI-M4}
 % ------------------------------------------------------------------------------
-
-Este módulo gestiona la información relacionada con el proceso comercial de venta de productos, desde la creación de pedidos hasta el seguimiento de su entrega y el registro de los cobros asociados. Su objetivo es permitir un control estructurado de las operaciones comerciales realizadas con los clientes profesionales, así como del estado de los pedidos, las incidencias de entrega y los importes pendientes o abonados.
 
 \subsubsection*{Pedido}
 
@@ -398,12 +387,8 @@ Los datos asociados a un cobro incluyen:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M5. Gestión técnica del salón y seguimiento de servicios}
+\subsection{RI-M5}
 % ------------------------------------------------------------------------------
-
-El módulo de gestión técnica del salón y seguimiento de servicios gestiona la información relacionada con los clientes finales atendidos en las peluquerías, los servicios realizados y la información técnica asociada a dichos tratamientos. Su objetivo es permitir a los profesionales del salón mantener un historial estructurado de los trabajos realizados, registrar los productos utilizados, consultar la evolución técnica de cada cliente y facilitar la generación de comunicaciones personalizadas dirigidas a dichos clientes a partir de la información técnica registrada.
-
-La información gestionada por este módulo permite documentar los servicios realizados en el salón, registrar fórmulas y productos empleados, facilitar la consulta de tratamientos previos como apoyo a futuros trabajos técnicos y apoyar la elaboración de correos personalizados basados en el historial técnico del cliente del salón.
 
 \subsubsection*{Cliente del salón}
 
@@ -499,12 +484,8 @@ Para cada sugerencia de producto el sistema debe registrar:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M6. Promociones, notificaciones y formaciones}
+\subsection{RI-M6}
 % ------------------------------------------------------------------------------
-
-El módulo de promociones, notificaciones y formaciones gestiona la información relacionada con la comunicación entre el distribuidor y las peluquerías usuarias del sistema. Su objetivo es permitir la difusión de promociones comerciales, la segmentación de clientes mediante categorías, el envío de avisos y recordatorios relevantes y la gestión de actividades formativas dirigidas a los clientes profesionales.
-
-La información gestionada por este módulo permite mostrar promociones activas, asociarlas a categorías de clientes, registrar notificaciones relacionadas con eventos importantes del sistema, programar recordatorios y mantener un catálogo de formaciones disponibles junto con la posible inscripción de usuarios autorizados.
 
 \subsubsection*{Promoción}
 
@@ -628,12 +609,8 @@ Para cada inscripción a formación el sistema debe registrar:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M7. Administración e integraciones}
+\subsection{RI-M7}
 % ------------------------------------------------------------------------------
-
-El módulo de administración e integraciones gestiona la información necesaria para la configuración general del sistema, la consulta de información operativa y la relación con herramientas o servicios externos utilizados en la actividad del distribuidor. Su objetivo es facilitar las tareas de administración, permitir la generación de información de apoyo a la toma de decisiones y soportar el intercambio de datos con sistemas externos.
-
-La información gestionada por este módulo permite registrar configuraciones del sistema, mantener información sobre integraciones externas disponibles y generar propuestas de pedido a proveedor a partir de la actividad registrada en la plataforma.
 
 \subsubsection*{Configuración del sistema}
 
@@ -726,12 +703,8 @@ Para cada línea de propuesta el sistema debe registrar:
 \end{itemize}
 
 % ------------------------------------------------------------------------------
-\subsection{M8. Funcionalidades adicionales}
+\subsection{RI-M8}
 % ------------------------------------------------------------------------------
-
-Este módulo recoge un conjunto de funcionalidades identificadas durante el proceso de análisis de requisitos que, por su carácter complementario, no forman parte de ninguno de los módulos principales del sistema. Su objetivo es ampliar el valor de la aplicación mediante herramientas avanzadas de apoyo al trabajo del profesional y nuevas funcionalidades orientadas tanto a la atención al cliente como a la operativa comercial.
-
-La información asociada a este módulo podrá utilizarse para apoyar la recomendación de tratamientos, la simulación visual de resultados, el reconocimiento de productos mediante cámara y la reserva online de citas por parte de clientes finales. Dado su carácter evolutivo, estas funcionalidades podrán incorporarse en versiones posteriores del sistema.
 
 \subsubsection*{Consulta de recomendación de tratamientos}
 
