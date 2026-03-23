@@ -3,7 +3,7 @@
 // Componente de de navegación inferior
 // Este componente se muestra en la parte inferior de la pantalla y permite navegar entre las secciones principales de la aplicación
 
-import { HomeIcon, ProfileIcon, SettingsIcon } from "./IconsSVGs";
+import { HomeIcon, ProfileIcon, SettingsIcon, LogoutIcon } from "./IconsSVGs";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 
@@ -62,7 +62,7 @@ export default function BottomNav() {
 				onClick={handleLogout}
 				className="flex flex-col items-center opacity-60 hover:opacity-100 transition-opacity"
 			>
-				<SettingsIcon className="mb-1 h-6 w-6 text-black" />
+				<LogoutIcon className="mb-1 h-6 w-6 text-black" />
 				<span className="text-[10px] uppercase tracking-tight text-black">
 					Cerrar sesión
 				</span>

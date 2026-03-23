@@ -5,6 +5,7 @@ import { useState } from "react";
 import HeaderTitle from "../components/HeaderTitle";
 import { useRouter } from "next/navigation";
 import PageTransition from "../components/PageTransition";
+import Link from "next/link";
 
 // esta función se encarga de manejar el envío del formulario, se encarga de recoger los datos del formulario, enviarlos a la API de autenticación y manejar la respuesta de la API
 export default function LoginPage() {
@@ -95,12 +96,12 @@ export default function LoginPage() {
 				<div className="mx-auto mt-6 w-full max-w-sm text-center">
 					<p className="text-sm text-slate-600">
 						¿Nuevo cliente?{" "}
-						<a
+						<Link
 							href="/register"
 							className="font-semibold text-black hover:underline"
 						>
 							Solicita aquí tu acceso.
-						</a>
+						</Link>
 					</p>
 				</div>
 			</PageTransition>

@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { pool } from "@/app/lib/db";
 import HeaderTitle from "@/app/components/HeaderTitle";
-import UsersTable, { type Usuario } from "./UsersTable";
+import UsersTable from "./UsersTable";
+import { type Usuario } from "./users-table-utils";
 
 // Lista de usuarios del sistema
 export default async function UsuariosPage() {

@@ -557,3 +557,22 @@ export function ReportsIcon({ className = "w-6 h-6" }: { className?: string }) {
 		</svg>
 	);
 }
+
+// Icono para logout
+export function LogoutIcon({ className = "w-6 h-6" }: { className?: string }) {
+	return (
+		<svg
+			fill="none"
+			stroke="currentColor"
+			viewBox="0 0 24 24"
+			className={className}
+		>
+			<path
+				d="M17 16l4-4m0 0l-4-4m4 4H3"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeWidth="1"
+			/>
+		</svg>
+	);
+}

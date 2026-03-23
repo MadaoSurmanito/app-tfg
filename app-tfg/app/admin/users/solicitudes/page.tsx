@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { pool } from "@/app/lib/db";
 import HeaderTitle from "@/app/components/HeaderTitle";
 import DataTable from "@/app/components/DataTable";
-
+import Link from "next/link";
 type Solicitud = {
 	id: string;
 	name: string;
@@ -85,18 +85,18 @@ export default async function SolicitudesPage() {
 			header: "Acciones",
 			render: (solicitud: Solicitud) => (
 				<div className="flex gap-2">
-					<a
+					<Link
 						className="rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600"
 						href={`/admin/users/solicitudes/${solicitud.id}/approve`}
 					>
 						Aprobar
-					</a>
-					<a
+					</Link>
+					<Link
 						className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
 						href={`/admin/users/solicitudes/${solicitud.id}/reject`}
 					>
 						Rechazar
-					</a>
+					</Link>
 				</div>
 			),
 		},

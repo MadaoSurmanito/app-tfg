@@ -181,6 +181,21 @@ export default async function EditUsuarioPage({ params }: Props) {
 						</div>
 					</div>
 
+					<div className="mt-6 border-t border-white/10 pt-6">
+						<label className="mb-1 block text-sm font-medium text-white">
+							Contraseña
+						</label>
+						<PasswordFieldWithStrength
+							name="password"
+							label="Nueva contraseña"
+							placeholder="Dejar en blanco para no cambiarla"
+							required={false}
+							showConfirm
+							confirmName="confirm_password"
+							confirmLabel="Confirmar nueva contraseña"
+						/>
+					</div>
+
 					<div className="mt-6 flex gap-3">
 						<button
 							type="submit"
@@ -195,17 +210,6 @@ export default async function EditUsuarioPage({ params }: Props) {
 						>
 							Cancelar
 						</Link>
-					</div>
-					<div className="mt-6 border-t border-white/10 pt-6">
-						<PasswordFieldWithStrength
-							name="password"
-							label="Nueva contraseña"
-							placeholder="Dejar en blanco para no cambiarla"
-							required={false}
-							showConfirm
-							confirmName="confirm_password"
-							confirmLabel="Confirmar nueva contraseña"
-						/>
 					</div>
 				</form>
 			</div>
