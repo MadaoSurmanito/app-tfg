@@ -11,13 +11,14 @@ type Solicitud = {
 	company: string;
 	phone?: string | null;
 	requested_at: string;
+	requested_role_name: string;
 };
 
 type Props = {
 	solicitudes: Solicitud[];
 };
 
-// En esta página se muestra la lista de solicitudes de registro pendientes, solo accesible para el admin. Desde aquí se puede acceder a la aprobación o rechazo de cada solicitud.
+// Lista de solicitudes pendientes
 export default async function SolicitudesPage() {
 	const session = await auth();
 
@@ -25,15 +26,28 @@ export default async function SolicitudesPage() {
 		redirect("/login");
 	}
 
-	const result = await pool.query(
+	const result = await pool.query<Solicitud>(
 		`
-			SELECT id, email, name, company, phone, requested_at
-			FROM user_requests
-			WHERE status = 'pendiente'
-			ORDER BY requested_at DESC
+			SELECT
+				ur.id,
+				ur.email,
+				ur.name,
+				ur.company,
+				ur.phone,
+				ur.requested_at,
+				r.name AS requested_role_name
+			FROM user_requests ur
+			INNER JOIN request_statuses rs
+				ON rs.id = ur.status_id
+			INNER JOIN roles r
+				ON r.id = ur.requested_role_id
+			WHERE rs.code = 'pending'
+			ORDER BY ur.requested_at DESC
 		`,
 	);
+
 	const solicitudes = result.rows;
+
 	const columns = [
 		{
 			key: "name",
@@ -56,6 +70,11 @@ export default async function SolicitudesPage() {
 			render: (solicitud: Solicitud) => solicitud.phone || "-",
 		},
 		{
+			key: "requested_role_name",
+			header: "Rol solicitado",
+			render: (solicitud: Solicitud) => solicitud.requested_role_name,
+		},
+		{
 			key: "requested_at",
 			header: "Fecha de solicitud",
 			render: (solicitud: Solicitud) =>
@@ -74,7 +93,7 @@ export default async function SolicitudesPage() {
 					</a>
 					<a
 						className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-						href={`/admin/solicitudes/${solicitud.id}/reject`}
+						href={`/admin/users/solicitudes/${solicitud.id}/reject`}
 					>
 						Rechazar
 					</a>

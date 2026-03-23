@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,8 +16,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
 	title: "Kinestilistas",
 	description: "Aplicación profesional para peluquerías",
-	// Necesario para que la aplicación sea reconocida como PWA y funcione correctamente en dispositivos móviles
-	manifest: "/manifest.webmanifest",
 	// Configuración para PWA y Apple Web App
 	appleWebApp: {
 		capable: true,
@@ -50,6 +49,7 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
+				<ServiceWorkerRegister />
 				{children}
 			</body>
 		</html>

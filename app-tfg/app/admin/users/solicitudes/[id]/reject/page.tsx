@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import { pool } from "@/app/lib/db";
 import HeaderTitle from "@/app/components/HeaderTitle";
 import SolicitudReviewCard from "@/app/components/SolicitudReviewCard";
-import Link from "next/link";
 
 type Props = {
 	params: Promise<{
@@ -11,7 +10,7 @@ type Props = {
 	}>;
 };
 
-// En esta página se muestra el detalle de una solicitud de registro pendiente, solo accesible para el admin. Desde aquí se puede rechazar la solicitud.
+// Vista de rechazo de una solicitud
 export default async function RejectSolicitudPage({ params }: Props) {
 	const session = await auth();
 
@@ -23,9 +22,18 @@ export default async function RejectSolicitudPage({ params }: Props) {
 
 	const result = await pool.query(
 		`
-			SELECT id, email, name, company, phone, requested_at, status
-			FROM user_requests
-			WHERE id = $1
+			SELECT
+				ur.id,
+				ur.email,
+				ur.name,
+				ur.company,
+				ur.phone,
+				ur.requested_at,
+				rs.code AS status_code
+			FROM user_requests ur
+			INNER JOIN request_statuses rs
+				ON rs.id = ur.status_id
+			WHERE ur.id = $1
 			LIMIT 1
 		`,
 		[id],
@@ -37,7 +45,7 @@ export default async function RejectSolicitudPage({ params }: Props) {
 		notFound();
 	}
 
-	if (solicitud.status !== "pendiente") {
+	if (solicitud.status_code !== "pending") {
 		redirect("/admin/users/solicitudes");
 	}
 
@@ -50,7 +58,7 @@ export default async function RejectSolicitudPage({ params }: Props) {
 				description="Puede indicar un motivo para dejar constancia de la decisión."
 				solicitud={solicitud}
 				actionLabel="Confirmar rechazo"
-				actionHref={`/api/admin/users/solicitudes/${solicitud.id}/reject`}
+				actionHref={`/api/admin/solicitudes/${solicitud.id}/reject`}
 				actionColor="red"
 				showRejectionReason
 			/>

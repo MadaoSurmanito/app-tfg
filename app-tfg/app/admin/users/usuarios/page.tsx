@@ -4,9 +4,7 @@ import { pool } from "@/app/lib/db";
 import HeaderTitle from "@/app/components/HeaderTitle";
 import UsersTable, { type Usuario } from "./UsersTable";
 
-// En esta página se muestra la lista de usuarios del sistema.
-// Solo accesible para el admin. Desde aquí se pueden consultar,
-// filtrar y ordenar todos los usuarios registrados.
+// Lista de usuarios del sistema
 export default async function UsuariosPage() {
 	const session = await auth();
 
@@ -14,21 +12,28 @@ export default async function UsuariosPage() {
 		redirect("/login");
 	}
 
-	const result = await pool.query<Usuario>(`
+	// Cargar usuarios con rol y estado
+	const result = await pool.query<Usuario>(
+		`
 		SELECT
-			id,
-			name,
-			email,
-			company,
-			phone,
-			role,
-			status,
-			image_url,
-			created_at,
-			last_login
-		FROM users
-		ORDER BY created_at DESC
-	`);
+			u.id,
+			u.name,
+			u.email,
+			u.company,
+			u.phone,
+			r.code AS role,
+			us.code AS status,
+			u.profile_image_url,
+			u.created_at,
+			u.last_login_at
+		FROM users u
+		INNER JOIN roles r
+			ON r.id = u.role_id
+		INNER JOIN user_statuses us
+			ON us.id = u.status_id
+		ORDER BY u.created_at DESC
+	`,
+	);
 
 	const usuarios = result.rows;
 

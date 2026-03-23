@@ -1,15 +1,12 @@
 import bcrypt from "bcryptjs";
+import type { PoolClient } from "pg";
 import { pool } from "@/app/lib/db";
+import { getPasswordValidationMessage } from "@/app/lib/password";
 
-/**
- * Tipos de usuario permitidos para alta desde solicitud o desde administración.
- * No incluimos "admin" porque este flujo solo crea clientes o comerciales.
- */
-export type RegisterableUserRole = "cliente" | "comercial";
+// Roles permitidos en este flujo
+export type RegisterableUserRole = "client" | "commercial";
 
-/**
- * Datos base que necesitamos para registrar un usuario o una solicitud.
- */
+// Datos base del registro
 export type RegisterUserInput = {
 	email: string;
 	name: string;
@@ -19,24 +16,16 @@ export type RegisterUserInput = {
 	role: RegisterableUserRole;
 };
 
-/**
- * Modo de funcionamiento del servicio:
- * - "request": crea una solicitud pendiente en user_requests
- * - "admin_approved": crea el usuario real en users y además deja trazabilidad en user_requests como aprobada
- */
+// Modos del servicio
 export type RegisterUserMode = "request" | "admin_approved";
 
-/**
- * Opciones completas del servicio común.
- */
+// Opciones completas del servicio
 export type RegisterUserOptions = RegisterUserInput & {
 	mode: RegisterUserMode;
-	reviewedByUserId?: string; // obligatorio realmente solo en admin_approved
+	reviewedByUserId?: string;
 };
 
-/**
- * Resultado del servicio para que los endpoints puedan responder de forma uniforme.
- */
+// Resultado del servicio
 export type RegisterUserResult = {
 	ok: true;
 	message: string;
@@ -44,22 +33,11 @@ export type RegisterUserResult = {
 	userId?: string;
 };
 
-/**
- * Expresión regular para validar correo electrónico.
- */
+// Regex de validación
 const EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-
-/**
- * Expresión regular para validar teléfono internacional tipo E.164.
- * Ejemplos válidos:
- * +34600111222
- * 34600111222
- */
 const PHONE_REGEX = /^\+?[1-9]\d{1,14}$/;
 
-/**
- * Error controlado de aplicación para devolver mensajes claros y códigos HTTP apropiados.
- */
+// Error controlado del servicio
 export class RegisterUserError extends Error {
 	status: number;
 
@@ -70,10 +48,7 @@ export class RegisterUserError extends Error {
 	}
 }
 
-/**
- * Normaliza y valida la entrada antes de tocar la base de datos.
- * Devuelve los datos ya limpios.
- */
+// Normaliza y valida los datos de entrada
 function normalizeAndValidateInput(
 	input: RegisterUserInput,
 ): RegisterUserInput {
@@ -85,18 +60,14 @@ function normalizeAndValidateInput(
 	const phone = String(input.phone ?? "").trim();
 	const password = String(input.password ?? "");
 	const role: RegisterableUserRole =
-		input.role === "cliente" ? "cliente" : "comercial";
+		input.role === "client" ? "client" : "commercial";
 
-	/**
-	 * Campos obligatorios.
-	 */
+	// Campos obligatorios
 	if (!email || !name || !company || !password) {
 		throw new RegisterUserError("Faltan campos obligatorios", 400);
 	}
 
-	/**
-	 * Longitudes máximas para evitar abusos y errores.
-	 */
+	// Longitudes máximas
 	const fieldsToValidate = {
 		name: { value: name, max: 120, label: "El nombre" },
 		company: { value: company, max: 120, label: "El nombre de la empresa" },
@@ -110,9 +81,7 @@ function normalizeAndValidateInput(
 		}
 	}
 
-	/**
-	 * Formato de correo.
-	 */
+	// Formato de correo
 	if (!EMAIL_REGEX.test(email)) {
 		throw new RegisterUserError(
 			"El correo electrónico no tiene un formato válido",
@@ -120,22 +89,16 @@ function normalizeAndValidateInput(
 		);
 	}
 
-	/**
-	 * Formato de teléfono solo si se proporciona.
-	 */
+	// Formato de teléfono
 	if (phone && !PHONE_REGEX.test(phone)) {
 		throw new RegisterUserError("El teléfono no tiene un formato válido", 400);
 	}
 
-	/**
-	 * Longitud mínima razonable de contraseña.
-	 * Puedes subirla si quieres a 6, 8, etc.
-	 */
-	if (password.length < 4) {
-		throw new RegisterUserError(
-			"La contraseña debe tener al menos 4 caracteres",
-			400,
-		);
+	// Reglas de contraseña
+	const passwordValidationMessage = getPasswordValidationMessage(password);
+
+	if (passwordValidationMessage) {
+		throw new RegisterUserError(passwordValidationMessage, 400);
 	}
 
 	return {
@@ -148,25 +111,102 @@ function normalizeAndValidateInput(
 	};
 }
 
-/**
- * Servicio común reutilizable por:
- * - /api/auth/register-request
- * - /api/admin/register-user
- *
- * Este servicio:
- * 1. valida los datos
- * 2. comprueba duplicados
- * 3. crea solicitud pendiente o alta aprobada al instante
- * 4. usa transacción para evitar inconsistencias
- */
+// Resuelve los IDs de catálogos que necesita el servicio
+async function resolveCatalogIds(
+	client: PoolClient,
+	roleCode: RegisterableUserRole,
+	mode: RegisterUserMode,
+) {
+	const requestStatusCode = mode === "request" ? "pending" : "approved";
+	const requestSourceCode =
+		mode === "request" ? "self_registration" : "admin_created";
+	const activeUserStatusCode = "active";
+
+	const catalogQuery = await client.query<{
+		kind: string;
+		id: number;
+		code: string;
+	}>(
+		`
+			SELECT 'role' AS kind, id, code
+			FROM roles
+			WHERE code = $1
+
+			UNION ALL
+
+			SELECT 'request_status' AS kind, id, code
+			FROM request_statuses
+			WHERE code = $2
+
+			UNION ALL
+
+			SELECT 'request_source_type' AS kind, id, code
+			FROM request_source_types
+			WHERE code = $3
+
+			UNION ALL
+
+			SELECT 'user_status' AS kind, id, code
+			FROM user_statuses
+			WHERE code = $4
+		`,
+		[roleCode, requestStatusCode, requestSourceCode, activeUserStatusCode],
+	);
+
+	const roleRow = catalogQuery.rows.find((row) => row.kind === "role");
+	const requestStatusRow = catalogQuery.rows.find(
+		(row) => row.kind === "request_status",
+	);
+	const requestSourceRow = catalogQuery.rows.find(
+		(row) => row.kind === "request_source_type",
+	);
+	const userStatusRow = catalogQuery.rows.find(
+		(row) => row.kind === "user_status",
+	);
+
+	if (!roleRow) {
+		throw new RegisterUserError(
+			"No existe el rol solicitado en el sistema",
+			500,
+		);
+	}
+
+	if (!requestStatusRow) {
+		throw new RegisterUserError(
+			"No existe el estado de solicitud requerido en el sistema",
+			500,
+		);
+	}
+
+	if (!requestSourceRow) {
+		throw new RegisterUserError(
+			"No existe el origen de solicitud requerido en el sistema",
+			500,
+		);
+	}
+
+	if (!userStatusRow) {
+		throw new RegisterUserError(
+			"No existe el estado de usuario requerido en el sistema",
+			500,
+		);
+	}
+
+	return {
+		roleId: Number(roleRow.id),
+		requestStatusId: Number(requestStatusRow.id),
+		requestSourceTypeId: Number(requestSourceRow.id),
+		activeUserStatusId: Number(userStatusRow.id),
+	};
+}
+
+// Servicio común de registro
 export async function registerUser(
 	options: RegisterUserOptions,
 ): Promise<RegisterUserResult> {
 	const normalized = normalizeAndValidateInput(options);
 
-	/**
-	 * Para altas aprobadas instantáneamente exigimos saber quién las aprueba.
-	 */
+	// En alta aprobada necesitamos saber quién aprueba
 	if (
 		options.mode === "admin_approved" &&
 		(!options.reviewedByUserId || options.reviewedByUserId.trim() === "")
@@ -182,9 +222,7 @@ export async function registerUser(
 	try {
 		await client.query("BEGIN");
 
-		/**
-		 * 1) Comprobar si ya existe un usuario real con ese correo.
-		 */
+		// Comprobar si ya existe un usuario con ese correo
 		const existingUser = await client.query(
 			`
 				SELECT id
@@ -199,16 +237,19 @@ export async function registerUser(
 			throw new RegisterUserError("Ya existe una cuenta con ese correo", 409);
 		}
 
-		/**
-		 * 2) Comprobar si ya existe una solicitud pendiente con ese correo.
-		 * Solo bloqueamos las pendientes porque el índice único parcial también hace eso.
-		 */
+		// Resolver IDs internos
+		const { roleId, requestStatusId, requestSourceTypeId, activeUserStatusId } =
+			await resolveCatalogIds(client, normalized.role, options.mode);
+
+		// Comprobar si ya existe una solicitud pendiente con ese correo
 		const existingPendingRequest = await client.query(
 			`
-				SELECT id
-				FROM user_requests
-				WHERE lower(email) = lower($1)
-				  AND status = 'pendiente'
+				SELECT ur.id
+				FROM user_requests ur
+				INNER JOIN request_statuses rs
+					ON rs.id = ur.status_id
+				WHERE lower(ur.email) = lower($1)
+				  AND rs.code = 'pending'
 				LIMIT 1
 			`,
 			[normalized.email],
@@ -221,17 +262,12 @@ export async function registerUser(
 			);
 		}
 
-		/**
-		 * 3) Hasheamos la contraseña una única vez.
-		 */
+		// Hashear contraseña
 		const passwordHash = await bcrypt.hash(normalized.password, 10);
 
-		/**
-		 * Flujo A:
-		 * Registro público -> solo crea solicitud pendiente.
-		 */
+		// Registro público: crea solo la solicitud
 		if (options.mode === "request") {
-			const insertedRequest = await client.query(
+			const insertedRequest = await client.query<{ id: string }>(
 				`
 					INSERT INTO user_requests (
 						name,
@@ -239,11 +275,12 @@ export async function registerUser(
 						company,
 						phone,
 						password_hash,
-						requested_role,
-						status,
+						requested_role_id,
+						status_id,
+						request_source_type_id,
 						requested_at
 					)
-					VALUES ($1, $2, $3, $4, $5, $6, 'pendiente', NOW())
+					VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
 					RETURNING id
 				`,
 				[
@@ -252,7 +289,9 @@ export async function registerUser(
 					normalized.company,
 					normalized.phone,
 					passwordHash,
-					normalized.role,
+					roleId,
+					requestStatusId,
+					requestSourceTypeId,
 				],
 			);
 
@@ -265,11 +304,8 @@ export async function registerUser(
 			};
 		}
 
-		/**
-		 * Flujo B:
-		 * Alta directa por admin -> crea usuario real y además guarda la solicitud ya aprobada.
-		 */
-		const insertedUser = await client.query(
+		// Alta aprobada por admin: crea usuario real
+		const insertedUser = await client.query<{ id: string }>(
 			`
 				INSERT INTO users (
 					name,
@@ -277,13 +313,14 @@ export async function registerUser(
 					company,
 					phone,
 					password_hash,
-					role,
-					status,
-					image_url,
-					last_login,
-					created_at
+					role_id,
+					status_id,
+					profile_image_url,
+					last_login_at,
+					created_at,
+					updated_at
 				)
-				VALUES ($1, $2, $3, $4, $5, $6, 'activo', NULL, NOW(), NOW())
+				VALUES ($1, $2, $3, $4, $5, $6, $7, NULL, NULL, NOW(), NOW())
 				RETURNING id
 			`,
 			[
@@ -292,17 +329,15 @@ export async function registerUser(
 				normalized.company,
 				normalized.phone,
 				passwordHash,
-				normalized.role,
+				roleId,
+				activeUserStatusId,
 			],
 		);
 
 		const createdUserId = insertedUser.rows[0]?.id;
 
-		/**
-		 * Guardamos también la petición en user_requests para mantener
-		 * la trazabilidad histórica, pero directamente aprobada.
-		 */
-		const insertedApprovedRequest = await client.query(
+		// Guardar también la solicitud aprobada para trazabilidad
+		const insertedApprovedRequest = await client.query<{ id: string }>(
 			`
 				INSERT INTO user_requests (
 					name,
@@ -310,14 +345,16 @@ export async function registerUser(
 					company,
 					phone,
 					password_hash,
-					status,
+					requested_role_id,
+					status_id,
+					request_source_type_id,
 					requested_at,
 					reviewed_at,
 					reviewed_by,
 					rejection_reason,
-					approved_user_id
+					created_user_id
 				)
-				VALUES ($1, $2, $3, $4, $5, 'aprobada', NOW(), NOW(), $6, NULL, $7)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW(), $9, NULL, $10)
 				RETURNING id
 			`,
 			[
@@ -326,6 +363,9 @@ export async function registerUser(
 				normalized.company,
 				normalized.phone,
 				passwordHash,
+				roleId,
+				requestStatusId,
+				requestSourceTypeId,
 				options.reviewedByUserId,
 				createdUserId,
 			],
@@ -342,17 +382,12 @@ export async function registerUser(
 	} catch (error: unknown) {
 		await client.query("ROLLBACK");
 
-		/**
-		 * Error de aplicación controlado.
-		 */
+		// Error controlado del servicio
 		if (error instanceof RegisterUserError) {
 			throw error;
 		}
 
-		/**
-		 * Error típico de restricción única en PostgreSQL.
-		 * Por ejemplo si dos peticiones concurrentes intentan crear el mismo correo.
-		 */
+		// Error de restricción única
 		if (
 			typeof error === "object" &&
 			error !== null &&
@@ -365,9 +400,7 @@ export async function registerUser(
 			);
 		}
 
-		/**
-		 * Error típico de CHECK constraint en PostgreSQL.
-		 */
+		// Error de check constraint
 		if (
 			typeof error === "object" &&
 			error !== null &&
@@ -375,6 +408,19 @@ export async function registerUser(
 			error.code === "23514"
 		) {
 			throw new RegisterUserError("Los datos enviados no son válidos", 400);
+		}
+
+		// Error de clave foránea
+		if (
+			typeof error === "object" &&
+			error !== null &&
+			"code" in error &&
+			error.code === "23503"
+		) {
+			throw new RegisterUserError(
+				"No se pudo resolver alguno de los valores internos requeridos",
+				500,
+			);
 		}
 
 		console.error("Error en registerUser:", error);

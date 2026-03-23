@@ -8,7 +8,6 @@ import PageTransition from "../components/PageTransition";
 
 // esta función se encarga de manejar el envío del formulario, se encarga de recoger los datos del formulario, enviarlos a la API de autenticación y manejar la respuesta de la API
 export default function LoginPage() {
-	
 	const [leaving, setLeaving] = useState(false);
 	const [error, setError] = useState("");
 	const router = useRouter();
@@ -40,7 +39,7 @@ export default function LoginPage() {
 
 		if (userData?.user?.role === "admin") {
 			router.push("/admin");
-		} else if (userData?.user?.role === "comercial") {
+		} else if (userData?.user?.role === "commercial") {
 			router.push("/comerciales");
 		} else {
 			router.push("/clientes");
@@ -50,57 +49,60 @@ export default function LoginPage() {
 	return (
 		<main className="app-bg min-h-[100svh] w-full px-4 py-4 text-slate-800">
 			<HeaderTitle title="KinEstilistas" />
-			 <PageTransition
-								isLeaving={leaving}
-								className="mx-auto max-w-2xl rounded-2xl p-6 text-center"
-							>
-			<div className="mx-auto mt-6 w-full max-w-sm">
-				<form
-					onSubmit={handleSubmit}
-					className="rounded-2xl bg-white p-6 shadow-md flex flex-col gap-4"
-				>
-					<h2 className="mb-2 text-center text-xl font-semibold">
-						Iniciar sesión
-					</h2>
-
-					<input
-						name="identifier"
-						type="text"
-						placeholder="Correo, teléfono o usuario"
-						required
-						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
-					/>
-
-					<input
-						name="password"
-						type="password"
-						placeholder="Contraseña"
-						autoComplete="current-password"
-						required
-						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
-					/>
-
-					<button
-						type="submit"
-						className="mt-2 rounded-lg bg-black py-3 font-medium text-white hover:opacity-90 transition"
+			<PageTransition
+				isLeaving={leaving}
+				className="mx-auto max-w-2xl rounded-2xl p-6 text-center"
+			>
+				<div className="mx-auto mt-6 w-full max-w-sm">
+					<form
+						onSubmit={handleSubmit}
+						className="rounded-2xl bg-white p-6 shadow-md flex flex-col gap-4"
 					>
-						Entrar
-					</button>
+						<h2 className="mb-2 text-center text-xl font-semibold">
+							Iniciar sesión
+						</h2>
 
-					{error && <p className="text-center text-sm text-red-600">{error}</p>}
-				</form>
-			</div>
-			<div className="mx-auto mt-6 w-full max-w-sm text-center">
-				<p className="text-sm text-slate-600">
-					¿Nuevo cliente?{" "}
-					<a
-						href="/register"
-						className="font-semibold text-black hover:underline"
-					>
-						Solicita aquí tu acceso.
-					</a>
-				</p>
-			</div>
+						<input
+							name="identifier"
+							type="text"
+							placeholder="Correo, teléfono o usuario"
+							required
+							className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+						/>
+
+						<input
+							name="password"
+							type="password"
+							placeholder="Contraseña"
+							autoComplete="current-password"
+							required
+							className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+						/>
+
+						<button
+							type="submit"
+							className="mt-2 rounded-lg bg-black py-3 font-medium text-white hover:opacity-90 transition"
+						>
+							Entrar
+						</button>
+
+						{error && (
+							<p className="text-center text-sm text-red-600">{error}</p>
+						)}
+					</form>
+				</div>
+
+				<div className="mx-auto mt-6 w-full max-w-sm text-center">
+					<p className="text-sm text-slate-600">
+						¿Nuevo cliente?{" "}
+						<a
+							href="/register"
+							className="font-semibold text-black hover:underline"
+						>
+							Solicita aquí tu acceso.
+						</a>
+					</p>
+				</div>
 			</PageTransition>
 		</main>
 	);

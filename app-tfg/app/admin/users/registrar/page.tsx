@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import PasswordFieldWithStrength from "@/app/components/PasswordFieldWithStrength";
 /**
  * Página para que los administradores registren usuarios directamente.
  * Permite elegir el tipo de usuario: comercial o cliente.
@@ -121,13 +121,12 @@ function AdminRegisterUser() {
 					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 				/>
 
-				<input
+				<PasswordFieldWithStrength
 					name="password"
-					type="password"
+					label="Contraseña"
 					placeholder="Contraseña"
 					required
-					minLength={4}
-					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					showConfirm
 				/>
 
 				<button

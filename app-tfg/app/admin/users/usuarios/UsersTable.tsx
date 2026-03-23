@@ -9,11 +9,11 @@ export type Usuario = {
 	email: string;
 	company: string | null;
 	phone: string | null;
-	role: "admin" | "cliente" | "comercial";
-	status: "activo" | "inactivo" | "bloqueado";
-	image_url: string | null;
+	role: "admin" | "client" | "commercial";
+	status: "active" | "inactive" | "blocked";
+	profile_image_url: string | null;
 	created_at: string;
-	last_login: string | null;
+	last_login_at: string | null;
 };
 
 type Props = {
@@ -31,11 +31,12 @@ const sortableFields: { key: SortField; label: string }[] = [
 	{ key: "phone", label: "Teléfono" },
 	{ key: "role", label: "Rol" },
 	{ key: "status", label: "Estado" },
-	{ key: "image_url", label: "Imagen" },
+	{ key: "profile_image_url", label: "Imagen" },
 	{ key: "created_at", label: "Fecha de alta" },
-	{ key: "last_login", label: "Último login" },
+	{ key: "last_login_at", label: "Último login" },
 ];
 
+// Formatea fechas
 function formatDate(value: string | null) {
 	if (!value) return "-";
 
@@ -48,11 +49,13 @@ function formatDate(value: string | null) {
 	});
 }
 
+// Normaliza valores para búsqueda
 function normalizeValue(value: unknown): string {
 	if (value === null || value === undefined) return "";
 	return String(value).toLowerCase();
 }
 
+// Compara valores para ordenación
 function compareValues(a: unknown, b: unknown) {
 	if (a === null || a === undefined) return 1;
 	if (b === null || b === undefined) return -1;
@@ -73,26 +76,56 @@ function compareValues(a: unknown, b: unknown) {
 	return String(a).localeCompare(String(b), "es", { sensitivity: "base" });
 }
 
+// Traduce el rol para mostrarlo
+function getRoleLabel(role: Usuario["role"]) {
+	switch (role) {
+		case "admin":
+			return "Administrador";
+		case "client":
+			return "Cliente";
+		case "commercial":
+			return "Comercial";
+		default:
+			return role;
+	}
+}
+
+// Traduce el estado para mostrarlo
+function getStatusLabel(status: Usuario["status"]) {
+	switch (status) {
+		case "active":
+			return "Activo";
+		case "inactive":
+			return "Inactivo";
+		case "blocked":
+			return "Bloqueado";
+		default:
+			return status;
+	}
+}
+
+// Clases visuales por rol
 function getRoleClasses(role: Usuario["role"]) {
 	switch (role) {
 		case "admin":
 			return "bg-red-500/20 text-red-200";
-		case "cliente":
+		case "client":
 			return "bg-emerald-500/20 text-emerald-200";
-		case "comercial":
+		case "commercial":
 			return "bg-blue-500/20 text-blue-200";
 		default:
 			return "bg-white/10 text-white";
 	}
 }
 
+// Clases visuales por estado
 function getStatusClasses(status: Usuario["status"]) {
 	switch (status) {
-		case "activo":
+		case "active":
 			return "bg-green-500/20 text-green-200";
-		case "inactivo":
+		case "inactive":
 			return "bg-yellow-500/20 text-yellow-200";
-		case "bloqueado":
+		case "blocked":
 			return "bg-red-500/20 text-red-200";
 		default:
 			return "bg-white/10 text-white";
@@ -107,18 +140,21 @@ export default function UsersTable({ usuarios }: Props) {
 	const [sortField, setSortField] = useState<SortField>("created_at");
 	const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
+	// Roles disponibles en los datos
 	const roles = useMemo(() => {
 		return [...new Set(usuarios.map((u) => u.role).filter(Boolean))].sort(
 			(a, b) => a.localeCompare(b, "es", { sensitivity: "base" }),
 		);
 	}, [usuarios]);
 
+	// Estados disponibles en los datos
 	const statuses = useMemo(() => {
 		return [...new Set(usuarios.map((u) => u.status).filter(Boolean))].sort(
 			(a, b) => a.localeCompare(b, "es", { sensitivity: "base" }),
 		);
 	}, [usuarios]);
 
+	// Filtra y ordena usuarios
 	const filteredAndSortedUsers = useMemo(() => {
 		const searchTerm = search.trim().toLowerCase();
 
@@ -136,8 +172,8 @@ export default function UsersTable({ usuarios }: Props) {
 
 			const matchesImage =
 				hasImageFilter === "todos" ||
-				(hasImageFilter === "con_imagen" && !!usuario.image_url) ||
-				(hasImageFilter === "sin_imagen" && !usuario.image_url);
+				(hasImageFilter === "con_imagen" && !!usuario.profile_image_url) ||
+				(hasImageFilter === "sin_imagen" && !usuario.profile_image_url);
 
 			return matchesSearch && matchesRole && matchesStatus && matchesImage;
 		});
@@ -158,6 +194,7 @@ export default function UsersTable({ usuarios }: Props) {
 		sortDirection,
 	]);
 
+	// Cambia la ordenación
 	function handleSort(field: SortField) {
 		if (sortField === field) {
 			setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -168,6 +205,7 @@ export default function UsersTable({ usuarios }: Props) {
 		setSortDirection("asc");
 	}
 
+	// Resetea filtros
 	function resetFilters() {
 		setSearch("");
 		setRoleFilter("todos");
@@ -206,7 +244,7 @@ export default function UsersTable({ usuarios }: Props) {
 							<option value="todos">Todos</option>
 							{roles.map((role) => (
 								<option key={role} value={role}>
-									{role}
+									{getRoleLabel(role)}
 								</option>
 							))}
 						</select>
@@ -224,7 +262,7 @@ export default function UsersTable({ usuarios }: Props) {
 							<option value="todos">Todos</option>
 							{statuses.map((status) => (
 								<option key={status} value={status}>
-									{status}
+									{getStatusLabel(status)}
 								</option>
 							))}
 						</select>
@@ -352,36 +390,36 @@ export default function UsersTable({ usuarios }: Props) {
 											<span
 												className={`rounded-full px-3 py-1 text-xs font-medium ${getRoleClasses(usuario.role)}`}
 											>
-												{usuario.role}
+												{getRoleLabel(usuario.role)}
 											</span>
 										</td>
 										<td className="px-4 py-3">
 											<span
 												className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusClasses(usuario.status)}`}
 											>
-												{usuario.status}
+												{getStatusLabel(usuario.status)}
 											</span>
 										</td>
 										<td className="px-4 py-3">
-											{usuario.image_url ? "Sí" : "No"}
+											{usuario.profile_image_url ? "Sí" : "No"}
 										</td>
 										<td className="px-4 py-3">
 											{formatDate(usuario.created_at)}
 										</td>
 										<td className="px-4 py-3">
-											{formatDate(usuario.last_login)}
+											{formatDate(usuario.last_login_at)}
 										</td>
 										<td className="px-4 py-3">
 											<div className="flex gap-2">
 												<Link
-													href={`/admin/usuarios/${usuario.id}`}
+													href={`/admin/users/usuarios/${usuario.id}`}
 													className="rounded-lg bg-cyan-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-cyan-700"
 												>
 													Ver
 												</Link>
 
 												<Link
-													href={`/admin/usuarios/${usuario.id}/edit`}
+													href={`/admin/users/usuarios/${usuario.id}/edit`}
 													className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-white/20"
 												>
 													Editar
