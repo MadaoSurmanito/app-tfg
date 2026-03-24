@@ -87,7 +87,6 @@ export default async function EditUsuarioPage({ params }: Props) {
 
 	return (
 		<>
-			<HeaderTitle title="Editar usuario" />
 
 			<div className="mx-auto mt-6 w-full max-w-3xl">
 				<form

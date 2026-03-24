@@ -1,18 +1,19 @@
 import BottomNav from "../components/BottomNav";
-import PageTransition from "../components/PageTransition";
+import HeaderTitle from "../components/HeaderTitle";
 
-// Layout específico para la sección de administración
+// Layout para las páginas del admin panel
 export default function AdminLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
 	return (
-		<main className="app-bg flex min-h-screen w-full flex-col text-slate-800">
+		<main className="app-bg min-h-screen w-full text-slate-800">
 			<div className="bg-overlay fixed inset-0 -z-10" />
 
-			<section className="flex-1 overflow-y-auto px-6 pt-4 pb-6">
-				<PageTransition>{children}</PageTransition>
+			<section className="px-4 pt-4 pb-28 md:px-6 md:pb-32">
+				<HeaderTitle title="Kinestilistas" subtitle="Panel de administración" />
+				{children}
 			</section>
 
 			<BottomNav />

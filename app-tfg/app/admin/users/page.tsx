@@ -14,16 +14,16 @@ const navItems = [
 		icon: <RegisterRequestsIcon className="h-6 w-6" />,
 		href: "/admin/users/solicitudes",
 	},
-    {
-        title: "Lista de usuarios",
-        icon: <ClientsIcon className="h-6 w-6" />,
-        href: "/admin/users/usuarios",
-    },
-    {
-        title: "Registrar nuevo usuario",
-        icon: <ClientsIcon className="h-6 w-6" />,
-        href: "/admin/users/registrar",
-    }
+	{
+		title: "Lista de usuarios",
+		icon: <ClientsIcon className="h-6 w-6" />,
+		href: "/admin/users/usuarios",
+	},
+	{
+		title: "Registrar nuevo usuario",
+		icon: <ClientsIcon className="h-6 w-6" />,
+		href: "/admin/users/registrar",
+	},
 ];
 
 // Página de inicio para el admin panel.
@@ -32,8 +32,6 @@ export default function AdminHome() {
 
 	return (
 		<PageTransition>
-			<HeaderTitle title="Kinestilistas" />
-
 			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
 				{navItems.map((item) => (
 					<NavCard

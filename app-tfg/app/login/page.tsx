@@ -49,7 +49,7 @@ export default function LoginPage() {
 
 	return (
 		<main className="app-bg min-h-[100svh] w-full px-4 py-4 text-slate-800">
-			<HeaderTitle title="KinEstilistas" />
+			<HeaderTitle title="KinEstilistas " subtitle="Alta Peluquería &amp; Estética" />
 			<PageTransition
 				isLeaving={leaving}
 				className="mx-auto max-w-2xl rounded-2xl p-6 text-center"

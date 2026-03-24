@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { pool } from "@/app/lib/db";
-import HeaderTitle from "@/app/components/HeaderTitle";
+import H1Title from "@/app/components/H1Title";
 import UsersTable from "./UsersTable";
 import { type Usuario } from "./users-table-utils";
+import PageTransition from "@/app/components/PageTransition";
 
 // Lista de usuarios del sistema
 export default async function UsuariosPage() {
@@ -40,11 +41,13 @@ export default async function UsuariosPage() {
 
 	return (
 		<>
-			<HeaderTitle title="Usuarios" />
+			<PageTransition>
+				<H1Title title="Usuarios" subtitle="Lista de usuarios del sistema" />
 
-			<div className="mx-auto mt-6 w-full max-w-7xl">
-				<UsersTable usuarios={usuarios} />
-			</div>
+				<div className="mx-auto mt-6 w-full max-w-7xl">
+					<UsersTable usuarios={usuarios} />
+				</div>
+			</PageTransition>
 		</>
 	);
 }

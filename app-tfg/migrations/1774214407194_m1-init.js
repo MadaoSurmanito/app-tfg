@@ -8,7 +8,6 @@ exports.up = (pgm) => {
     pgm.createExtension("pgcrypto", { ifNotExists: true });
 
     // CATÁLOGOS
-
     pgm.createTable("roles", {
         id: {
             type: "smallint",

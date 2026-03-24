@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { SortDirection, SortField } from "./users-table-utils";
 import {
 	getRoleLabel,
@@ -29,7 +30,12 @@ type Props = {
 	resetFilters: () => void;
 };
 
-export function UsersTableFilters({
+type FilterFieldsProps = Omit<
+	Props,
+	"filteredAndSortedUsers" | "totalUsuarios"
+>;
+
+function FilterFields({
 	search,
 	setSearch,
 	roleFilter,
@@ -46,14 +52,12 @@ export function UsersTableFilters({
 	setSortDirection,
 	roles,
 	statuses,
-	filteredAndSortedUsers,
-	totalUsuarios,
 	resetFilters,
-}: Props) {
+}: FilterFieldsProps) {
 	return (
-		<div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-md">
+		<div className="space-y-4">
 			<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-				<div className="xl:col-span-1">
+				<div>
 					<label className="mb-1 block text-sm font-semibold text-slate-700">
 						Buscar
 					</label>
@@ -118,7 +122,7 @@ export function UsersTableFilters({
 				</div>
 			</div>
 
-			<div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+			<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 				<div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-end">
 					<label className="flex items-center gap-2 text-sm text-slate-700">
 						<input
@@ -166,12 +170,7 @@ export function UsersTableFilters({
 					</div>
 				</div>
 
-				<div className="flex flex-wrap items-center gap-3">
-					<span className="text-sm text-slate-600">
-						Mostrando <strong>{filteredAndSortedUsers.length}</strong> de{" "}
-						<strong>{totalUsuarios}</strong> usuarios
-					</span>
-
+				<div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 					<button
 						type="button"
 						onClick={resetFilters}
@@ -179,6 +178,61 @@ export function UsersTableFilters({
 					>
 						Limpiar filtros
 					</button>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+export function UsersTableFilters(props: Props) {
+	const { filteredAndSortedUsers, totalUsuarios, ...filterFieldsProps } = props;
+
+	const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+	const [contentHeight, setContentHeight] = useState(0);
+	const contentRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		const updateHeight = () => {
+			if (contentRef.current) {
+				setContentHeight(contentRef.current.scrollHeight);
+			}
+		};
+
+		updateHeight();
+		window.addEventListener("resize", updateHeight);
+		return () => window.removeEventListener("resize", updateHeight);
+	}, [isFiltersOpen, filteredAndSortedUsers.length, totalUsuarios]);
+
+	return (
+		<div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-md md:p-5">
+			<div className="flex flex-wrap items-center justify-between gap-3">
+				<div>
+					<h2 className="text-base font-semibold text-slate-800">Filtros</h2>
+					<p className="text-sm text-slate-500">
+						Mostrando <strong>{filteredAndSortedUsers.length}</strong> de{" "}
+						<strong>{totalUsuarios}</strong> usuarios
+					</p>
+				</div>
+
+				<button
+					type="button"
+					onClick={() => setIsFiltersOpen((prev) => !prev)}
+					className="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-gray-50"
+				>
+					{isFiltersOpen ? "Ocultar filtros" : "Mostrar filtros"}
+				</button>
+			</div>
+
+			<div
+				className="overflow-hidden transition-all duration-300 ease-in-out"
+				style={{
+					maxHeight: isFiltersOpen ? `${contentHeight}px` : "0px",
+					opacity: isFiltersOpen ? 1 : 0,
+					marginTop: isFiltersOpen ? "1rem" : "0rem",
+				}}
+			>
+				<div ref={contentRef}>
+					<FilterFields {...filterFieldsProps} />
 				</div>
 			</div>
 		</div>

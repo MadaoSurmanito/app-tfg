@@ -9,12 +9,11 @@ import { RegisterRequestsIcon, ClientsIcon } from "../components/IconsSVGs";
 
 // Opciones de navegación para administradores
 const navItems = [
-
 	{
 		title: "Gestión de usuarios",
 		icon: <ClientsIcon className="h-6 w-6" />,
 		href: "/admin/users",
-	}
+	},
 ];
 
 // Página de inicio para el admin panel.
@@ -23,8 +22,6 @@ export default function AdminHome() {
 
 	return (
 		<PageTransition>
-			<HeaderTitle title="Kinestilistas" />
-
 			<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
 				{navItems.map((item) => (
 					<NavCard

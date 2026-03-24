@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { pool } from "@/app/lib/db";
-import HeaderTitle from "@/app/components/HeaderTitle";
+import H1Title from "@/app/components/H1Title";
 import DataTable from "@/app/components/DataTable";
+import PageTransition from "@/app/components/PageTransition";
 import Link from "next/link";
 type Solicitud = {
 	id: string;
@@ -104,16 +105,21 @@ export default async function SolicitudesPage() {
 
 	return (
 		<>
-			<HeaderTitle title="Solicitudes de registro" />
-
-			<div className="mx-auto mt-6 w-full max-w-6xl">
-				<DataTable
-					data={solicitudes}
-					columns={columns}
-					getRowKey={(solicitud) => solicitud.id}
-					emptyMessage="No hay solicitudes pendientes."
+			<PageTransition>
+				<H1Title
+					title="Solicitudes de registro"
+					subtitle="Lista de solicitudes pendientes"
 				/>
-			</div>
+
+				<div className="mx-auto mt-6 w-full max-w-6xl">
+					<DataTable
+						data={solicitudes}
+						columns={columns}
+						getRowKey={(solicitud) => solicitud.id}
+						emptyMessage="No hay solicitudes pendientes."
+					/>
+				</div>
+			</PageTransition>
 		</>
 	);
 }

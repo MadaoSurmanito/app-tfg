@@ -1,14 +1,14 @@
-type HeaderTitleProps = {
+type H1TitleProps = {
 	title: string;
-	subtitle?: string;
+	subtitle: string;
 	noGlass?: boolean;
 };
 
-export default function HeaderTitle({
+export default function H1Title({
 	title,
-	subtitle = "Alta Peluquería & Estética",
+	subtitle,
 	noGlass = false,
-}: HeaderTitleProps) {
+}: H1TitleProps) {
 	return (
 		<header
 			className={`mb-4 rounded-2xl px-6 py-4 text-center ${
@@ -21,15 +21,6 @@ export default function HeaderTitle({
 			<p className="mt-1 text-center text-[10px] uppercase tracking-[0.2em] text-black/80 sm:text-[15px]">
 				{subtitle}
 			</p>
-			{noGlass && (
-				<div className="absolute right-6 top-4">
-					<img
-						src="/profile-image.png"
-						alt="Profile"
-						className="h-10 w-10 rounded-full"
-					/>
-				</div>
-			)}
 		</header>
 	);
 }

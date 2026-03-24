@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import PasswordFieldWithStrength from "@/app/components/PasswordFieldWithStrength";
+import PageTransition from "@/app/components/PageTransition";
 /**
  * Página para que los administradores registren usuarios directamente.
  * Permite elegir el tipo de usuario: comercial o cliente.
@@ -69,80 +70,82 @@ function AdminRegisterUser() {
 	}
 
 	return (
-		<div className="mx-auto mt-12 w-full max-w-sm">
-			<form
-				onSubmit={handleAdminSubmit}
-				className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md"
-			>
-				<h2 className="mb-2 text-center text-xl font-semibold">
-					Registrar usuario (admin)
-				</h2>
-
-				<select
-					name="type"
-					value={userType}
-					onChange={(e) => setUserType(e.target.value)}
-					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+		<PageTransition>
+			<div className="mx-auto mt-12 w-full max-w-sm">
+				<form
+					onSubmit={handleAdminSubmit}
+					className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md"
 				>
-					<option value="comercial">Comercial</option>
-					<option value="cliente">Cliente</option>
-				</select>
+					<h2 className="mb-2 text-center text-xl font-semibold">
+						Registrar usuario (admin)
+					</h2>
 
-				<input
-					name="name"
-					type="text"
-					placeholder="Nombre completo"
-					required
-					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
-				/>
+					<select
+						name="type"
+						value={userType}
+						onChange={(e) => setUserType(e.target.value)}
+						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					>
+						<option value="comercial">Comercial</option>
+						<option value="cliente">Cliente</option>
+					</select>
 
-				<input
-					name="email"
-					type="email"
-					placeholder="Correo electrónico"
-					autoComplete="email"
-					required
-					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
-				/>
+					<input
+						name="name"
+						type="text"
+						placeholder="Nombre completo"
+						required
+						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					/>
 
-				<input
-					name="company"
-					type="text"
-					placeholder="Empresa"
-					required
-					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
-				/>
+					<input
+						name="email"
+						type="email"
+						placeholder="Correo electrónico"
+						autoComplete="email"
+						required
+						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					/>
 
-				<input
-					name="phone"
-					type="tel"
-					placeholder="Teléfono"
-					autoComplete="tel"
-					className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
-				/>
+					<input
+						name="company"
+						type="text"
+						placeholder="Empresa"
+						required
+						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					/>
 
-				<PasswordFieldWithStrength
-					name="password"
-					label="Contraseña"
-					placeholder="Contraseña"
-					required
-					showConfirm
-				/>
+					<input
+						name="phone"
+						type="tel"
+						placeholder="Teléfono"
+						autoComplete="tel"
+						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
+					/>
 
-				<button
-					type="submit"
-					disabled={loading}
-					className="mt-2 rounded-lg bg-black py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
-				>
-					{loading ? "Registrando..." : "Registrar usuario"}
-				</button>
+					<PasswordFieldWithStrength
+						name="password"
+						label="Contraseña"
+						placeholder="Contraseña"
+						required
+						showConfirm
+					/>
 
-				{error && <p className="text-center text-sm text-red-600">{error}</p>}
-				{success && (
-					<p className="text-center text-sm text-green-600">{success}</p>
-				)}
-			</form>
-		</div>
+					<button
+						type="submit"
+						disabled={loading}
+						className="mt-2 rounded-lg bg-black py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+					>
+						{loading ? "Registrando..." : "Registrar usuario"}
+					</button>
+
+					{error && <p className="text-center text-sm text-red-600">{error}</p>}
+					{success && (
+						<p className="text-center text-sm text-green-600">{success}</p>
+					)}
+				</form>
+			</div>
+		</PageTransition>
 	);
 }
 
