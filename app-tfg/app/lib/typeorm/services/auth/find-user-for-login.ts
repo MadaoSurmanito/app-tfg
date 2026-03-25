@@ -4,7 +4,7 @@ import { User } from "@/app/lib/typeorm/entities/User";
 
 export async function findUserForLogin(identifier: string) {
 	const ds = await getDataSource();
-	const repo = ds.getRepository(User);
+	const repo = ds.getRepository("User");
 
 	const normalizedIdentifier = identifier.trim().toLowerCase();
 

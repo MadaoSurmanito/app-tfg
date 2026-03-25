@@ -5,7 +5,7 @@ import { UserRequest } from "@/app/lib/typeorm/entities/UserRequest";
 // Se reutiliza tanto desde páginas server como desde la API.
 export async function getUserRequestById(id: string) {
 	const ds = await getDataSource();
-	const repo = ds.getRepository(UserRequest);
+	const repo = ds.getRepository("UserRequest");
 
 	return repo.findOne({
 		where: { id },

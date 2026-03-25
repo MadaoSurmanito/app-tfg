@@ -23,8 +23,8 @@ export async function createUser(input: CreateUserInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository(User);
-		const logRepo = manager.getRepository(UserManagementLog);
+		const userRepo = manager.getRepository("User");
+		const logRepo = manager.getRepository("UserManagementLog");
 
 		const normalizedEmail = input.email.trim().toLowerCase();
 

@@ -3,7 +3,7 @@ import { UserStatus } from "@/app/lib/typeorm/entities/UserStatus";
 
 export async function listUserStatuses() {
 	const ds = await getDataSource();
-	const repo = ds.getRepository(UserStatus);
+	const repo = ds.getRepository("UserStatus");
 
 	return repo.find({
 		order: {

@@ -2,17 +2,17 @@ import "reflect-metadata";
 import "dotenv/config";
 import { DataSource } from "typeorm";
 
-import { Role } from "./entities/Role";
-import { UserStatus } from "./entities/UserStatus";
-import { RequestStatus } from "./entities/RequestStatus";
-import { RequestSourceType } from "./entities/RequestSourceType";
-import { AccessEventType } from "./entities/AccessEventType";
-import { AccessResultType } from "./entities/AccessResultType";
-import { UserAdminActionType } from "./entities/UserAdminActionType";
-import { User } from "./entities/User";
-import { UserRequest } from "./entities/UserRequest";
-import { UserManagementLog } from "./entities/UserManagementLog";
-import { UserAccessLog } from "./entities/UserAccessLog";
+import { Role } from "@/app/lib/typeorm/entities/Role";
+import { UserStatus } from "@/app/lib/typeorm/entities/UserStatus";
+import { RequestStatus } from "@/app/lib/typeorm/entities/RequestStatus";
+import { RequestSourceType } from "@/app/lib/typeorm/entities/RequestSourceType";
+import { AccessEventType } from "@/app/lib/typeorm/entities/AccessEventType";
+import { AccessResultType } from "@/app/lib/typeorm/entities/AccessResultType";
+import { UserAdminActionType } from "@/app/lib/typeorm/entities/UserAdminActionType";
+import { User } from "@/app/lib/typeorm/entities/User";
+import { UserRequest } from "@/app/lib/typeorm/entities/UserRequest";
+import { UserManagementLog } from "@/app/lib/typeorm/entities/UserManagementLog";
+import { UserAccessLog } from "@/app/lib/typeorm/entities/UserAccessLog";
 
 export const typeormEntities = {
 	Role,
@@ -43,9 +43,7 @@ function createDataSource() {
 }
 
 declare global {
-	// eslint-disable-next-line no-var
 	var __typeormDataSource: DataSource | undefined;
-	// eslint-disable-next-line no-var
 	var __typeormDataSourceInitPromise: Promise<DataSource> | undefined;
 }
 

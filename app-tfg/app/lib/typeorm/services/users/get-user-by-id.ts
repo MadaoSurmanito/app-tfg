@@ -5,7 +5,7 @@ import { User } from "@/app/lib/typeorm/entities/User";
 // Este servicio se reutiliza tanto en páginas server como en endpoints API.
 export async function getUserById(id: string) {
 	const ds = await getDataSource();
-	const repo = ds.getRepository(User);
+	const repo = ds.getRepository("User");
 
 	return repo.findOne({
 		where: { id },

@@ -14,9 +14,9 @@ export async function logoutUserSession(input: LogoutUserSessionInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const eventTypeRepo = manager.getRepository(AccessEventType);
-		const resultTypeRepo = manager.getRepository(AccessResultType);
-		const accessLogRepo = manager.getRepository(UserAccessLog);
+		const eventTypeRepo = manager.getRepository("AccessEventType");
+		const resultTypeRepo = manager.getRepository("AccessResultType");
+		const accessLogRepo = manager.getRepository("UserAccessLog");
 
 		const now = input.logoutAt ?? new Date();
 

@@ -23,8 +23,8 @@ export async function createRegisterRequest(input: CreateRegisterRequestInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository(User);
-		const userRequestRepo = manager.getRepository(UserRequest);
+		const userRepo = manager.getRepository("User");
+		const userRequestRepo = manager.getRepository("UserRequest");
 
 		const normalizedEmail = input.email.trim().toLowerCase();
 

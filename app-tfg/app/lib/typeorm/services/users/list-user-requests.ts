@@ -1,13 +1,16 @@
 import { getDataSource } from "@/app/lib/typeorm/data-source";
 import { UserRequest } from "@/app/lib/typeorm/entities/UserRequest";
+import { REQUEST_STATUS_IDS } from "@/app/lib/typeorm/constants/catalog-ids";
 
-// Lista las solicitudes de usuario incluyendo todas las relaciones
-// necesarias para poder pintarlas en administración sin consultas extra.
 export async function listUserRequests() {
 	const ds = await getDataSource();
+
 	const repo = ds.getRepository(UserRequest);
 
 	return repo.find({
+		where: {
+			status_id: REQUEST_STATUS_IDS.PENDING,
+		},
 		relations: {
 			requestedRole: true,
 			status: true,

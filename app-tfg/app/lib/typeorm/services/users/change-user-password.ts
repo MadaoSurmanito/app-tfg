@@ -16,8 +16,8 @@ export async function changeUserPassword(input: ChangeUserPasswordInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository(User);
-		const logRepo = manager.getRepository(UserManagementLog);
+		const userRepo = manager.getRepository("User");
+		const logRepo = manager.getRepository("UserManagementLog");
 
 		const user = await userRepo.findOne({
 			where: { id: input.userId },

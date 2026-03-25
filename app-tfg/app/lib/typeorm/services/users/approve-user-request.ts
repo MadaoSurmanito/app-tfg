@@ -1,37 +1,18 @@
 import { getDataSource } from "@/app/lib/typeorm/data-source";
 import { User } from "@/app/lib/typeorm/entities/User";
-import { UserRequest } from "@/app/lib/typeorm/entities/UserRequest";
 import { UserManagementLog } from "@/app/lib/typeorm/entities/UserManagementLog";
-import {
-	REQUEST_STATUS_IDS,
-	USER_ADMIN_ACTION_TYPE_IDS,
-	USER_STATUS_IDS,
-} from "@/app/lib/typeorm/constants/catalog-ids";
 
-// Aprueba una solicitud pendiente:
-// 1) crea el usuario real
-// 2) marca la solicitud como aprobada
-// 3) registra la acción en user_management_log
 export async function approveUserRequest(
 	requestId: string,
 	performedByUserId: string,
 ) {
 	const ds = await getDataSource();
 
-	console.log(
-		"[approveUserRequest] entity metadatas:",
-		ds.entityMetadatas.map((m) => m.name),
-	);
-
-	console.log(
-		"[approveUserRequest] UserRequest metadata match:",
-		ds.entityMetadatas.some((m) => m.target === UserRequest),
-	);
-
 	return ds.transaction(async (manager) => {
 		const userRequestRepo = manager.getRepository("UserRequest");
 		const userRepo = manager.getRepository("User");
 		const logRepo = manager.getRepository("UserManagementLog");
+		const requestStatusRepo = manager.getRepository("RequestStatus");
 
 		const request = await userRequestRepo.findOne({
 			where: { id: requestId },
@@ -48,17 +29,31 @@ export async function approveUserRequest(
 			throw new Error("Solicitud no encontrada");
 		}
 
-		if (request.status_id !== REQUEST_STATUS_IDS.PENDING) {
+		const [pendingStatus, approvedStatus] = await Promise.all([
+			requestStatusRepo.findOne({ where: { code: "pending" } }),
+			requestStatusRepo.findOne({ where: { code: "approved" } }),
+		]);
+
+		if (!pendingStatus || !approvedStatus) {
+			throw new Error("No se pudieron resolver los estados de solicitud");
+		}
+
+		if (request.status_id !== pendingStatus.id) {
 			throw new Error("La solicitud no está pendiente");
 		}
 
-		const existingUser = await userRepo.findOne({
-			where: { email: request.email.toLowerCase() },
-		});
+		const existingUser = await userRepo
+			.createQueryBuilder("u")
+			.where("LOWER(u.email) = LOWER(:email)", {
+				email: request.email,
+			})
+			.getOne();
 
 		if (existingUser) {
 			throw new Error("Ya existe un usuario con ese correo");
 		}
+
+		const activeUserStatus = 1;
 
 		const user = userRepo.create({
 			name: request.name,
@@ -67,45 +62,57 @@ export async function approveUserRequest(
 			company: request.company,
 			phone: request.phone,
 			role_id: request.requested_role_id,
-			status_id: USER_STATUS_IDS.ACTIVE,
+			status_id: activeUserStatus,
 			profile_image_url: null,
 			last_login_at: null,
 		});
 
 		const savedUser = await userRepo.save(user);
 
-		request.status_id = REQUEST_STATUS_IDS.APPROVED;
-		request.reviewed_at = new Date();
-		request.reviewed_by = performedByUserId;
-		request.created_user_id = savedUser.id;
+		const reviewedAt = new Date();
 
-		await userRequestRepo.save(request);
+		await userRequestRepo.update(
+			{ id: request.id },
+			{
+				status_id: approvedStatus.id,
+				reviewed_at: reviewedAt,
+				reviewed_by: performedByUserId,
+				created_user_id: savedUser.id,
+				rejection_reason: null,
+			},
+		);
 
-		const log = logRepo.create({
-			target_user_id: savedUser.id,
-			performed_by: performedByUserId,
-			action_type_id: USER_ADMIN_ACTION_TYPE_IDS.USER_APPROVED,
-			previous_status_id: null,
-			new_status_id: USER_STATUS_IDS.ACTIVE,
-			previous_role_id: null,
-			new_role_id: savedUser.role_id,
-			reason: null,
-			notes: `Solicitud aprobada (${request.id}) y usuario creado`,
+		const refreshedRequest = await userRequestRepo.findOne({
+			where: { id: request.id },
+			relations: {
+				requestedRole: true,
+				status: true,
+				requestSourceType: true,
+				reviewedByUser: true,
+				createdUser: true,
+			},
 		});
 
-		await logRepo.save(log);
+		if (!refreshedRequest) {
+			throw new Error("No se pudo recargar la solicitud aprobada");
+		}
+
+		await logRepo.save(
+			logRepo.create({
+				target_user_id: savedUser.id,
+				performed_by: performedByUserId,
+				action_type_id: 6,
+				previous_status_id: null,
+				new_status_id: activeUserStatus,
+				previous_role_id: null,
+				new_role_id: savedUser.role_id,
+				reason: null,
+				notes: `Solicitud aprobada (${request.id}) y usuario creado`,
+			}),
+		);
 
 		return {
-			request: await userRequestRepo.findOne({
-				where: { id: request.id },
-				relations: {
-					requestedRole: true,
-					status: true,
-					requestSourceType: true,
-					reviewedByUser: true,
-					createdUser: true,
-				},
-			}),
+			request: refreshedRequest,
 			user: await userRepo.findOne({
 				where: { id: savedUser.id },
 				relations: {

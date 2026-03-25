@@ -3,7 +3,7 @@ import { User } from "@/app/lib/typeorm/entities/User";
 
 export async function registerSuccessfulLogin(userId: string) {
 	const ds = await getDataSource();
-	const repo = ds.getRepository(User);
+	const repo = ds.getRepository("User");
 
 	await repo.update(
 		{ id: userId },

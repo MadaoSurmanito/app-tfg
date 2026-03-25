@@ -8,7 +8,6 @@ type Props = {
 };
 
 // Componente cliente encargado de lanzar las acciones contra la API.
-// Usamos fetch para mantener el contrato JSON de los endpoints.
 export default function SolicitudActions({ solicitudId }: Props) {
 	const router = useRouter();
 
@@ -47,17 +46,18 @@ export default function SolicitudActions({ solicitudId }: Props) {
 		}
 	}
 
-	async function handleReject() {
+	async function handleRejectSubmit(e: React.FormEvent<HTMLFormElement>) {
+		e.preventDefault();
+
 		try {
 			setError(null);
+			setRejectLoading(true);
 
 			const trimmedReason = rejectionReason.trim();
 
 			if (!trimmedReason) {
 				throw new Error("Debes indicar un motivo de rechazo");
 			}
-
-			setRejectLoading(true);
 
 			const response = await fetch(
 				`/api/admin/user-requests/${solicitudId}/reject`,
@@ -67,7 +67,7 @@ export default function SolicitudActions({ solicitudId }: Props) {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						rejectionReason: trimmedReason,
+						reason: trimmedReason,
 					}),
 				},
 			);
@@ -89,7 +89,6 @@ export default function SolicitudActions({ solicitudId }: Props) {
 
 	return (
 		<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-			{/* APROBAR */}
 			<div className="rounded-2xl border border-green-200 bg-white p-6 shadow-md">
 				<h2 className="text-lg font-semibold text-slate-800">
 					Aprobar solicitud
@@ -109,8 +108,10 @@ export default function SolicitudActions({ solicitudId }: Props) {
 				</button>
 			</div>
 
-			{/* RECHAZAR */}
-			<div className="rounded-2xl border border-red-200 bg-white p-6 shadow-md">
+			<form
+				onSubmit={handleRejectSubmit}
+				className="rounded-2xl border border-red-200 bg-white p-6 shadow-md"
+			>
 				<h2 className="text-lg font-semibold text-slate-800">
 					Rechazar solicitud
 				</h2>
@@ -129,6 +130,7 @@ export default function SolicitudActions({ solicitudId }: Props) {
 						<textarea
 							id="rejectionReason"
 							name="rejectionReason"
+							required
 							value={rejectionReason}
 							onChange={(e) => setRejectionReason(e.target.value)}
 							rows={4}
@@ -138,15 +140,14 @@ export default function SolicitudActions({ solicitudId }: Props) {
 					</div>
 
 					<button
-						type="button"
-						onClick={handleReject}
+						type="submit"
 						disabled={approveLoading || rejectLoading}
 						className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
 					>
 						{rejectLoading ? "Rechazando..." : "Confirmar rechazo"}
 					</button>
 				</div>
-			</div>
+			</form>
 
 			{error && (
 				<div className="lg:col-span-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

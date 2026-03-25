@@ -21,9 +21,9 @@ export async function logAccessEvent(input: LogAccessEventInput) {
 		const ds = await getDataSource();
 
 		await ds.transaction(async (manager) => {
-			const eventTypeRepo = manager.getRepository(AccessEventType);
-			const resultTypeRepo = manager.getRepository(AccessResultType);
-			const accessLogRepo = manager.getRepository(UserAccessLog);
+			const eventTypeRepo = manager.getRepository("AccessEventType");
+			const resultTypeRepo = manager.getRepository("AccessResultType");
+			const accessLogRepo = manager.getRepository("UserAccessLog");
 
 			const [eventType, resultType] = await Promise.all([
 				eventTypeRepo.findOne({

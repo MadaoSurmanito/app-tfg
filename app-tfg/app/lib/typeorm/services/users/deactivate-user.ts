@@ -28,10 +28,10 @@ export async function deactivateUser(input: DeactivateUserInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository(User);
-		const statusRepo = manager.getRepository(UserStatus);
-		const logRepo = manager.getRepository(UserManagementLog);
-		const actionTypeRepo = manager.getRepository(UserAdminActionType);
+		const userRepo = manager.getRepository("User");
+		const statusRepo = manager.getRepository("UserStatus");
+		const logRepo = manager.getRepository("UserManagementLog");
+		const actionTypeRepo = manager.getRepository("UserAdminActionType");
 
 		const user = await userRepo.findOne({
 			where: { id: input.userId },
