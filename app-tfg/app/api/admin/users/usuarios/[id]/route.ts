@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import {
 	deactivateUser,
 	DeactivateUserError,
-} from "@/app/lib/typeorm/services/users/deactivate-user";
+} from "@/lib/typeorm/services/users/deactivate-user";
 
 type Props = {
 	params: Promise<{ id: string }>;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { listUsers } from "@/app/lib/typeorm/services/users/list-users";
-import { createUser } from "@/app/lib/typeorm/services/users/create-user";
+import { listUsers } from "@/lib/typeorm/services/users/list-users";
+import { createUser } from "@/lib/typeorm/services/users/create-user";
 
 export async function GET() {
 	try {

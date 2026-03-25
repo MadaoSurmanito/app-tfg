@@ -1,7 +1,7 @@
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { User } from "@/app/lib/typeorm/entities/User";
-import { UserManagementLog } from "@/app/lib/typeorm/entities/UserManagementLog";
-import { USER_ADMIN_ACTION_TYPE_IDS } from "@/app/lib/typeorm/constants/catalog-ids";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
+import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
+import { USER_ADMIN_ACTION_TYPE_IDS } from "@/lib/typeorm/constants/catalog-ids";
 
 type UpdateUserStatusInput = {
 	userId: string;
@@ -15,8 +15,8 @@ export async function updateUserStatus(input: UpdateUserStatusInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository("User");
-		const logRepo = manager.getRepository("UserManagementLog");
+		const userRepo = manager.getRepository(User);
+		const logRepo = manager.getRepository(UserManagementLog);
 
 		const user = await userRepo.findOne({
 			where: { id: input.userId },

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { logoutUserSession } from "@/app/lib/typeorm/services/auth/logout-user-session";
+import { logoutUserSession } from "@/lib/typeorm/services/auth/logout-user-session";
 
 export async function POST() {
 	try {

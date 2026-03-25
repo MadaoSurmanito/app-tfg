@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { changeUserPassword } from "@/app/lib/typeorm/services/users/change-user-password";
+import { changeUserPassword } from "@/lib/typeorm/services/users/change-user-password";
 
 type Context = {
 	params: Promise<{ id: string }>;

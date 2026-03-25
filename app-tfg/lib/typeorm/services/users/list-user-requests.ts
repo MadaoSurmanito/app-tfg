@@ -1,6 +1,6 @@
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { UserRequest } from "@/app/lib/typeorm/entities/UserRequest";
-import { REQUEST_STATUS_IDS } from "@/app/lib/typeorm/constants/catalog-ids";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
+import { REQUEST_STATUS_IDS } from "@/lib/typeorm/constants/catalog-ids";
 
 export async function listUserRequests() {
 	const ds = await getDataSource();

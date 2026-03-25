@@ -3,8 +3,8 @@ import { auth } from "@/auth";
 import {
 	registerUserByAdmin,
 	RegisterUserByAdminError,
-} from "@/app/lib/typeorm/services/users/register-user-by-admin";
-import { ROLE_IDS } from "@/app/lib/typeorm/constants/catalog-ids";
+} from "@/lib/typeorm/services/users/register-user-by-admin";
+import { ROLE_IDS } from "@/lib/typeorm/constants/catalog-ids";
 
 type RegisterUserBody = {
 	name?: string;

@@ -1,10 +1,10 @@
 import { Brackets } from "typeorm";
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { User } from "@/app/lib/typeorm/entities/User";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
 
 export async function findUserForLogin(identifier: string) {
 	const ds = await getDataSource();
-	const repo = ds.getRepository("User");
+	const repo = ds.getRepository(User);
 
 	const normalizedIdentifier = identifier.trim().toLowerCase();
 

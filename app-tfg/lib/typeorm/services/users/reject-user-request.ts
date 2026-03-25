@@ -1,4 +1,6 @@
-import { getDataSource } from "@/app/lib/typeorm/data-source";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
+import { RequestStatus } from "@/lib/typeorm/entities/RequestStatus";
 
 export async function rejectUserRequest(
 	requestId: string,
@@ -8,8 +10,8 @@ export async function rejectUserRequest(
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRequestRepo = manager.getRepository("UserRequest");
-		const requestStatusRepo = manager.getRepository("RequestStatus");
+		const userRequestRepo = manager.getRepository(UserRequest);
+		const requestStatusRepo = manager.getRepository(RequestStatus);
 
 		const request = await userRequestRepo.findOne({
 			where: { id: requestId },

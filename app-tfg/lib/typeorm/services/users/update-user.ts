@@ -1,6 +1,11 @@
 import bcrypt from "bcryptjs";
-import { getPasswordValidationMessage } from "@/app/lib/password";
-import { getDataSource } from "@/app/lib/typeorm/data-source";
+import { getPasswordValidationMessage } from "@/lib/password";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
+import { Role } from "@/lib/typeorm/entities/Role";
+import { UserStatus } from "@/lib/typeorm/entities/UserStatus";
+import { UserAdminActionType } from "@/lib/typeorm/entities/UserAdminActionType";
+import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
 
 export class UpdateUserError extends Error {
     status: number;
@@ -77,11 +82,11 @@ export async function updateUser(input: UpdateUserInput) {
     const ds = await getDataSource();
 
     return ds.transaction(async (manager) => {
-        const userRepo = manager.getRepository("User");
-        const roleRepo = manager.getRepository("Role");
-        const statusRepo = manager.getRepository("UserStatus");
-        const actionTypeRepo = manager.getRepository("UserAdminActionType");
-        const logRepo = manager.getRepository("UserManagementLog");
+        const userRepo = manager.getRepository(User);
+        const roleRepo = manager.getRepository(Role);
+        const statusRepo = manager.getRepository(UserStatus);
+        const actionTypeRepo = manager.getRepository(UserAdminActionType);
+        const logRepo = manager.getRepository(UserManagementLog);
 
         const currentUser = await userRepo.findOne({
             where: { id: input.userId },

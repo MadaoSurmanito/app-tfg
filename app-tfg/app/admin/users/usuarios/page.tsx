@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import H1Title from "@/app/components/H1Title";
 import PageTransition from "@/app/components/PageTransition";
 import UsersTable from "./UsersTable";
-import { listUsers } from "@/app/lib/typeorm/services/users/list-users";
+import { listUsers } from "@/lib/typeorm/services/users/list-users";
 import { mapUserToUsuario } from "./user-table-mapper";
 
 // Lista de usuarios del sistema.

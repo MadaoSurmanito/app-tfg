@@ -1,7 +1,7 @@
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { AccessEventType } from "@/app/lib/typeorm/entities/AccessEventType";
-import { AccessResultType } from "@/app/lib/typeorm/entities/AccessResultType";
-import { UserAccessLog } from "@/app/lib/typeorm/entities/UserAccessLog";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { AccessEventType } from "@/lib/typeorm/entities/AccessEventType";
+import { AccessResultType } from "@/lib/typeorm/entities/AccessResultType";
+import { UserAccessLog } from "@/lib/typeorm/entities/UserAccessLog";
 
 type LogAccessEventInput = {
 	userId?: string | null;
@@ -21,9 +21,9 @@ export async function logAccessEvent(input: LogAccessEventInput) {
 		const ds = await getDataSource();
 
 		await ds.transaction(async (manager) => {
-			const eventTypeRepo = manager.getRepository("AccessEventType");
-			const resultTypeRepo = manager.getRepository("AccessResultType");
-			const accessLogRepo = manager.getRepository("UserAccessLog");
+			const eventTypeRepo = manager.getRepository(AccessEventType);
+			const resultTypeRepo = manager.getRepository(AccessResultType);
+			const accessLogRepo = manager.getRepository(UserAccessLog);
 
 			const [eventType, resultType] = await Promise.all([
 				eventTypeRepo.findOne({

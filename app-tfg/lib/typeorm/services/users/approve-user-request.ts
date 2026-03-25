@@ -1,6 +1,10 @@
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { User } from "@/app/lib/typeorm/entities/User";
-import { UserManagementLog } from "@/app/lib/typeorm/entities/UserManagementLog";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
+import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
+import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
+import { RequestStatus } from "@/lib/typeorm/entities/RequestStatus";
+
+import { USER_ADMIN_ACTION_TYPE_IDS } from "../../constants/catalog-ids";
 
 export async function approveUserRequest(
 	requestId: string,
@@ -9,10 +13,10 @@ export async function approveUserRequest(
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRequestRepo = manager.getRepository("UserRequest");
-		const userRepo = manager.getRepository("User");
-		const logRepo = manager.getRepository("UserManagementLog");
-		const requestStatusRepo = manager.getRepository("RequestStatus");
+		const userRequestRepo = manager.getRepository(UserRequest);
+		const userRepo = manager.getRepository(User);
+		const logRepo = manager.getRepository(UserManagementLog);
+		const requestStatusRepo = manager.getRepository(RequestStatus);
 
 		const request = await userRequestRepo.findOne({
 			where: { id: requestId },
@@ -101,7 +105,7 @@ export async function approveUserRequest(
 			logRepo.create({
 				target_user_id: savedUser.id,
 				performed_by: performedByUserId,
-				action_type_id: 6,
+				action_type_id: USER_ADMIN_ACTION_TYPE_IDS.USER_APPROVED,
 				previous_status_id: null,
 				new_status_id: activeUserStatus,
 				previous_role_id: null,

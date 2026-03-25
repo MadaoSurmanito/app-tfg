@@ -2,9 +2,9 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
-import { findUserForLogin } from "@/app/lib/typeorm/services/auth/find-user-for-login";
-import { logAccessEvent } from "@/app/lib/typeorm/services/auth/log-access-event";
-import { registerSuccessfulLogin } from "@/app/lib/typeorm/services/auth/register-successful-login";
+import { findUserForLogin } from "@/lib/typeorm/services/auth/find-user-for-login";
+import { logAccessEvent } from "@/lib/typeorm/services/auth/log-access-event";
+import { registerSuccessfulLogin } from "@/lib/typeorm/services/auth/register-successful-login";
 
 declare module "next-auth" {
 	interface Session {

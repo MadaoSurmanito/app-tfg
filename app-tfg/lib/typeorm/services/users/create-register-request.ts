@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { User } from "@/app/lib/typeorm/entities/User";
-import { UserRequest } from "@/app/lib/typeorm/entities/UserRequest";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
+import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
 import {
 	REQUEST_SOURCE_TYPE_IDS,
 	REQUEST_STATUS_IDS,
 	ROLE_IDS,
-} from "@/app/lib/typeorm/constants/catalog-ids";
+} from "@/lib/typeorm/constants/catalog-ids";
 
 type CreateRegisterRequestInput = {
 	name: string;
@@ -23,8 +23,8 @@ export async function createRegisterRequest(input: CreateRegisterRequestInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository("User");
-		const userRequestRepo = manager.getRepository("UserRequest");
+		const userRepo = manager.getRepository(User);
+		const userRequestRepo = manager.getRepository(UserRequest);
 
 		const normalizedEmail = input.email.trim().toLowerCase();
 

@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import PasswordFieldWithStrength from "@/app/components/PasswordFieldWithStrength";
-import { getUserById } from "@/app/lib/typeorm/services/users/get-user-by-id";
-import { listRoles } from "@/app/lib/typeorm/services/users/list-roles";
-import { listUserStatuses } from "@/app/lib/typeorm/services/users/list-users-statuses";
+import { getUserById } from "@/lib/typeorm/services/users/get-user-by-id";
+import { listRoles } from "@/lib/typeorm/services/users/list-roles";
+import { listUserStatuses } from "@/lib/typeorm/services/users/list-users-statuses";
 
 type Props = {
 	params: Promise<{

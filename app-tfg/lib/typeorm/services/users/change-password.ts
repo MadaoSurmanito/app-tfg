@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import { getDataSource } from "../../data-source";
 import { USER_ADMIN_ACTION_TYPE_IDS } from "../../constants/catalog-ids";
+import { User } from "@/lib/typeorm/entities/User";
+import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
+import { UserAccessLog } from "@/lib/typeorm/entities/UserAccessLog";
 
 type ChangePasswordInput = {
 	userId: string;
@@ -25,9 +28,9 @@ export async function changePassword(
 
 	try {
 		return await ds.transaction(async (manager) => {
-			const userRepo = manager.getRepository("User");
-			const logRepo = manager.getRepository("UserManagementLog");
-			const accessLogRepo = manager.getRepository("UserAccessLog");
+			const userRepo = manager.getRepository(User);
+			const logRepo = manager.getRepository(UserManagementLog);
+			const accessLogRepo = manager.getRepository(UserAccessLog);
 
 			const user = await userRepo.findOne({
 				where: { id: input.userId },

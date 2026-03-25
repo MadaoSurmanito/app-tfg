@@ -1,12 +1,15 @@
 import bcrypt from "bcryptjs";
-import { getPasswordValidationMessage } from "@/app/lib/password";
-import { getDataSource } from "@/app/lib/typeorm/data-source";
+import { getPasswordValidationMessage } from "@/lib/password";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
+import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
+import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
 import {
 	REQUEST_SOURCE_TYPE_IDS,
 	REQUEST_STATUS_IDS,
 	USER_ADMIN_ACTION_TYPE_IDS,
 	USER_STATUS_IDS,
-} from "@/app/lib/typeorm/constants/catalog-ids";
+} from "@/lib/typeorm/constants/catalog-ids";
 
 type RegisterUserByAdminInput = {
 	name: string;
@@ -73,9 +76,9 @@ export async function registerUserByAdmin(input: RegisterUserByAdminInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository("User");
-		const userRequestRepo = manager.getRepository("UserRequest");
-		const logRepo = manager.getRepository("UserManagementLog");
+		const userRepo = manager.getRepository(User);
+		const userRequestRepo = manager.getRepository(UserRequest);
+		const logRepo = manager.getRepository(UserManagementLog);
 
 		const existingUser = await userRepo
 			.createQueryBuilder("u")

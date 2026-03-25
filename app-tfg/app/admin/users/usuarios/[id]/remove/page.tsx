@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { getUserById } from "@/app/lib/typeorm/services/users/get-user-by-id";
+import { getUserById } from "@/lib/typeorm/services/users/get-user-by-id";
 
 type Props = {
 	params: Promise<{ id: string }>;

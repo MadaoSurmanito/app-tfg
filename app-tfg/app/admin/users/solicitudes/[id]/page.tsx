@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import HeaderTitle from "@/app/components/HeaderTitle";
-import { getUserRequestById } from "@/app/lib/typeorm/services/users/get-user-request-by-id";
+import { getUserRequestById } from "@/lib/typeorm/services/users/get-user-request-by-id";
 import SolicitudActions from "./SolicitudActions";
 
 type Props = {

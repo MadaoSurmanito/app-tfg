@@ -1,8 +1,8 @@
-import { getDataSource } from "@/app/lib/typeorm/data-source";
-import { User } from "@/app/lib/typeorm/entities/User";
-import { UserStatus } from "@/app/lib/typeorm/entities/UserStatus";
-import { UserManagementLog } from "@/app/lib/typeorm/entities/UserManagementLog";
-import { UserAdminActionType } from "@/app/lib/typeorm/entities/UserAdminActionType";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
+import { UserStatus } from "@/lib/typeorm/entities/UserStatus";
+import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
+import { UserAdminActionType } from "@/lib/typeorm/entities/UserAdminActionType";
 
 type DeactivateUserInput = {
 	userId: string;
@@ -28,10 +28,10 @@ export async function deactivateUser(input: DeactivateUserInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
-		const userRepo = manager.getRepository("User");
-		const statusRepo = manager.getRepository("UserStatus");
-		const logRepo = manager.getRepository("UserManagementLog");
-		const actionTypeRepo = manager.getRepository("UserAdminActionType");
+		const userRepo = manager.getRepository(User);
+		const statusRepo = manager.getRepository(UserStatus);
+		const logRepo = manager.getRepository(UserManagementLog);
+		const actionTypeRepo = manager.getRepository(UserAdminActionType);
 
 		const user = await userRepo.findOne({
 			where: { id: input.userId },

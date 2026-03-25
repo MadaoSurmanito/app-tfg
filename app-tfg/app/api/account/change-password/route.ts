@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getPasswordValidationMessage } from "@/app/lib/password";
-import { changePassword } from "@/app/lib/typeorm/services/users/change-password";
+import { getPasswordValidationMessage } from "@/lib/password";
+import { changePassword } from "@/lib/typeorm/services/users/change-password";
 
 // Cambia la contraseña del usuario autenticado
 export async function POST(request: Request) {

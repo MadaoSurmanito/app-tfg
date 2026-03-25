@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import H1Title from "@/app/components/H1Title";
 import PageTransition from "@/app/components/PageTransition";
-import { getUserById } from "@/app/lib/typeorm/services/users/get-user-by-id";
+import { getUserById } from "@/lib/typeorm/services/users/get-user-by-id";
 import {
 	formatDate,
 	getRoleClassesLight,

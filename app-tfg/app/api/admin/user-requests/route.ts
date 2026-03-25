@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { listUserRequests } from "@/app/lib/typeorm/services/users/list-user-requests";
+import { listUserRequests } from "@/lib/typeorm/services/users/list-user-requests";
 
 // Devuelve el listado de solicitudes de alta.
 // Solo los administradores pueden consultarlo.
