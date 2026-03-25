@@ -1,5 +1,5 @@
-import BottomNav from "../components/BottomNav";
-import HeaderTitle from "../components/HeaderTitle";
+import HeaderTitle from "@/app/components/basics/HeaderTitle";
+import BottomNav from "@/app/components/basics/BottomNav";
 
 // Layout para las páginas del admin panel
 export default function AdminLayout({

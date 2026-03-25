@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import H1Title from "@/app/components/H1Title";
 import DataTable from "@/app/components/DataTable";
-import PageTransition from "@/app/components/PageTransition";
+import PageTransition from "@/app/components/animations/PageTransition";
 import { listUserRequests } from "@/lib/typeorm/services/users/list-user-requests";
 
 type Solicitud = {

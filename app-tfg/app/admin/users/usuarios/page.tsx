@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import H1Title from "@/app/components/H1Title";
-import PageTransition from "@/app/components/PageTransition";
+import PageTransition from "@/app/components/animations/PageTransition";
 import UsersTable from "./UsersTable";
 import { listUsers } from "@/lib/typeorm/services/users/list-users";
 import { mapUserToUsuario } from "./user-table-mapper";

@@ -1,5 +1,8 @@
+
+import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { getPasswordValidationMessage } from "@/lib/password";
 import { getDataSource } from "@/lib/typeorm/data-source";
 import { User } from "@/lib/typeorm/entities/User";
 
@@ -8,6 +11,8 @@ type UpdateProfileRequestBody = {
 	company?: string | null;
 	phone?: string | null;
 	profile_image_url?: string | null;
+	password?: string;
+	confirmPassword?: string;
 };
 
 function normalizeText(value: string | null | undefined) {
@@ -32,6 +37,8 @@ export async function PATCH(request: Request) {
 		const company = normalizeText(body.company) || null;
 		const phone = normalizeText(body.phone) || null;
 		const profileImageUrl = normalizeText(body.profile_image_url) || null;
+		const password = String(body.password ?? "");
+		const confirmPassword = String(body.confirmPassword ?? "");
 
 		if (!name) {
 			return NextResponse.json(
@@ -41,6 +48,30 @@ export async function PATCH(request: Request) {
 				},
 				{ status: 400 },
 			);
+		}
+
+		if (password || confirmPassword) {
+			if (password !== confirmPassword) {
+				return NextResponse.json(
+					{
+						message: "Las contraseñas no coinciden",
+						code: "PASSWORD_MATCH",
+					},
+					{ status: 400 },
+				);
+			}
+
+			const passwordValidationMessage = getPasswordValidationMessage(password);
+
+			if (passwordValidationMessage) {
+				return NextResponse.json(
+					{
+						message: passwordValidationMessage,
+						code: "PASSWORD_RULES",
+					},
+					{ status: 400 },
+				);
+			}
 		}
 
 		const ds = await getDataSource();
@@ -64,13 +95,20 @@ export async function PATCH(request: Request) {
 		user.company = company;
 		user.phone = phone;
 		user.profile_image_url = profileImageUrl;
+
+		if (password) {
+			user.password_hash = await bcrypt.hash(password, 10);
+		}
+
 		user.updated_at = new Date();
 
 		await userRepo.save(user);
 
 		return NextResponse.json(
 			{
-				message: "Perfil actualizado correctamente",
+				message: password
+					? "Perfil y contraseña actualizados correctamente"
+					: "Perfil actualizado correctamente",
 				userId: user.id,
 			},
 			{ status: 200 },

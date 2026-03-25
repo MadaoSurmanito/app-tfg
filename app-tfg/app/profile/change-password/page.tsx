@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import HeaderTitle from "@/app/components/HeaderTitle";
-import PasswordFieldWithStrength from "@/app/components/PasswordFieldWithStrength";
+import HeaderTitle from "@/app/components/basics/HeaderTitle";
+import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
 
 // Página para cambiar la contraseña propia
 export default async function ChangePasswordPage() {

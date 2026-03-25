@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import PageTransition from "@/app/components/PageTransition";
+import PageTransition from "@/app/components/animations/PageTransition";
 import UserProfileCard from "@/app/components/users/UserProfileCard";
 import { getUserById } from "@/lib/typeorm/services/users/get-user-by-id";
-import HeaderTitle from "../components/HeaderTitle";
-import BottomNav from "../components/BottomNav";
-
+import HeaderTitle from "@/app/components/basics/HeaderTitle";
+import BottomNav from "@/app/components/basics/BottomNav";
 export default async function ProfilePage() {
 	const session = await auth();
 

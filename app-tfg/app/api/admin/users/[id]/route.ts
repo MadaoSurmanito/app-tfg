@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { getDataSource } from "@/lib/typeorm/data-source";
+import { User } from "@/lib/typeorm/entities/User";
 import {
 	updateUser,
 	UpdateUserError,
@@ -40,6 +42,35 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 		const { id } = await params;
 		const body = (await request.json()) as UpdateUserRequestBody;
 
+		// Impide que un administrador se cambie su propio rol desde este endpoint.
+		// Si el usuario objetivo es el mismo que el de la sesión, se conserva el rol actual.
+		let safeRoleId = Number(body.roleId);
+
+		if (id === session.user.id) {
+			const ds = await getDataSource();
+			const userRepo = ds.getRepository(User);
+
+			const currentUser = await userRepo.findOne({
+				where: { id },
+				select: {
+					id: true,
+					role_id: true,
+				},
+			});
+
+			if (!currentUser) {
+				return NextResponse.json(
+					{
+						message: "Usuario no encontrado",
+						code: "USER_NOT_FOUND",
+					},
+					{ status: 404 },
+				);
+			}
+
+			safeRoleId = currentUser.role_id;
+		}
+
 		const result = await updateUser({
 			userId: id,
 			performedByUserId: session.user.id,
@@ -48,7 +79,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 			company: body.company ?? null,
 			phone: body.phone ?? null,
 			profile_image_url: body.profile_image_url ?? null,
-			roleId: Number(body.roleId),
+			roleId: safeRoleId,
 			statusId: Number(body.statusId),
 			password: body.password ?? "",
 			confirmPassword: body.confirmPassword ?? "",

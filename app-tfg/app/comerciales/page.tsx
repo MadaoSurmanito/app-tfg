@@ -2,8 +2,8 @@
 
 import AssistantCard from "../components/AssistantCard";
 import NavCard from "../components/NavCard";
-import HeaderTitle from "../components/HeaderTitle";
-import PageTransition from "../components/PageTransition";
+import HeaderTitle from "../components/basics/HeaderTitle";
+import PageTransition from "../components/animations/PageTransition";
 import RouteMapCard from "../components/RouteMapCard";
 
 import {

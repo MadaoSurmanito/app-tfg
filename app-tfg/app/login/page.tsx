@@ -2,9 +2,9 @@
 "use client"; // necesario para poder usar el hook useState y la función signIn de next-auth, ya que esta página se renderiza en el cliente y no en el servidor
 import { signIn } from "next-auth/react";
 import { useState } from "react";
-import HeaderTitle from "../components/HeaderTitle";
+import HeaderTitle from "../components/basics/HeaderTitle";
 import { useRouter } from "next/navigation";
-import PageTransition from "../components/PageTransition";
+import PageTransition from "../components/animations/PageTransition";
 import Link from "next/link";
 
 // esta función se encarga de manejar el envío del formulario, se encarga de recoger los datos del formulario, enviarlos a la API de autenticación y manejar la respuesta de la API

@@ -1,6 +1,6 @@
 "use client";
 
-import { HomeIcon, ProfileIcon, SettingsIcon, LogoutIcon } from "./IconsSVGs";
+import { HomeIcon, ProfileIcon, SettingsIcon, LogoutIcon } from "@/app/components/IconsSVGs";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 

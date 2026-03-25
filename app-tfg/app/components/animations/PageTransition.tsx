@@ -1,0 +1,109 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+type PageTransitionProps = {
+	children: React.ReactNode;
+	isLeaving?: boolean;
+	className?: string;
+	durationMs?: number;
+	onExited?: () => void;
+};
+
+type TransitionPhase = "entering" | "entered" | "leaving";
+
+function isIOSDevice() {
+	if (typeof window === "undefined") return false;
+
+	const ua = window.navigator.userAgent;
+	const platform = window.navigator.platform;
+
+	return (
+		/iPad|iPhone|iPod/.test(ua) ||
+		(platform === "MacIntel" && navigator.maxTouchPoints > 1)
+	);
+}
+
+export default function PageTransition({
+	children,
+	isLeaving = false,
+	className = "",
+	durationMs = 500,
+	onExited,
+}: PageTransitionProps) {
+	const [phase, setPhase] = useState<TransitionPhase>("entering");
+	const [isIOS, setIsIOS] = useState(false);
+	const exitCallbackCalledRef = useRef(false);
+
+	// Detecta iOS y lanza la animación de entrada al montar
+	useEffect(() => {
+		setIsIOS(isIOSDevice());
+
+		const enterTimer = setTimeout(() => {
+			setPhase("entered");
+		}, 30);
+
+		return () => clearTimeout(enterTimer);
+	}, []);
+
+	// Cuando isLeaving pasa a true, activa la fase de salida
+	useEffect(() => {
+		if (!isLeaving) {
+			exitCallbackCalledRef.current = false;
+			return;
+		}
+
+		setPhase("leaving");
+
+		const exitTimer = setTimeout(() => {
+			if (!exitCallbackCalledRef.current) {
+				exitCallbackCalledRef.current = true;
+				onExited?.();
+			}
+		}, durationMs);
+
+		return () => clearTimeout(exitTimer);
+	}, [isLeaving, durationMs, onExited]);
+
+	const baseTransition = isIOS
+		? `transition-opacity ease-out`
+		: `transition-all ease-out`;
+
+	const durationStyle = {
+		transitionDuration: `${durationMs}ms`,
+	};
+
+	// ============================================================================
+	// ESTADOS VISUALES
+	// ============================================================================
+	// iOS: mejor limitarse a opacidad para evitar glitches
+	// Resto: opacidad + pequeña escala + desplazamiento vertical
+	let transitionClass = "";
+
+	if (isIOS) {
+		if (phase === "entering") {
+			transitionClass = "opacity-0";
+		} else if (phase === "entered") {
+			transitionClass = "opacity-100";
+		} else {
+			transitionClass = "opacity-0";
+		}
+	} else {
+		if (phase === "entering") {
+			transitionClass = "opacity-0 scale-95 translate-y-4";
+		} else if (phase === "entered") {
+			transitionClass = "opacity-100 scale-100 translate-y-0";
+		} else {
+			transitionClass = "opacity-0 scale-95 -translate-y-2";
+		}
+	}
+
+	return (
+		<div
+			className={`${baseTransition} will-change-transform ${transitionClass} ${className}`}
+			style={durationStyle}
+		>
+			{children}
+		</div>
+	);
+}

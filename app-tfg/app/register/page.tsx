@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import HeaderTitle from "../components/HeaderTitle";
+import HeaderTitle from "../components/basics/HeaderTitle";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import PageTransition from "../components/PageTransition";
-import PasswordFieldWithStrength from "../components/PasswordFieldWithStrength";
+import PageTransition from "../components/animations/PageTransition";
+import PasswordFieldWithStrength from "../components/users/PasswordFieldWithStrength";
 
 export default function RegisterPage() {
 	const [leaving, setLeaving] = useState(false);

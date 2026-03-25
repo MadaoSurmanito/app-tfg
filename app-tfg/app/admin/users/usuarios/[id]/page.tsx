@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
-import H1Title from "@/app/components/H1Title";
-import PageTransition from "@/app/components/PageTransition";
+import BackButton from "@/app/components/basics/BackButton";
+import PageTransition from "@/app/components/animations/PageTransition";
 import UserProfileCard from "@/app/components/users/UserProfileCard";
 import { getUserById } from "@/lib/typeorm/services/users/get-user-by-id";
 
@@ -31,27 +31,30 @@ export default async function UsuarioDetallePage({ params }: Props) {
 
 	return (
 		<PageTransition>
-			<H1Title title={user.name} subtitle="Detalle del usuario seleccionado" />
-
-			<UserProfileCard
-				mode="view"
-				user={{
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					company: user.company,
-					phone: user.phone,
-					profile_image_url: user.profile_image_url,
-					created_at: user.created_at,
-					last_login_at: user.last_login_at,
-					role: {
-						code: user.role.code as "admin" | "client" | "commercial",
-					},
-					status: {
-						code: user.status.code as "active" | "inactive" | "blocked",
-					},
-				}}
-			/>
+			<div className="mx-auto w-full max-w-4xl">
+				<div className="mb-4">
+					<BackButton />
+				</div>
+				<UserProfileCard
+					mode="view"
+					user={{
+						id: user.id,
+						name: user.name,
+						email: user.email,
+						company: user.company,
+						phone: user.phone,
+						profile_image_url: user.profile_image_url,
+						created_at: user.created_at,
+						last_login_at: user.last_login_at,
+						role: {
+							code: user.role.code as "admin" | "client" | "commercial",
+						},
+						status: {
+							code: user.status.code as "active" | "inactive" | "blocked",
+						},
+					}}
+				/>
+			</div>
 		</PageTransition>
 	);
 }

@@ -1,5 +1,5 @@
-import BottomNav from "../components/BottomNav";
-import PageTransition from "../components/PageTransition";
+import BottomNav from "@/app/components/basics/BottomNav";
+import PageTransition from "../components/animations/PageTransition";
 
 // Layout específico para la sección de clientes
 export default function ClientLayout({

@@ -1,6 +1,6 @@
 import BottomNav from "../components/BottomNav";
-import PageTransition from "../components/PageTransition";
-import HeaderTitle from "../components/HeaderTitle";
+import PageTransition from "../components/animations/PageTransition";
+import HeaderTitle from "../components/basics/HeaderTitle";
 
 // Layout específico para la sección de comerciales
 export default function CommercialLayout({

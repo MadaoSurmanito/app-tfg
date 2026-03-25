@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import PasswordFieldWithStrength from "@/app/components/PasswordFieldWithStrength";
+import { useMemo, useState } from "react";
+import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
 import {
 	formatDate,
 	getRoleClassesLight,
@@ -35,9 +35,11 @@ type CatalogOption = {
 	name: string;
 };
 
+type UserProfileCardMode = "view" | "edit" | "admin-edit";
+
 type Props = {
 	user: UserProfileCardUser;
-	mode?: "view" | "edit" | "admin-edit";
+	mode?: UserProfileCardMode;
 	title?: string;
 	subtitle?: string;
 	roles?: CatalogOption[];
@@ -45,11 +47,38 @@ type Props = {
 	backHref?: string;
 	submitLabel?: string;
 	submitUrl?: string;
+	allowPasswordChange?: boolean;
+};
+
+type FormDataState = {
+	name: string;
+	email: string;
+	company: string;
+	phone: string;
+	profile_image_url: string;
+	roleId: number;
+	statusId: number;
+	password: string;
+	confirmPassword: string;
 };
 
 function toDateString(value: string | Date | null | undefined) {
 	if (!value) return null;
 	return value instanceof Date ? value.toISOString() : value;
+}
+
+function buildInitialFormData(user: UserProfileCardUser): FormDataState {
+	return {
+		name: user.name ?? "",
+		email: user.email ?? "",
+		company: user.company ?? "",
+		phone: user.phone ?? "",
+		profile_image_url: user.profile_image_url ?? "",
+		roleId: Number(user.role_id ?? 0),
+		statusId: Number(user.status_id ?? 0),
+		password: "",
+		confirmPassword: "",
+	};
 }
 
 export default function UserProfileCard({
@@ -62,27 +91,54 @@ export default function UserProfileCard({
 	backHref,
 	submitLabel,
 	submitUrl,
+	allowPasswordChange = false,
 }: Props) {
-	const isAdminEdit = mode === "admin-edit";
-	const [isEditing, setIsEditing] = useState(mode === "edit" || mode === "admin-edit");
+	// ============================================================================
+	// MODO ACTIVO Y FLAGS DERIVADOS
+	// ============================================================================
+	// Aquí se centraliza la lógica de qué "tipo" de tarjeta estamos pintando.
+	// La idea es que si más adelante quieres cambiar qué aparece en cada modo,
+	// solo tengas que tocar esta zona y los bloques marcados más abajo.
+	const isViewMode = mode === "view";
+	const isSelfEditMode = mode === "edit";
+	const isAdminEditMode = mode === "admin-edit";
+
+	// En esta card, cualquier modo distinto de "view" se considera editable.
+	const isEditableMode = isSelfEditMode || isAdminEditMode;
+
+	// La sección de contraseña aparece:
+	// - siempre en edición de admin
+	// - opcionalmente en edición de perfil propio
+	const showPasswordSection = isAdminEditMode || isSelfEditMode;
+
+	// ============================================================================
+	// ESTADO LOCAL DE LA TARJETA
+	// ============================================================================
 	const [isSaving, setIsSaving] = useState(false);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
+	const [formData, setFormData] = useState<FormDataState>(
+		buildInitialFormData(user),
+	);
 
-	const [formData, setFormData] = useState({
-		name: user.name ?? "",
-		email: user.email ?? "",
-		company: user.company ?? "",
-		phone: user.phone ?? "",
-		profile_image_url: user.profile_image_url ?? "",
-		roleId: Number(user.role_id ?? 0),
-		statusId: Number(user.status_id ?? 0),
-		password: "",
-		confirmPassword: "",
-	});
+	// ============================================================================
+	// DATOS DERIVADOS
+	// ============================================================================
+	const createdAt = toDateString(user.created_at);
+	const lastLoginAt = toDateString(user.last_login_at);
 
+	// Foto que se muestra en cabecera:
+	// - en vista: la persistida en usuario
+	// - en edición: la que se está escribiendo en el formulario
+	const displayedProfileImage = isEditableMode
+		? formData.profile_image_url
+		: user.profile_image_url;
+
+	// ============================================================================
+	// HELPERS DE FORMULARIO
+	// ============================================================================
 	const handleChange =
-		(field: keyof typeof formData) =>
+		(field: keyof FormDataState) =>
 		(
 			e: React.ChangeEvent<
 				HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -100,56 +156,88 @@ export default function UserProfileCard({
 		};
 
 	const resetForm = () => {
-		setFormData({
-			name: user.name ?? "",
-			email: user.email ?? "",
-			company: user.company ?? "",
-			phone: user.phone ?? "",
-			profile_image_url: user.profile_image_url ?? "",
-			roleId: Number(user.role_id ?? 0),
-			statusId: Number(user.status_id ?? 0),
-			password: "",
-			confirmPassword: "",
-		});
+		setFormData(buildInitialFormData(user));
 		setErrorMessage(null);
 		setSuccessMessage(null);
 	};
 
+	// ============================================================================
+	// PAYLOAD SEGÚN MODO
+	// ============================================================================
+	// Se separa de forma explícita para que sea fácil ver qué se manda
+	// en cada uno de los tres modos.
+	const requestPayload = useMemo(() => {
+		// ------------------------------------------------------------------------
+		// MODO 1: VISUALIZACIÓN PURA
+		// ------------------------------------------------------------------------
+		// No debería enviar nada porque no hay guardado en este modo.
+		if (isViewMode) {
+			return null;
+		}
+
+		// ------------------------------------------------------------------------
+		// MODO 2: EDICIÓN DE PERFIL PROPIO
+		// ------------------------------------------------------------------------
+		// El usuario puede cambiar sus datos básicos.
+		// El correo no se edita aquí.
+		// La contraseña solo se manda si este modo la permite.
+		if (isSelfEditMode) {
+			return {
+				name: formData.name,
+				company: formData.company,
+				phone: formData.phone,
+				profile_image_url: formData.profile_image_url,
+				password: showPasswordSection ? formData.password : "",
+				confirmPassword: showPasswordSection ? formData.confirmPassword : "",
+			};
+		}
+
+		// ------------------------------------------------------------------------
+		// MODO 3: EDICIÓN ADMINISTRATIVA
+		// ------------------------------------------------------------------------
+		// El admin puede modificar también correo, rol y estado.
+		if (isAdminEditMode) {
+			return {
+				name: formData.name,
+				email: formData.email,
+				company: formData.company,
+				phone: formData.phone,
+				profile_image_url: formData.profile_image_url,
+				roleId: formData.roleId,
+				statusId: formData.statusId,
+				password: formData.password,
+				confirmPassword: formData.confirmPassword,
+			};
+		}
+
+		return null;
+	}, [
+		formData,
+		isViewMode,
+		isSelfEditMode,
+		isAdminEditMode,
+		showPasswordSection,
+	]);
+
+	// ============================================================================
+	// ENVÍO DEL FORMULARIO
+	// ============================================================================
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (!submitUrl) return;
+		if (!submitUrl || !requestPayload) return;
 
 		try {
 			setIsSaving(true);
 			setErrorMessage(null);
 			setSuccessMessage(null);
 
-			const payload = isAdminEdit
-				? {
-						name: formData.name,
-						email: formData.email,
-						company: formData.company,
-						phone: formData.phone,
-						profile_image_url: formData.profile_image_url,
-						roleId: formData.roleId,
-						statusId: formData.statusId,
-						password: formData.password,
-						confirmPassword: formData.confirmPassword,
-					}
-				: {
-						name: formData.name,
-						company: formData.company,
-						phone: formData.phone,
-						profile_image_url: formData.profile_image_url,
-					};
-
 			const response = await fetch(submitUrl, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(payload),
+				body: JSON.stringify(requestPayload),
 			});
 
 			const body = await response.json().catch(() => null);
@@ -160,17 +248,12 @@ export default function UserProfileCard({
 
 			setSuccessMessage(body?.message ?? "Cambios guardados correctamente");
 
-			if (mode === "edit") {
-				setIsEditing(false);
-			}
-
-			if (isAdminEdit) {
-				setFormData((prev) => ({
-					...prev,
-					password: "",
-					confirmPassword: "",
-				}));
-			}
+			// Tras guardar, se limpian solo los campos sensibles.
+			setFormData((prev) => ({
+				...prev,
+				password: "",
+				confirmPassword: "",
+			}));
 		} catch (error) {
 			setErrorMessage(
 				error instanceof Error ? error.message : "No se pudo guardar",
@@ -180,16 +263,17 @@ export default function UserProfileCard({
 		}
 	};
 
-	const createdAt = toDateString(user.created_at);
-	const lastLoginAt = toDateString(user.last_login_at);
-
 	return (
 		<div className="mx-auto mt-6 w-full max-w-4xl">
+			{/* ==================================================================== */}
+			{/* CABECERA OPCIONAL DE LA TARJETA                                       */}
+			{/* ==================================================================== */}
 			{title || subtitle ? (
 				<div className="mb-4">
 					{title ? (
 						<h2 className="text-2xl font-semibold text-slate-800">{title}</h2>
 					) : null}
+
 					{subtitle ? (
 						<p className="mt-1 text-sm text-slate-600">{subtitle}</p>
 					) : null}
@@ -200,15 +284,14 @@ export default function UserProfileCard({
 				onSubmit={handleSubmit}
 				className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md"
 			>
+				{/* ==================================================================== */}
+				{/* BLOQUE SUPERIOR: AVATAR + IDENTIDAD                                   */}
+				{/* ==================================================================== */}
 				<div className="flex flex-col gap-6 md:flex-row md:items-start">
 					<div className="h-24 w-24 overflow-hidden rounded-full bg-gray-200">
-						{(isEditing ? formData.profile_image_url : user.profile_image_url) ? (
+						{displayedProfileImage ? (
 							<img
-								src={
-									isEditing
-										? formData.profile_image_url
-										: (user.profile_image_url ?? "")
-								}
+								src={displayedProfileImage}
 								alt={user.name}
 								className="h-full w-full object-cover"
 							/>
@@ -220,7 +303,22 @@ export default function UserProfileCard({
 					</div>
 
 					<div className="min-w-0 flex-1">
-						{isEditing ? (
+						{/* ---------------------------------------------------------------- */}
+						{/* MODO 1: VIEW                                                     */}
+						{/* ---------------------------------------------------------------- */}
+						{isViewMode ? (
+							<>
+								<h2 className="text-xl font-semibold text-slate-800">
+									{user.name}
+								</h2>
+								<p className="mt-1 text-sm text-slate-600">{user.email}</p>
+							</>
+						) : null}
+
+						{/* ---------------------------------------------------------------- */}
+						{/* MODO 2: EDIT (perfil propio)                                      */}
+						{/* ---------------------------------------------------------------- */}
+						{isSelfEditMode ? (
 							<div className="grid grid-cols-1 gap-4">
 								<div>
 									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -235,27 +333,12 @@ export default function UserProfileCard({
 									/>
 								</div>
 
-								{isAdminEdit ? (
-									<div>
-										<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-											Correo electrónico
-										</label>
-										<input
-											type="email"
-											value={formData.email}
-											onChange={handleChange("email")}
-											className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
-											required
-										/>
-									</div>
-								) : (
-									<div>
-										<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-											Correo electrónico
-										</p>
-										<p className="mt-1 text-sm text-slate-600">{user.email}</p>
-									</div>
-								)}
+								<div>
+									<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+										Correo electrónico
+									</p>
+									<p className="mt-1 text-sm text-slate-600">{user.email}</p>
+								</div>
 
 								<div>
 									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -269,15 +352,56 @@ export default function UserProfileCard({
 									/>
 								</div>
 							</div>
-						) : (
-							<>
-								<h2 className="text-xl font-semibold text-slate-800">
-									{user.name}
-								</h2>
-								<p className="mt-1 text-sm text-slate-600">{user.email}</p>
-							</>
-						)}
+						) : null}
 
+						{/* ---------------------------------------------------------------- */}
+						{/* MODO 3: ADMIN-EDIT                                                */}
+						{/* ---------------------------------------------------------------- */}
+						{isAdminEditMode ? (
+							<div className="grid grid-cols-1 gap-4">
+								<div>
+									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+										Nombre
+									</label>
+									<input
+										type="text"
+										value={formData.name}
+										onChange={handleChange("name")}
+										className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+										required
+									/>
+								</div>
+
+								<div>
+									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+										Correo electrónico
+									</label>
+									<input
+										type="email"
+										value={formData.email}
+										onChange={handleChange("email")}
+										className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+										required
+									/>
+								</div>
+
+								<div>
+									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+										URL de imagen de perfil
+									</label>
+									<input
+										type="text"
+										value={formData.profile_image_url}
+										onChange={handleChange("profile_image_url")}
+										className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+									/>
+								</div>
+							</div>
+						) : null}
+
+						{/* ================================================================= */}
+						{/* CHIPS DE ROL Y ESTADO                                              */}
+						{/* ================================================================= */}
 						<div className="mt-3 flex flex-wrap gap-2">
 							<span
 								className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getRoleClassesLight(
@@ -298,13 +422,19 @@ export default function UserProfileCard({
 					</div>
 				</div>
 
+				{/* ==================================================================== */}
+				{/* BLOQUE MEDIO: DATOS DETALLADOS                                        */}
+				{/* ==================================================================== */}
 				<div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+					{/* ---------------------------------------------------------------- */}
+					{/* CAMPO COMPARTIDO: EMPRESA                                         */}
+					{/* ---------------------------------------------------------------- */}
 					<div className="rounded-xl bg-slate-50 p-4">
 						<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 							Empresa
 						</p>
 
-						{isEditing ? (
+						{isEditableMode ? (
 							<input
 								type="text"
 								value={formData.company}
@@ -312,16 +442,21 @@ export default function UserProfileCard({
 								className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
 							/>
 						) : (
-							<p className="mt-1 text-sm text-slate-800">{user.company || "-"}</p>
+							<p className="mt-1 text-sm text-slate-800">
+								{user.company || "-"}
+							</p>
 						)}
 					</div>
 
+					{/* ---------------------------------------------------------------- */}
+					{/* CAMPO COMPARTIDO: TELÉFONO                                        */}
+					{/* ---------------------------------------------------------------- */}
 					<div className="rounded-xl bg-slate-50 p-4">
 						<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 							Teléfono
 						</p>
 
-						{isEditing ? (
+						{isEditableMode ? (
 							<input
 								type="text"
 								value={formData.phone}
@@ -333,7 +468,10 @@ export default function UserProfileCard({
 						)}
 					</div>
 
-					{isAdminEdit ? (
+					{/* ---------------------------------------------------------------- */}
+					{/* SOLO MODO 3: ADMIN-EDIT -> ROL Y ESTADO                           */}
+					{/* ---------------------------------------------------------------- */}
+					{isAdminEditMode ? (
 						<>
 							<div className="rounded-xl bg-slate-50 p-4">
 								<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -344,11 +482,13 @@ export default function UserProfileCard({
 									onChange={handleChange("roleId")}
 									className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
 								>
-									{roles.map((role) => (
-										<option key={role.id} value={role.id}>
-											{role.name}
-										</option>
-									))}
+									{roles
+										.filter((role) => role.name !== "Administrador")
+										.map((role) => (
+											<option key={role.id} value={role.id}>
+												{role.name}
+											</option>
+										))}
 								</select>
 							</div>
 
@@ -371,6 +511,9 @@ export default function UserProfileCard({
 						</>
 					) : null}
 
+					{/* ---------------------------------------------------------------- */}
+					{/* CAMPOS INFORMATIVOS COMPARTIDOS                                   */}
+					{/* ---------------------------------------------------------------- */}
 					<div className="rounded-xl bg-slate-50 p-4">
 						<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 							Fecha de alta
@@ -390,8 +533,20 @@ export default function UserProfileCard({
 					</div>
 				</div>
 
-				{isAdminEdit ? (
+				{/* ==================================================================== */}
+				{/* BLOQUE CONTRASEÑA                                                    */}
+				{/* ==================================================================== */}
+				{/* Aparece:
+				    - en admin-edit siempre
+				    - en edit solo si allowPasswordChange = true
+				    - nunca en view
+				*/}
+				{showPasswordSection ? (
 					<div className="mt-6 rounded-xl bg-slate-50 p-4">
+						<p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+							Cambiar contraseña
+						</p>
+
 						<PasswordFieldWithStrength
 							name="password"
 							label="Nueva contraseña"
@@ -415,6 +570,9 @@ export default function UserProfileCard({
 					</div>
 				) : null}
 
+				{/* ==================================================================== */}
+				{/* MENSAJES DE FEEDBACK                                                 */}
+				{/* ==================================================================== */}
 				{errorMessage ? (
 					<div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
 						{errorMessage}
@@ -427,30 +585,36 @@ export default function UserProfileCard({
 					</div>
 				) : null}
 
-				{mode !== "view" ? (
+				{/* ==================================================================== */}
+				{/* ACCIONES DE PIE                                                      */}
+				{/* ==================================================================== */}
+				{!isViewMode ? (
 					<div className="mt-6 flex flex-wrap gap-3">
 						<button
 							type="submit"
 							disabled={isSaving}
 							className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
 						>
-							{isSaving
-								? "Guardando..."
-								: (submitLabel ?? "Guardar cambios")}
+							{isSaving ? "Guardando..." : (submitLabel ?? "Guardar cambios")}
 						</button>
 
-						{mode === "edit" ? (
+						{/* ---------------------------------------------------------------- */}
+						{/* MODO 2: EDIT -> botón de restablecer                              */}
+						{/* ---------------------------------------------------------------- */}
+						{isSelfEditMode ? (
 							<button
 								type="button"
-								onClick={() => {
-									resetForm();
-									setIsEditing(false);
-								}}
+								onClick={resetForm}
 								className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
 							>
-								Cancelar
+								Restablecer
 							</button>
-						) : backHref ? (
+						) : null}
+
+						{/* ---------------------------------------------------------------- */}
+						{/* MODO 3: ADMIN-EDIT -> enlace cancelar                             */}
+						{/* ---------------------------------------------------------------- */}
+						{isAdminEditMode && backHref ? (
 							<Link
 								href={backHref}
 								className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"

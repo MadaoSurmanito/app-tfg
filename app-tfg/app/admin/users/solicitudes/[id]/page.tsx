@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
-import HeaderTitle from "@/app/components/HeaderTitle";
+import HeaderTitle from "@/app/components/basics/HeaderTitle";
 import { getUserRequestById } from "@/lib/typeorm/services/users/get-user-request-by-id";
 import SolicitudActions from "./SolicitudActions";
 
