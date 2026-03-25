@@ -13,9 +13,12 @@ type Props = {
 	confirmLabel?: string;
 	showConfirm?: boolean;
 	defaultValue?: string;
+	value?: string;
+	onChange?: (value: string) => void;
+	confirmValue?: string;
+	onConfirmChange?: (value: string) => void;
 };
 
-// Campo de contraseña reutilizable
 export default function PasswordFieldWithStrength({
 	name = "password",
 	label = "Contraseña",
@@ -26,9 +29,32 @@ export default function PasswordFieldWithStrength({
 	confirmLabel = "Confirmar contraseña",
 	showConfirm = false,
 	defaultValue = "",
+	value,
+	onChange,
+	confirmValue,
+	onConfirmChange,
 }: Props) {
-	const [password, setPassword] = useState(defaultValue);
-	const [confirmPassword, setConfirmPassword] = useState("");
+	const [internalPassword, setInternalPassword] = useState(defaultValue);
+	const [internalConfirmPassword, setInternalConfirmPassword] = useState("");
+
+	const password = value ?? internalPassword;
+	const resolvedConfirmPassword = confirmValue ?? internalConfirmPassword;
+
+	const setPassword = (nextValue: string) => {
+		if (onChange) {
+			onChange(nextValue);
+			return;
+		}
+		setInternalPassword(nextValue);
+	};
+
+	const setConfirmPassword = (nextValue: string) => {
+		if (onConfirmChange) {
+			onConfirmChange(nextValue);
+			return;
+		}
+		setInternalConfirmPassword(nextValue);
+	};
 
 	const validation = useMemo(() => validatePassword(password), [password]);
 
@@ -44,12 +70,14 @@ export default function PasswordFieldWithStrength({
 					: "bg-green-500";
 
 	const passwordsMatch =
-		!showConfirm || confirmPassword === "" || password === confirmPassword;
+		!showConfirm ||
+		resolvedConfirmPassword === "" ||
+		password === resolvedConfirmPassword;
 
 	return (
 		<div className="space-y-3">
 			<div>
-				<label className="mb-1 block text-sm font-medium text-white hidden">
+				<label className="mb-1 hidden text-sm font-medium text-slate-700">
 					{label}
 				</label>
 				<input
@@ -61,53 +89,53 @@ export default function PasswordFieldWithStrength({
 					autoComplete={autoComplete}
 					required={required}
 					minLength={PASSWORD_MIN_LENGTH}
-					className="w-full rounded-xl border border-white/20 bg-black/20 px-4 py-2 text-white placeholder:text-white/50 outline-none transition focus:border-cyan-400"
+					className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-slate-400"
 				/>
 			</div>
 
 			<div>
-				<div className="h-2 w-full overflow-hidden rounded-full bg-black/20">
+				<div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
 					<div
 						className={`h-full transition-all ${progressClass}`}
 						style={{ width: progressWidth }}
 					/>
 				</div>
 
-				<div className="mt-2 space-y-1 text-xs text-black/80">
-					<p className={validation.lengthValid ? "text-green-300" : ""}>
+				<div className="mt-2 space-y-1 text-xs text-slate-500">
+					<p className={validation.lengthValid ? "text-green-600" : ""}>
 						• Mínimo 8 caracteres
 					</p>
-					<p className={validation.hasNumber ? "text-green-300" : ""}>
+					<p className={validation.hasNumber ? "text-green-600" : ""}>
 						• Al menos 1 número
 					</p>
-					<p className={validation.hasSymbol ? "text-green-300" : ""}>
+					<p className={validation.hasSymbol ? "text-green-600" : ""}>
 						• Al menos 1 símbolo
 					</p>
 				</div>
 			</div>
 
-			{showConfirm && (
+			{showConfirm ? (
 				<div>
-					<label className="mb-1 block text-sm font-medium text-white hidden">
+					<label className="mb-1 hidden text-sm font-medium text-slate-700">
 						{confirmLabel}
 					</label>
 					<input
 						name={confirmName}
 						type="password"
-						value={confirmPassword}
+						value={resolvedConfirmPassword}
 						onChange={(e) => setConfirmPassword(e.target.value)}
 						placeholder="Repite la contraseña"
 						autoComplete={autoComplete}
 						required={required}
-						className="w-full rounded-xl border border-white/20 bg-black/20 px-4 py-2 text-white placeholder:text-white/50 outline-none transition focus:border-cyan-400"
+						className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-slate-800 placeholder:text-slate-400 outline-none transition focus:border-slate-400"
 					/>
-					{confirmPassword && !passwordsMatch && (
-						<p className="mt-2 text-xs text-red-300">
+					{resolvedConfirmPassword && !passwordsMatch ? (
+						<p className="mt-2 text-xs text-red-500">
 							Las contraseñas no coinciden
 						</p>
-					)}
+					) : null}
 				</div>
-			)}
+			) : null}
 		</div>
 	);
 }
