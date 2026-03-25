@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "migrate": "node-pg-migrate",
-    "migrate:create": "node-pg-migrate create",
-    "migrate:up": "dotenv -e .env -- node-pg-migrate up",
-    "migrate:down": "dotenv -e .env -- node-pg-migrate down"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "typeorm": "typeorm-ts-node-commonjs -d app/lib/typeorm/data-source.ts",
+    "migration:generate": "npm run typeorm -- migration:generate migrations/typeorm/auto",
+    "migration:create": "npm run typeorm -- migration:create migrations/typeorm/manual",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -26,14 +28,13 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
-    "node-pg-migrate": "^8.0.4",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typeorm-ts-node-commonjs": "^0.3.20",
     "typescript": "^5"
   }
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import HeaderTitle from "./components/HeaderTitle";
 import PageTransition from "./components/PageTransition";
 import AnimatedLink from "./components/AnimatedLink";
+import Link from "next/link";
 
 export default function Home() {
 	const [leaving, setLeaving] = useState(false);
@@ -32,13 +33,12 @@ export default function Home() {
 						transformar tu peluquería.
 					</p>
 
-					<AnimatedLink
+					<Link
 						href="/login"
-						onNavigateStart={() => setLeaving(true)}
 						className="inline-block rounded-full bg-blue-600 px-6 py-3 text-white transition duration-200 hover:bg-blue-700 active:scale-95"
 					>
 						Comenzar
-					</AnimatedLink>
+					</Link>
 				</PageTransition>
 			</section>
 		</main>

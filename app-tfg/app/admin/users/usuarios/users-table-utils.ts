@@ -1,14 +1,22 @@
-// Archivo de utilidades para la tabla de usuarios, contiene funciones para formatear fechas, comparar valores, obtener etiquetas y clases para roles y estados, etc.
+// Utilidades de presentación para la tabla de usuarios.
+// Aquí mantenemos solo lo que pertenece claramente a la UI:
+// - tipo plano que consume la tabla
+// - labels y clases visuales
+// - helpers de búsqueda, ordenación y fechas
 
-// Tipos y funciones comunes para la gestión de usuarios en la tabla
+export type UserRoleCode = "admin" | "client" | "commercial";
+export type UserStatusCode = "active" | "inactive" | "blocked";
+
+// DTO de UI.
+// No es la entidad TypeORM: es el shape plano que usa la tabla en cliente.
 export type Usuario = {
 	id: string;
 	name: string;
 	email: string;
 	company: string | null;
 	phone: string | null;
-	role: "admin" | "client" | "commercial";
-	status: "active" | "inactive" | "blocked";
+	role: UserRoleCode;
+	status: UserStatusCode;
 	profile_image_url: string | null;
 	created_at: string;
 	last_login_at: string | null;
@@ -30,7 +38,7 @@ export const sortableFields: { key: SortField; label: string }[] = [
 	{ key: "last_login_at", label: "Último login" },
 ];
 
-// Función para formatear fechas en formato largo
+// Formatea una fecha en formato largo.
 export function formatDate(value: string | null) {
 	if (!value) return "-";
 
@@ -43,13 +51,24 @@ export function formatDate(value: string | null) {
 	});
 }
 
-// Función para normalizar valores a string en minúsculas, útil para comparaciones y filtrados
+// Formatea una fecha en formato corto.
+export function formatDateShort(value: string | null) {
+	if (!value) return "-";
+
+	return new Date(value).toLocaleDateString("es-ES", {
+		day: "2-digit",
+		month: "2-digit",
+		year: "2-digit",
+	});
+}
+
+// Normaliza valores para búsqueda y filtrado.
 export function normalizeValue(value: unknown): string {
 	if (value === null || value === undefined) return "";
 	return String(value).toLowerCase();
 }
 
-// Función para comparar valores de diferentes tipos, con soporte para fechas y strings
+// Compara valores. Si ambos son fechas válidas, compara como fecha.
 export function compareValues(a: unknown, b: unknown) {
 	if (a === null || a === undefined) return 1;
 	if (b === null || b === undefined) return -1;
@@ -70,8 +89,8 @@ export function compareValues(a: unknown, b: unknown) {
 	return String(a).localeCompare(String(b), "es", { sensitivity: "base" });
 }
 
-// Funciones para obtener etiquetas y clases CSS según el rol y estado del usuario
-export function getRoleLabel(role: Usuario["role"]) {
+// Labels legibles para rol y estado.
+export function getRoleLabel(role: UserRoleCode) {
 	switch (role) {
 		case "admin":
 			return "Administrador";
@@ -79,13 +98,10 @@ export function getRoleLabel(role: Usuario["role"]) {
 			return "Cliente";
 		case "commercial":
 			return "Comercial";
-		default:
-			return role;
 	}
 }
 
-// Función para obtener la etiqueta del estado del usuario
-export function getStatusLabel(status: Usuario["status"]) {
+export function getStatusLabel(status: UserStatusCode) {
 	switch (status) {
 		case "active":
 			return "Activo";
@@ -93,13 +109,11 @@ export function getStatusLabel(status: Usuario["status"]) {
 			return "Inactivo";
 		case "blocked":
 			return "Bloqueado";
-		default:
-			return status;
 	}
 }
 
-// Funciones para obtener las clases CSS según el rol y estado del usuario, para mostrar diferentes colores en la tabla
-export function getRoleClasses(role: Usuario["role"]) {
+// Clases visuales dark.
+export function getRoleClasses(role: UserRoleCode) {
 	switch (role) {
 		case "admin":
 			return "bg-red-500/20 text-red-200";
@@ -107,13 +121,10 @@ export function getRoleClasses(role: Usuario["role"]) {
 			return "bg-emerald-500/20 text-emerald-200";
 		case "commercial":
 			return "bg-blue-500/20 text-blue-200";
-		default:
-			return "bg-white/10 text-white";
 	}
 }
 
-// Función para obtener las clases CSS según el estado del usuario, para mostrar diferentes colores en la tabla
-export function getStatusClasses(status: Usuario["status"]) {
+export function getStatusClasses(status: UserStatusCode) {
 	switch (status) {
 		case "active":
 			return "bg-green-500/20 text-green-200";
@@ -121,24 +132,11 @@ export function getStatusClasses(status: Usuario["status"]) {
 			return "bg-yellow-500/20 text-yellow-200";
 		case "blocked":
 			return "bg-red-500/20 text-red-200";
-		default:
-			return "bg-white/10 text-white";
 	}
 }
 
-// Función para formatear fechas en formato corto (dd/mm/aa)
-export function formatDateShort(value: string | null) {
-	if (!value) return "-";
-
-	return new Date(value).toLocaleDateString("es-ES", {
-		day: "2-digit",
-		month: "2-digit",
-		year: "2-digit",
-	});
-}
-
-// Versiones light de las funciones para obtener clases CSS, con colores más suaves para usar en fondos claros
-export function getRoleClassesLight(role: Usuario["role"]) {
+// Clases visuales light.
+export function getRoleClassesLight(role: UserRoleCode) {
 	switch (role) {
 		case "admin":
 			return "bg-red-100 text-red-700";
@@ -146,13 +144,10 @@ export function getRoleClassesLight(role: Usuario["role"]) {
 			return "bg-emerald-100 text-emerald-700";
 		case "commercial":
 			return "bg-blue-100 text-blue-700";
-		default:
-			return "bg-slate-100 text-slate-700";
 	}
 }
 
-// Función para obtener las clases CSS según el estado del usuario, para mostrar diferentes colores en la tabla, versión light para fondos claros
-export function getStatusClassesLight(status: Usuario["status"]) {
+export function getStatusClassesLight(status: UserStatusCode) {
 	switch (status) {
 		case "active":
 			return "bg-green-100 text-green-700";
@@ -160,7 +155,5 @@ export function getStatusClassesLight(status: Usuario["status"]) {
 			return "bg-yellow-100 text-yellow-700";
 		case "blocked":
 			return "bg-red-100 text-red-700";
-		default:
-			return "bg-slate-100 text-slate-700";
 	}
 }

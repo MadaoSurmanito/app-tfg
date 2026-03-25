@@ -1,15 +1,16 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { auth } from "@/auth";
-import { pool } from "@/app/lib/db";
 import H1Title from "@/app/components/H1Title";
 import DataTable from "@/app/components/DataTable";
 import PageTransition from "@/app/components/PageTransition";
-import Link from "next/link";
+import { listUserRequests } from "@/app/lib/typeorm/services/users/list-user-requests";
+
 type Solicitud = {
 	id: string;
 	name: string;
 	email: string;
-	company: string;
+	company: string | null;
 	phone?: string | null;
 	requested_at: string;
 	requested_role_name: string;
@@ -19,7 +20,9 @@ type Props = {
 	solicitudes: Solicitud[];
 };
 
-// Lista de solicitudes pendientes
+// Lista de solicitudes pendientes.
+// Esta página es un Server Component, así que consulta directamente
+// la capa de servicios TypeORM sin pasar por fetch a la API interna.
 export default async function SolicitudesPage() {
 	const session = await auth();
 
@@ -27,27 +30,21 @@ export default async function SolicitudesPage() {
 		redirect("/login");
 	}
 
-	const result = await pool.query<Solicitud>(
-		`
-			SELECT
-				ur.id,
-				ur.email,
-				ur.name,
-				ur.company,
-				ur.phone,
-				ur.requested_at,
-				r.name AS requested_role_name
-			FROM user_requests ur
-			INNER JOIN request_statuses rs
-				ON rs.id = ur.status_id
-			INNER JOIN roles r
-				ON r.id = ur.requested_role_id
-			WHERE rs.code = 'pending'
-			ORDER BY ur.requested_at DESC
-		`,
-	);
+	// Obtenemos todas las solicitudes con sus relaciones y después
+	// filtramos en servidor solo las pendientes para la tabla.
+	const rawRequests = await listUserRequests();
 
-	const solicitudes = result.rows;
+	const solicitudes: Solicitud[] = rawRequests
+		.filter((request) => request.status.code === "pending")
+		.map((request) => ({
+			id: request.id,
+			name: request.name,
+			email: request.email,
+			company: request.company,
+			phone: request.phone,
+			requested_at: request.requested_at.toISOString(),
+			requested_role_name: request.requestedRole.name,
+		}));
 
 	const columns = [
 		{
@@ -63,7 +60,7 @@ export default async function SolicitudesPage() {
 		{
 			key: "company",
 			header: "Empresa",
-			render: (solicitud: Solicitud) => solicitud.company,
+			render: (solicitud: Solicitud) => solicitud.company || "-",
 		},
 		{
 			key: "phone",
@@ -85,41 +82,31 @@ export default async function SolicitudesPage() {
 			key: "actions",
 			header: "Acciones",
 			render: (solicitud: Solicitud) => (
-				<div className="flex gap-2">
-					<Link
-						className="rounded bg-green-500 px-3 py-1 text-white hover:bg-green-600"
-						href={`/admin/users/solicitudes/${solicitud.id}/approve`}
-					>
-						Aprobar
-					</Link>
-					<Link
-						className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-						href={`/admin/users/solicitudes/${solicitud.id}/reject`}
-					>
-						Rechazar
-					</Link>
-				</div>
+				<Link
+					className="rounded bg-sky-600 px-3 py-1 text-white hover:bg-sky-700"
+					href={`/admin/users/solicitudes/${solicitud.id}`}
+				>
+					Revisar
+				</Link>
 			),
 		},
 	];
 
 	return (
-		<>
-			<PageTransition>
-				<H1Title
-					title="Solicitudes de registro"
-					subtitle="Lista de solicitudes pendientes"
-				/>
+		<PageTransition>
+			<H1Title
+				title="Solicitudes de registro"
+				subtitle="Lista de solicitudes pendientes"
+			/>
 
-				<div className="mx-auto mt-6 w-full max-w-6xl">
-					<DataTable
-						data={solicitudes}
-						columns={columns}
-						getRowKey={(solicitud) => solicitud.id}
-						emptyMessage="No hay solicitudes pendientes."
-					/>
-				</div>
-			</PageTransition>
-		</>
+			<div className="mx-auto mt-6 w-full max-w-6xl">
+				<DataTable
+					data={solicitudes}
+					columns={columns}
+					getRowKey={(solicitud) => solicitud.id}
+					emptyMessage="No hay solicitudes pendientes."
+				/>
+			</div>
+		</PageTransition>
 	);
 }

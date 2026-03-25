@@ -1,53 +1,36 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { pool } from "@/app/lib/db";
 import H1Title from "@/app/components/H1Title";
-import UsersTable from "./UsersTable";
-import { type Usuario } from "./users-table-utils";
 import PageTransition from "@/app/components/PageTransition";
+import UsersTable from "./UsersTable";
+import { listUsers } from "@/app/lib/typeorm/services/users/list-users";
+import { mapUserToUsuario } from "./user-table-mapper";
 
-// Lista de usuarios del sistema
+// Lista de usuarios del sistema.
+// Al ser un Server Component, podemos consultar directamente la capa de servicios
+// sin pasar por fetch a la API interna.
 export default async function UsuariosPage() {
 	const session = await auth();
 
-	if (!session?.user || session.user.role !== "admin") {
+	if (!session) {
 		redirect("/login");
 	}
 
-	// Cargar usuarios con rol y estado
-	const result = await pool.query<Usuario>(
-		`
-		SELECT
-			u.id,
-			u.name,
-			u.email,
-			u.company,
-			u.phone,
-			r.code AS role,
-			us.code AS status,
-			u.profile_image_url,
-			u.created_at,
-			u.last_login_at
-		FROM users u
-		INNER JOIN roles r
-			ON r.id = u.role_id
-		INNER JOIN user_statuses us
-			ON us.id = u.status_id
-		ORDER BY u.created_at DESC
-	`,
-	);
+	if (session.user?.role !== "admin") {
+		redirect("/");
+	}
 
-	const usuarios = result.rows;
+	// Cargamos entidades TypeORM con sus relaciones y las adaptamos
+	// a un DTO plano de UI antes de pasarlas al componente cliente.
+	const usuarios = (await listUsers()).map(mapUserToUsuario);
 
 	return (
-		<>
-			<PageTransition>
-				<H1Title title="Usuarios" subtitle="Lista de usuarios del sistema" />
+		<PageTransition>
+			<H1Title title="Usuarios" subtitle="Lista de usuarios del sistema" />
 
-				<div className="mx-auto mt-6 w-full max-w-7xl">
-					<UsersTable usuarios={usuarios} />
-				</div>
-			</PageTransition>
-		</>
+			<div className="mx-auto mt-6 w-full max-w-7xl">
+				<UsersTable usuarios={usuarios} />
+			</div>
+		</PageTransition>
 	);
 }

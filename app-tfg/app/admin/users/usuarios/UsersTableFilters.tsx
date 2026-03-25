@@ -6,6 +6,8 @@ import {
 	getRoleLabel,
 	getStatusLabel,
 	sortableFields,
+	type UserRoleCode,
+	type UserStatusCode,
 } from "./users-table-utils";
 
 type Props = {
@@ -23,8 +25,8 @@ type Props = {
 	setSortField: (value: SortField) => void;
 	sortDirection: SortDirection;
 	setSortDirection: (value: SortDirection) => void;
-	roles: string[];
-	statuses: string[];
+	roles: UserRoleCode[];
+	statuses: UserStatusCode[];
 	filteredAndSortedUsers: { id: string }[];
 	totalUsuarios: number;
 	resetFilters: () => void;
@@ -82,7 +84,7 @@ function FilterFields({
 						<option value="todos">Todos</option>
 						{roles.map((role) => (
 							<option key={role} value={role}>
-								{getRoleLabel(role as "admin" | "client" | "commercial")}
+								{getRoleLabel(role)}
 							</option>
 						))}
 					</select>
@@ -100,7 +102,7 @@ function FilterFields({
 						<option value="todos">Todos</option>
 						{statuses.map((status) => (
 							<option key={status} value={status}>
-								{getStatusLabel(status as "active" | "inactive" | "blocked")}
+								{getStatusLabel(status)}
 							</option>
 						))}
 					</select>

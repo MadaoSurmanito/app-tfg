@@ -9,6 +9,7 @@ import {
 	type Usuario,
 } from "./users-table-utils";
 
+// Hook con toda la lógica de búsqueda, filtros y ordenación.
 export function useUsersTable(usuarios: Usuario[]) {
 	const [search, setSearch] = useState("");
 	const [roleFilter, setRoleFilter] = useState("todos");
@@ -18,17 +19,21 @@ export function useUsersTable(usuarios: Usuario[]) {
 	const [sortField, setSortField] = useState<SortField>("created_at");
 	const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
-	const roles = useMemo(() => {
-		return [...new Set(usuarios.map((u) => u.role).filter(Boolean))].sort(
-			(a, b) => a.localeCompare(b, "es", { sensitivity: "base" }),
-		);
-	}, [usuarios]);
+	const roles = useMemo(
+		() =>
+			[...new Set(usuarios.map((u) => u.role))].sort((a, b) =>
+				a.localeCompare(b, "es", { sensitivity: "base" }),
+			),
+		[usuarios],
+	);
 
-	const statuses = useMemo(() => {
-		return [...new Set(usuarios.map((u) => u.status).filter(Boolean))].sort(
-			(a, b) => a.localeCompare(b, "es", { sensitivity: "base" }),
-		);
-	}, [usuarios]);
+	const statuses = useMemo(
+		() =>
+			[...new Set(usuarios.map((u) => u.status))].sort((a, b) =>
+				a.localeCompare(b, "es", { sensitivity: "base" }),
+			),
+		[usuarios],
+	);
 
 	const filteredAndSortedUsers = useMemo(() => {
 		const searchTerm = search.trim().toLowerCase();
@@ -46,10 +51,12 @@ export function useUsersTable(usuarios: Usuario[]) {
 
 			const matchesImage =
 				hasImageFilter === "todos" ||
-				(hasImageFilter === "con_imagen" && !!usuario.profile_image_url) ||
+				(hasImageFilter === "con_imagen" &&
+					Boolean(usuario.profile_image_url)) ||
 				(hasImageFilter === "sin_imagen" && !usuario.profile_image_url);
 
-			const matchesHideInactiveUsers = !hideInactiveUsers || usuario.status !== "inactive";
+			const matchesHideInactiveUsers =
+				!hideInactiveUsers || usuario.status !== "inactive";
 
 			return (
 				matchesSearch &&
@@ -60,7 +67,7 @@ export function useUsersTable(usuarios: Usuario[]) {
 			);
 		});
 
-		return [...filtered].sort((a, b) => {
+		return filtered.toSorted((a, b) => {
 			const result = compareValues(a[sortField], b[sortField]);
 			return sortDirection === "asc" ? result : -result;
 		});

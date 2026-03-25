@@ -1,74 +1,29 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import {
-	registerUser,
-	RegisterUserError,
-	type RegisterableUserRole,
-} from "@/app/lib/services/register-user";
+import { NextRequest, NextResponse } from "next/server";
+import { createRegisterRequest } from "@/app/lib/typeorm/services/users/create-register-request";
 
-// Tipo del body esperado desde el formulario del panel de administración
-type AdminRegisterUserBody = {
-	email?: string;
-	name?: string;
-	company?: string;
-	phone?: string;
-	password?: string;
-	type?: RegisterableUserRole;
-};
-
-// Endpoint exclusivo para administradores
-export async function POST(request: Request) {
+// Endpoint público para solicitar alta en el sistema.
+export async function POST(request: NextRequest) {
 	try {
-		// Comprobar autenticación y rol
-		const session = await auth();
+		const body = await request.json();
 
-		if (!session?.user) {
-			return NextResponse.json({ message: "No autenticado" }, { status: 401 });
-		}
-
-		if (session.user.role !== "admin") {
-			return NextResponse.json({ message: "No autorizado" }, { status: 403 });
-		}
-
-		const body = (await request.json()) as AdminRegisterUserBody;
-
-		// Resolver el rol a partir del body
-		const requestedRole: RegisterableUserRole =
-			body.type === "commercial" ? "commercial" : "client";
-
-		// Ejecutar el servicio común en modo admin_approved
-		const result = await registerUser({
-			email: String(body.email ?? ""),
-			name: String(body.name ?? ""),
-			company: String(body.company ?? ""),
-			phone: String(body.phone ?? ""),
-			password: String(body.password ?? ""),
-			role: requestedRole,
-			mode: "admin_approved",
-			reviewedByUserId: session.user.id,
+		const createdRequest = await createRegisterRequest({
+			name: body.name,
+			email: body.email,
+			password: body.password,
+			company: body.company ?? null,
+			phone: body.phone ?? null,
+			roleId: body.roleId ? Number(body.roleId) : undefined,
 		});
+
+		return NextResponse.json(createdRequest, { status: 201 });
+	} catch (error) {
+		console.error("Error creating register request:", error);
 
 		return NextResponse.json(
 			{
-				message: result.message,
-				userId: result.userId,
-				requestId: result.requestId,
+				error:
+					error instanceof Error ? error.message : "Error interno del servidor",
 			},
-			{ status: 201 },
-		);
-	} catch (error: unknown) {
-		// Errores controlados del servicio
-		if (error instanceof RegisterUserError) {
-			return NextResponse.json(
-				{ message: error.message },
-				{ status: error.status },
-			);
-		}
-
-		console.error("Error en /api/admin/register-user:", error);
-
-		return NextResponse.json(
-			{ message: "Error interno del servidor" },
 			{ status: 500 },
 		);
 	}

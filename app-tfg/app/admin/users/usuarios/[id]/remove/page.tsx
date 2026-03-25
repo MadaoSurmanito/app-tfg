@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/auth";
-import { pool } from "@/app/lib/db";
+import { getUserById } from "@/app/lib/typeorm/services/users/get-user-by-id";
 
 type Props = {
 	params: Promise<{ id: string }>;
@@ -15,45 +15,14 @@ export default async function RemoveUserPage({ params }: Props) {
 	}
 
 	const { id } = await params;
+	const user = await getUserById(id);
 
-	const result = await pool.query(
-		`
-			SELECT
-				u.id,
-				u.name,
-				u.email,
-				r.code AS role_code,
-				r.name AS role_name,
-				s.id AS status_id,
-				s.code AS status_code,
-				s.name AS status_name
-			FROM users u
-			INNER JOIN roles r
-				ON r.id = u.role_id
-			INNER JOIN user_statuses s
-				ON s.id = u.status_id
-			WHERE u.id = $1
-		`,
-		[id],
-	);
-
-	if (result.rowCount === 0) {
+	if (!user) {
 		notFound();
 	}
 
-	const user = result.rows[0] as {
-		id: string;
-		name: string;
-		email: string;
-		role_code: string;
-		role_name: string;
-		status_id: number;
-		status_code: string;
-		status_name: string;
-	};
-
 	const isSelf = session.user.id === user.id;
-	const isAlreadyInactive = user.status_code === "inactive";
+	const isAlreadyInactive = user.status.code === "inactive";
 
 	return (
 		<div className="space-y-6">
@@ -75,11 +44,11 @@ export default async function RemoveUserPage({ params }: Props) {
 					</p>
 
 					<p className="text-sm text-white/70">
-						Rol actual: <strong>{user.role_name}</strong>
+						Rol actual: <strong>{user.role.name}</strong>
 					</p>
 
 					<p className="text-sm text-white/70">
-						Estado actual: <strong>{user.status_name}</strong>
+						Estado actual: <strong>{user.status.name}</strong>
 					</p>
 				</div>
 

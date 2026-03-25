@@ -9,6 +9,8 @@ type Props = {
 	usuarios: Usuario[];
 };
 
+// Contenedor principal de la tabla.
+// Recibe los usuarios ya adaptados desde el server component.
 export default function UsersTable({ usuarios }: Props) {
 	const table = useUsersTable(usuarios);
 

@@ -1,0 +1,32 @@
+export const ROLE_IDS = {
+	ADMIN: 1,
+	COMMERCIAL: 2,
+	CLIENT: 3,
+} as const;
+
+export const USER_STATUS_IDS = {
+	ACTIVE: 1,
+	INACTIVE: 2,
+	BLOCKED: 3,
+} as const;
+
+export const REQUEST_STATUS_IDS = {
+	PENDING: 1,
+	APPROVED: 2,
+	REJECTED: 3,
+} as const;
+
+export const REQUEST_SOURCE_TYPE_IDS = {
+	SELF_REGISTRATION: 1,
+	ADMIN_CREATED: 2,
+	COMMERCIAL_CREATED: 3,
+} as const;
+
+export const USER_ADMIN_ACTION_TYPE_IDS = {
+	STATUS_CHANGE: 1,
+	ROLE_CHANGE: 2,
+	USER_CREATED: 3,
+	USER_APPROVED: 4,
+	USER_REJECTED: 5,
+	PASSWORD_RESET: 6,
+} as const;

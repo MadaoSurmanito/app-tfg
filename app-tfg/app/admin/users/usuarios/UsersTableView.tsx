@@ -19,6 +19,7 @@ type Props = {
 	sortDirection: SortDirection;
 	handleSort: (field: SortField) => void;
 };
+
 function UserCard({ usuario }: { usuario: Usuario }) {
 	return (
 		<motion.div
@@ -28,7 +29,7 @@ function UserCard({ usuario }: { usuario: Usuario }) {
 			exit={{ opacity: 0, y: -12, scale: 0.98 }}
 			transition={{ duration: 0.28, ease: "easeInOut" }}
 			className="rounded-xl border border-gray-200 bg-white p-3.5 shadow-sm transition hover:shadow-md"
-			>
+		>
 			{/* HEADER: imagen + nombre + email */}
 			<div className="flex items-start gap-3">
 				<div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
@@ -124,16 +125,16 @@ export function UsersTableView({ filteredAndSortedUsers }: Props) {
 					No hay usuarios que coincidan con los filtros.
 				</div>
 			) : (
-			<motion.div
-				layout
-				className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 xl:grid-cols-3"
-			>
-				<AnimatePresence mode="popLayout">
-					{filteredAndSortedUsers.map((usuario) => (
-						<UserCard key={usuario.id} usuario={usuario} />
-					))}
-				</AnimatePresence>
-			</motion.div>
+				<motion.div
+					layout
+					className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 xl:grid-cols-3"
+				>
+					<AnimatePresence mode="popLayout">
+						{filteredAndSortedUsers.map((usuario) => (
+							<UserCard key={usuario.id} usuario={usuario} />
+						))}
+					</AnimatePresence>
+				</motion.div>
 			)}
 		</div>
 	);
