@@ -3,10 +3,7 @@
 import { useState } from "react";
 import PasswordFieldWithStrength from "@/app/components/PasswordFieldWithStrength";
 import PageTransition from "@/app/components/PageTransition";
-/**
- * Página para que los administradores registren usuarios directamente.
- * Permite elegir el tipo de usuario: comercial o cliente.
- */
+
 function AdminRegisterUser() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -29,10 +26,17 @@ function AdminRegisterUser() {
 		const company = String(formData.get("company") ?? "").trim();
 		const phone = String(formData.get("phone") ?? "").trim();
 		const password = String(formData.get("password") ?? "");
+		const confirmPassword = String(formData.get("confirm_password") ?? "");
 		const type = userType;
 
 		if (!email || !name || !company || !password) {
 			setError("Por favor, completa todos los campos requeridos");
+			setLoading(false);
+			return;
+		}
+
+		if (password !== confirmPassword) {
+			setError("Las contraseñas no coinciden");
 			setLoading(false);
 			return;
 		}
@@ -54,7 +58,7 @@ function AdminRegisterUser() {
 			const data = await response.json();
 
 			if (!response.ok) {
-				setError(data.message || "Error al registrar el usuario");
+				setError(data.error || data.message || "Error al registrar el usuario");
 				setLoading(false);
 				return;
 			}
@@ -129,6 +133,7 @@ function AdminRegisterUser() {
 						placeholder="Contraseña"
 						required
 						showConfirm
+						confirmName="confirm_password"
 					/>
 
 					<button
