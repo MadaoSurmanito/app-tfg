@@ -9,8 +9,12 @@ import {
 	getRoleLabel,
 	getStatusClassesLight,
 	getStatusLabel,
-} from "@/app/admin/users/usuarios/users-table-utils";
+} from "@/lib/utils/user-utils";
 
+// ----------------------------------------------------------------------------
+// TIPOS Y HELPERS
+// ---------------------------------------------------------------------------
+// Tipo de datos para el usuario que se muestra en la tarjeta de perfil.
 type UserProfileCardUser = {
 	id: string;
 	name: string;
@@ -30,6 +34,7 @@ type UserProfileCardUser = {
 	};
 };
 
+// Tipo de opción para los selectores de rol y estado en el modo de edición administrativa.
 type CatalogOption = {
 	id: number;
 	name: string;

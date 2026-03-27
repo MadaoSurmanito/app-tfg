@@ -3,7 +3,6 @@
 import { useState } from "react";
 import HeaderTitle from "./components/basics/HeaderTitle";
 import PageTransition from "./components/animations/PageTransition";
-import AnimatedLink from "./components/animations/AnimatedLink";
 import Link from "next/link";
 
 export default function Home() {

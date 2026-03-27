@@ -28,10 +28,9 @@ export default function BackButton({
 		<button
 			type="button"
 			onClick={handleBack}
-			className={`inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 ${className}`}
+			className={className}
 		>
-			<span aria-hidden="true">←</span>
-			<span>{label}</span>
+			{label}
 		</button>
 	);
 }

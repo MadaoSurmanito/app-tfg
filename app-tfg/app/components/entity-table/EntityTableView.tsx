@@ -1,0 +1,127 @@
+"use client";
+
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import type { EntityTableItem } from "./entity-table-types";
+
+type Props = {
+	items: EntityTableItem[];
+	emptyMessage?: string;
+};
+
+// Devuelve las clases visuales del botón según el tipo de acción.
+function getActionClasses(variant?: "primary" | "secondary" | "warning") {
+	if (variant === "warning") {
+		return "bg-amber-100 text-amber-700 hover:bg-amber-200";
+	}
+
+	if (variant === "secondary") {
+		return "bg-slate-100 text-slate-700 hover:bg-slate-200";
+	}
+
+	return "bg-sky-600 text-white hover:bg-sky-700";
+}
+
+// Tarjeta reutilizable que representa un único elemento del listado.
+function EntityCard({ item }: { item: EntityTableItem }) {
+	return (
+		<motion.div
+			layout
+			initial={{ opacity: 0, y: 12, scale: 0.98 }}
+			animate={{ opacity: 1, y: 0, scale: 0.98 }}
+			exit={{ opacity: 0, y: -12, scale: 0.98 }}
+			transition={{ duration: 0.28, ease: "easeInOut" }}
+			className="rounded-xl border border-gray-200 bg-white p-3.5 shadow-sm transition hover:shadow-md"
+		>
+			{/* CABECERA */}
+			<div className="flex items-start gap-3">
+				<div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
+					{item.imageUrl ? (
+						<img
+							src={item.imageUrl}
+							alt={item.title}
+							className="h-full w-full object-cover"
+						/>
+					) : (
+						<div className="flex h-full w-full items-center justify-center text-xs text-gray-500">
+							IMG
+						</div>
+					)}
+				</div>
+
+				<div className="min-w-0 flex-1">
+					<p className="truncate text-sm font-semibold text-slate-800">
+						{item.title}
+					</p>
+					<p className="truncate text-xs text-slate-600">{item.subtitle}</p>
+				</div>
+
+				<div className="ml-auto flex flex-col items-end gap-2">
+					{item.badges?.map((badge) => (
+						<span
+							key={`${item.id}-${badge.label}`}
+							className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badge.className ?? "bg-slate-100 text-slate-700"}`}
+						>
+							{badge.label}
+						</span>
+					))}
+				</div>
+			</div>
+
+			{/* CAMPOS INFORMATIVOS */}
+			<div className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-slate-600">
+				{item.fields.map((field) => (
+					<div key={`${item.id}-${field.label}`}>
+						<span className="font-medium text-slate-700">{field.label}:</span>{" "}
+						{field.value || "-"}
+					</div>
+				))}
+			</div>
+
+			{/* ACCIONES */}
+			{item.actions?.length ? (
+				<div className="mt-3 flex flex-wrap gap-2">
+					{item.actions.map((action) => (
+						<Link
+							key={`${item.id}-${action.label}`}
+							href={action.href}
+							className={`rounded-md px-2.5 py-1.5 text-[11px] font-medium transition ${getActionClasses(
+								action.variant,
+							)}`}
+						>
+							{action.label}
+						</Link>
+					))}
+				</div>
+			) : null}
+		</motion.div>
+	);
+}
+
+// Vista principal del listado reutilizable.
+// Muestra una rejilla de tarjetas o un mensaje vacío si no hay resultados.
+export default function EntityTableView({
+	items,
+	emptyMessage = "No hay elementos que coincidan con los filtros.",
+}: Props) {
+	return (
+		<div className="rounded-2xl border border-gray-200 bg-white shadow-md">
+			{items.length === 0 ? (
+				<div className="px-4 py-10 text-center text-slate-500">
+					{emptyMessage}
+				</div>
+			) : (
+				<motion.div
+					layout
+					className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 xl:grid-cols-3"
+				>
+					<AnimatePresence mode="popLayout">
+						{items.map((item) => (
+							<EntityCard key={item.id} item={item} />
+						))}
+					</AnimatePresence>
+				</motion.div>
+			)}
+		</div>
+	);
+}

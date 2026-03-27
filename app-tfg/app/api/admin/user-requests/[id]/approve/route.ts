@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { approveUserRequest } from "@/lib/typeorm/services/users/approve-user-request";
+import { approveUserRequest } from "@/lib/typeorm/services/users/request";
 
 type Context = {
 	params: Promise<{ id: string }>;

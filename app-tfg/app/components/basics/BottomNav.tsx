@@ -4,7 +4,13 @@ import { HomeIcon, ProfileIcon, SettingsIcon, LogoutIcon } from "@/app/component
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 
-export default function BottomNav() {
+type Props = {
+	LandingPage: string;
+};
+
+export default function BottomNav(params: { props?: Props }) {
+	const { LandingPage } = params.props || {};
+	const landingPageUrl = LandingPage || "/";
 	const handleLogout = async () => {
 		try {
 			await fetch("/api/auth/logout", {
@@ -21,7 +27,7 @@ export default function BottomNav() {
 	return (
 		<footer className="glass-header fixed inset-x-0 bottom-0 z-50 border-t border-white/20 px-4 py-3 backdrop-blur-md">
 			<div className="mx-auto flex max-w-6xl items-center justify-between">
-				<Link href="/" className="flex-1">
+				<Link href={landingPageUrl} className="flex-1">
 					<div className="flex flex-col items-center opacity-100 transition-opacity hover:opacity-80">
 						<HomeIcon className="mb-1 h-6 w-6 text-black" />
 						<span className="text-[10px] uppercase tracking-tight text-black">

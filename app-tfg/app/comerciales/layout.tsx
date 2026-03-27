@@ -1,4 +1,4 @@
-import BottomNav from "../components/BottomNav";
+import BottomNav from "../components/basics/BottomNav";
 import PageTransition from "../components/animations/PageTransition";
 import HeaderTitle from "../components/basics/HeaderTitle";
 

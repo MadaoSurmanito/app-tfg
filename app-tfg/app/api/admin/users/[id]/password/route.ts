@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { changeUserPassword } from "@/lib/typeorm/services/users/change-user-password";
+import { changeUserPassword } from "@/lib/typeorm/services/users/password";
 
 type Context = {
 	params: Promise<{ id: string }>;
@@ -34,6 +34,7 @@ export async function PATCH(request: NextRequest, context: Context) {
 			performedByUserId: session.user.id,
 			reason: body.reason ?? null,
 			notes: body.notes ?? null,
+			mode: "admin",
 		});
 
 		return NextResponse.json(result);

@@ -1,12 +1,14 @@
 import HeaderTitle from "@/app/components/basics/HeaderTitle";
 import BottomNav from "@/app/components/basics/BottomNav";
+import { requireAdminSession } from "@/lib/auth/require-session";
 
-// Layout para las páginas del admin panel
-export default function AdminLayout({
+export default async function AdminLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
+	await requireAdminSession();
+
 	return (
 		<main className="app-bg min-h-screen w-full text-slate-800">
 			<div className="bg-overlay fixed inset-0 -z-10" />
@@ -16,7 +18,9 @@ export default function AdminLayout({
 				{children}
 			</section>
 
-			<BottomNav />
+			<BottomNav props={{
+				LandingPage: "/admin"
+			}} />
 		</main>
 	);
 }

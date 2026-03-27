@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getUserRequestById } from "@/lib/typeorm/services/users/get-user-request-by-id";
+import { getUserRequestById } from "@/lib/typeorm/services/users/request";
 
 type Context = {
 	params: Promise<{ id: string }>;

@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import HeaderTitle from "../components/basics/HeaderTitle";
-import AssistantCard from "../components/AssistantCard";
 import NavCard from "../components/NavCard";
 import PageTransition from "../components/animations/PageTransition";
-import { RegisterRequestsIcon, ClientsIcon } from "../components/IconsSVGs";
+import { ClientsIcon } from "../components/IconsSVGs";
 
 // Opciones de navegación para administradores
 const navItems = [

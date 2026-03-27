@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import {
 	registerUserByAdmin,
 	RegisterUserByAdminError,
-} from "@/lib/typeorm/services/users/register-user-by-admin";
+} from "@/lib/typeorm/services/users/user";
 import { ROLE_IDS } from "@/lib/typeorm/constants/catalog-ids";
 
 type RegisterUserBody = {
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
 		const roleId = resolveRoleIdFromType(body.type);
 
-		const result = await registerUserByAdmin({
+		const createdUser = await registerUserByAdmin({
 			name: String(body.name ?? ""),
 			email: String(body.email ?? ""),
 			password: String(body.password ?? ""),
@@ -49,11 +49,17 @@ export async function POST(request: Request) {
 			performedByUserId: session.user.id,
 		});
 
+		if (!createdUser) {
+			return NextResponse.json(
+				{ error: "No se pudo recuperar el usuario creado" },
+				{ status: 500 },
+			);
+		}
+
 		return NextResponse.json(
 			{
 				message: "Usuario creado correctamente",
-				userId: result.user.id,
-				requestId: result.request.id,
+				userId: createdUser.id,
 			},
 			{ status: 201 },
 		);

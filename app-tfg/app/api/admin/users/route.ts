@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { listUsers } from "@/lib/typeorm/services/users/list-users";
-import { createUser } from "@/lib/typeorm/services/users/create-user";
+import { listUsers, registerUserByAdmin } from "@/lib/typeorm/services/users/user";
 
 export async function GET() {
 	try {
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const createdUser = await createUser({
+		const createdUser = await registerUserByAdmin({
 			name: body.name,
 			email: body.email,
 			password: body.password,

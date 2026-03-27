@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { PASSWORD_MIN_LENGTH, validatePassword } from "@/lib/password";
+import { PASSWORD_MIN_LENGTH, validatePassword } from "@/lib/utils/password-utils";
 
 type Props = {
 	name?: string;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createRegisterRequest } from "@/lib/typeorm/services/users/create-register-request";
+import { createRegisterRequest } from "@/lib/typeorm/services/users/request";
 
 type RegisterRequestBody = {
 	email?: string;

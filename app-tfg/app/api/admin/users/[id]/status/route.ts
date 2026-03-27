@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { updateUserStatus } from "@/lib/typeorm/services/users/update-user-status";
+import { updateUserStatus } from "@/lib/typeorm/services/users/status";
 
 type Context = {
 	params: Promise<{ id: string }>;

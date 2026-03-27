@@ -2,22 +2,22 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import PageTransition from "@/app/components/animations/PageTransition";
 import UserProfileCard from "@/app/components/users/UserProfileCard";
-import { getUserById } from "@/lib/typeorm/services/users/get-user-by-id";
+import { getUserById } from "@/lib/typeorm/services/users/user";
 import HeaderTitle from "@/app/components/basics/HeaderTitle";
 import BottomNav from "@/app/components/basics/BottomNav";
+import { requireUserSession } from "@/lib/auth/require-session";
+// profile/page
+// Página de perfil del usuario autenticado, donde puede consultar y editar su información personal.
+// Solo accesible para usuarios autenticados, sin importar su rol.
 export default async function ProfilePage() {
-	const session = await auth();
-
-	if (!session) {
-		redirect("/login");
-	}
-
-	if (!session.user?.id) {
-		redirect("/");
-	}
+	// CONTROL DE ACCESO
+	// Se asegura de que el usuario esté autenticado y tenga rol de administrador.
+	const session = await requireUserSession();
 
 	const user = await getUserById(session.user.id);
+	const role = user?.role.code;
 
+	// Si el usuario no existe o su rol no es válido, se redirige a la página de inicio.
 	if (!user) {
 		redirect("/");
 	}
@@ -67,7 +67,7 @@ export default async function ProfilePage() {
 				</PageTransition>
 			</div>
 
-			<BottomNav />
+			<BottomNav props={{ LandingPage: role === "admin" ? "/admin" : "/" }} />
 		</main>
 	);
 }

@@ -5,7 +5,7 @@ import { User } from "@/lib/typeorm/entities/User";
 import {
 	updateUser,
 	UpdateUserError,
-} from "@/lib/typeorm/services/users/update-user";
+} from "@/lib/typeorm/services/users/user";
 
 type RouteContext = {
 	params: Promise<{ id: string }>;

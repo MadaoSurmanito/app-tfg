@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getPasswordValidationMessage } from "@/lib/password";
-import { changePassword } from "@/lib/typeorm/services/users/change-password";
+import { getPasswordValidationMessage } from "@/lib/utils/password-utils";
+import { changeUserPassword } from "@/lib/typeorm/services/users/password";
 
 // Cambia la contraseña del usuario autenticado
 export async function POST(request: Request) {
@@ -37,11 +37,12 @@ export async function POST(request: Request) {
 		);
 	}
 
-	const result = await changePassword({
+	const result = await changeUserPassword({
 		userId: session.user.id,
 		currentPassword,
 		newPassword,
 		currentAccessSessionId: session.accessSessionId ?? null,
+		mode: "self"
 	});
 
 	if (!result.ok) {

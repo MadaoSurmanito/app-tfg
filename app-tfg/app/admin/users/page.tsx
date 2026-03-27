@@ -12,17 +12,17 @@ const navItems = [
 	{
 		title: "Solicitudes de registro",
 		icon: <RegisterRequestsIcon className="h-6 w-6" />,
-		href: "/admin/users/solicitudes",
+		href: "/admin/users/requests",
 	},
 	{
 		title: "Lista de usuarios",
 		icon: <ClientsIcon className="h-6 w-6" />,
-		href: "/admin/users/usuarios",
+		href: "/admin/users/list",
 	},
 	{
 		title: "Registrar nuevo usuario",
 		icon: <ClientsIcon className="h-6 w-6" />,
-		href: "/admin/users/registrar",
+		href: "/admin/users/register",
 	},
 ];
 

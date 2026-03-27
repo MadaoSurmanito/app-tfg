@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { getPasswordValidationMessage } from "@/lib/password";
+import { getPasswordValidationMessage } from "@/lib/utils/password-utils";
 import { getDataSource } from "@/lib/typeorm/data-source";
 import { User } from "@/lib/typeorm/entities/User";
 

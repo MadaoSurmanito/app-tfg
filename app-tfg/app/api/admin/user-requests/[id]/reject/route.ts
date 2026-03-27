@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { rejectUserRequest } from "@/lib/typeorm/services/users/reject-user-request";
+import { rejectUserRequest } from "@/lib/typeorm/services/users/request";
 
 type Props = {
 	params: Promise<{ id: string }>;
