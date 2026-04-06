@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import UserAvatar from "@/app/components/users/UserAvatar";
 import type { EntityTableItem } from "./entity-table-types";
 
 type Props = {
@@ -35,19 +36,12 @@ function EntityCard({ item }: { item: EntityTableItem }) {
 		>
 			{/* CABECERA */}
 			<div className="flex items-start gap-3">
-				<div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-gray-200">
-					{item.imageUrl ? (
-						<img
-							src={item.imageUrl}
-							alt={item.title}
-							className="h-full w-full object-cover"
-						/>
-					) : (
-						<div className="flex h-full w-full items-center justify-center text-xs text-gray-500">
-							IMG
-						</div>
-					)}
-				</div>
+				<UserAvatar
+					name={item.title}
+					imageUrl={item.imageUrl}
+					size="md"
+					className="flex-shrink-0"
+				/>
 
 				<div className="min-w-0 flex-1">
 					<p className="truncate text-sm font-semibold text-slate-800">

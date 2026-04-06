@@ -1,4 +1,3 @@
-
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
@@ -15,10 +14,26 @@ type UpdateProfileRequestBody = {
 	confirmPassword?: string;
 };
 
+// Helpers
+// Normaliza un texto: si es null o undefined lo convierte a cadena vacía, y recorta espacios al inicio y al final
 function normalizeText(value: string | null | undefined) {
 	return String(value ?? "").trim();
 }
 
+// Valida que una URL sea una imagen válida de Cloudinary (o que sea null/undefined)
+function isValidCloudinaryImageUrl(value: string | null) {
+	if (!value) return true;
+
+	try {
+		const url = new URL(value);
+
+		return url.protocol === "https:" && url.hostname === "res.cloudinary.com";
+	} catch {
+		return false;
+	}
+}
+
+// Endpoint para actualizar el perfil del usuario
 export async function PATCH(request: Request) {
 	try {
 		const session = await auth();
@@ -39,6 +54,16 @@ export async function PATCH(request: Request) {
 		const profileImageUrl = normalizeText(body.profile_image_url) || null;
 		const password = String(body.password ?? "");
 		const confirmPassword = String(body.confirmPassword ?? "");
+
+		if (!isValidCloudinaryImageUrl(profileImageUrl)) {
+			return NextResponse.json(
+				{
+					message: "La URL de la imagen de perfil no es válida",
+					code: "INVALID_PROFILE_IMAGE_URL",
+				},
+				{ status: 400 },
+			);
+		}
 
 		if (!name) {
 			return NextResponse.json(

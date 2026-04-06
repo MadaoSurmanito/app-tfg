@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import HeaderTitle from "@/app/components/basics/HeaderTitle";
 import { getUserRequestById } from "@/lib/typeorm/services/users/request";
-import SolicitudActions from "./SolicitudActions";
+import RequestsActions from "./RequestsActions";
 import PageTransition from "@/app/components/animations/PageTransition";
 import { requireAdminSession } from "@/lib/auth/require-session";
 // Recibe el ID de la solicitud a revisar a través de los parámetros de la URL.
@@ -33,7 +33,7 @@ export default async function ReviewSolicitudPage({ params }: Props) {
 	// VALIDACIÓN DE ESTADO
 	// Solo se permite revisar solicitudes que sigan pendientes.
 	if (solicitud.status.code !== "pending") {
-		redirect("/admin/users/solicitudes");
+		redirect("/admin/users/requests");
 	}
 
 	// RENDER
@@ -105,7 +105,7 @@ export default async function ReviewSolicitudPage({ params }: Props) {
 
 				{/* ACCIONES DE REVISIÓN */}
 				{/* Delegan la lógica interactiva al componente cliente correspondiente. */}
-				<SolicitudActions solicitudId={solicitud.id} />
+				<RequestsActions solicitudId={solicitud.id} />
 			</div>
 		</PageTransition>
 	);

@@ -9,7 +9,7 @@ type Props = {
 
 // Componente cliente que permite aprobar o rechazar una solicitud de registro.
 // Gestiona el estado local de carga, validación y errores de ambas acciones.
-export default function SolicitudActions({ solicitudId }: Props) {
+export default function RequestsActions({ solicitudId }: Props) {
 	// NAVEGACIÓN
 	// Se utiliza para redirigir y refrescar la vista tras completar una acción.
 	const router = useRouter();
@@ -48,7 +48,7 @@ export default function SolicitudActions({ solicitudId }: Props) {
 			}
 
 			// Si la aprobación es correcta, se vuelve al listado y se refresca.
-			router.push("/admin/users/solicitudes");
+			router.push("/admin/users/requests");
 			router.refresh();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Error inesperado");
@@ -94,7 +94,7 @@ export default function SolicitudActions({ solicitudId }: Props) {
 			}
 
 			// Si el rechazo es correcto, se vuelve al listado y se refresca.
-			router.push("/admin/users/solicitudes");
+			router.push("/admin/users/requests");
 			router.refresh();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Error inesperado");
