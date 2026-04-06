@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
+import UserAvatar from "@/app/components/users/UserAvatar";
 import {
 	formatDate,
 	getRoleClassesLight,
@@ -114,7 +115,8 @@ export default function UserProfileCard({
 	// La sección de contraseña aparece:
 	// - siempre en edición de admin
 	// - opcionalmente en edición de perfil propio
-	const showPasswordSection = isAdminEditMode || isSelfEditMode;
+	const showPasswordSection =
+		isAdminEditMode || (isSelfEditMode && allowPasswordChange);
 
 	// ============================================================================
 	// ESTADO LOCAL DE LA TARJETA
@@ -125,6 +127,11 @@ export default function UserProfileCard({
 	const [formData, setFormData] = useState<FormDataState>(
 		buildInitialFormData(user),
 	);
+	const [isUploadingImage, setIsUploadingImage] = useState(false);
+	const [selectedImageName, setSelectedImageName] = useState<string | null>(
+		null,
+	);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	// ============================================================================
 	// DATOS DERIVADOS
@@ -139,9 +146,27 @@ export default function UserProfileCard({
 		? formData.profile_image_url
 		: user.profile_image_url;
 
+	// Texto auxiliar del bloque de subida de imagen.
+	// Reglas:
+	// - Si no tiene foto, se muestra "Ningún archivo seleccionado".
+	// - Si está subiendo, se muestra "Subiendo... [nombre]".
+	// - Si ya se subió una nueva imagen pero aún no se ha guardado el perfil,
+	//   se muestra "[nombre] preparado para subir".
+	// - Si el usuario ya tenía foto y no ha seleccionado una nueva, no se muestra nada.
+	const profileImageStatusText = isUploadingImage
+		? selectedImageName
+			? `Subiendo... ${selectedImageName}`
+			: "Subiendo..."
+		: selectedImageName
+			? `${selectedImageName} preparado para subir`
+			: !formData.profile_image_url
+				? "Ningún archivo seleccionado"
+				: null;
+
 	// ============================================================================
 	// HELPERS DE FORMULARIO
 	// ============================================================================
+	// Manejador genérico para cambios en los campos del formulario.
 	const handleChange =
 		(field: keyof FormDataState) =>
 		(
@@ -160,11 +185,107 @@ export default function UserProfileCard({
 			}));
 		};
 
+	// Función para restablecer el formulario a los valores iniciales del usuario.
 	const resetForm = () => {
 		setFormData(buildInitialFormData(user));
+		setSelectedImageName(null);
 		setErrorMessage(null);
 		setSuccessMessage(null);
+
+		if (fileInputRef.current) {
+			fileInputRef.current.value = "";
+		}
 	};
+
+	// Manejador para subir la imagen de perfil seleccionada.
+	const handleProfileImageUpload = async (
+		e: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const file = e.target.files?.[0];
+
+		if (!file) return;
+
+		try {
+			setSelectedImageName(file.name);
+			setIsUploadingImage(true);
+			setErrorMessage(null);
+			setSuccessMessage(null);
+
+			const uploadFormData = new FormData();
+			uploadFormData.append("file", file);
+
+			const response = await fetch("/api/profile/upload-image", {
+				method: "POST",
+				body: uploadFormData,
+			});
+
+			const body = await response.json().catch(() => null);
+
+			if (!response.ok) {
+				throw new Error(body?.message ?? "No se pudo subir la imagen");
+			}
+
+			setFormData((prev) => ({
+				...prev,
+				profile_image_url: body?.imageUrl ?? "",
+			}));
+
+			setSuccessMessage(
+				"Imagen subida correctamente. Guarda los cambios para aplicarla al perfil.",
+			);
+		} catch (error) {
+			setErrorMessage(
+				error instanceof Error ? error.message : "No se pudo subir la imagen",
+			);
+			setSelectedImageName(null);
+		} finally {
+			setIsUploadingImage(false);
+
+			if (fileInputRef.current) {
+				fileInputRef.current.value = "";
+			}
+		}
+	};
+
+	// Abre el selector de archivos del input oculto.
+	const openFilePicker = () => {
+		fileInputRef.current?.click();
+	};
+
+	// Función para renderizar el campo de subida de imagen, que se muestra en ambos modos de edición.
+	const profileImageUploadField = (
+		<div>
+			<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+				Foto de perfil
+			</label>
+
+			<div className="mt-2 flex flex-col gap-3">
+				<input
+					ref={fileInputRef}
+					type="file"
+					accept="image/*"
+					onChange={handleProfileImageUpload}
+					className="hidden"
+					disabled={isUploadingImage}
+				/>
+
+				<div className="flex flex-wrap items-center gap-3">
+					<button
+						type="button"
+						onClick={openFilePicker}
+						disabled={isUploadingImage}
+						className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+					>
+						{displayedProfileImage ? "Cambiar foto" : "Seleccionar archivo"}
+					</button>
+
+					{profileImageStatusText ? (
+						<p className="text-sm text-slate-500">{profileImageStatusText}</p>
+					) : null}
+				</div>
+			</div>
+		</div>
+	);
 
 	// ============================================================================
 	// PAYLOAD SEGÚN MODO
@@ -252,6 +373,11 @@ export default function UserProfileCard({
 			}
 
 			setSuccessMessage(body?.message ?? "Cambios guardados correctamente");
+			setSelectedImageName(null);
+
+			if (fileInputRef.current) {
+				fileInputRef.current.value = "";
+			}
 
 			// Tras guardar, se limpian solo los campos sensibles.
 			setFormData((prev) => ({
@@ -293,19 +419,11 @@ export default function UserProfileCard({
 				{/* BLOQUE SUPERIOR: AVATAR + IDENTIDAD                                   */}
 				{/* ==================================================================== */}
 				<div className="flex flex-col gap-6 md:flex-row md:items-start">
-					<div className="h-24 w-24 overflow-hidden rounded-full bg-gray-200">
-						{displayedProfileImage ? (
-							<img
-								src={displayedProfileImage}
-								alt={user.name}
-								className="h-full w-full object-cover"
-							/>
-						) : (
-							<div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
-								Sin imagen
-							</div>
-						)}
-					</div>
+					<UserAvatar
+						name={user.name}
+						imageUrl={displayedProfileImage}
+						size="xl"
+					/>
 
 					<div className="min-w-0 flex-1">
 						{/* ---------------------------------------------------------------- */}
@@ -325,6 +443,7 @@ export default function UserProfileCard({
 						{/* ---------------------------------------------------------------- */}
 						{isSelfEditMode ? (
 							<div className="grid grid-cols-1 gap-4">
+								{/* Nombre */}
 								<div>
 									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 										Nombre
@@ -338,6 +457,7 @@ export default function UserProfileCard({
 									/>
 								</div>
 
+								{/* Correo electrónico (no editable) */}
 								<div>
 									<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 										Correo electrónico
@@ -345,17 +465,8 @@ export default function UserProfileCard({
 									<p className="mt-1 text-sm text-slate-600">{user.email}</p>
 								</div>
 
-								<div>
-									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-										URL de imagen de perfil
-									</label>
-									<input
-										type="text"
-										value={formData.profile_image_url}
-										onChange={handleChange("profile_image_url")}
-										className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
-									/>
-								</div>
+								{/* Foto de perfil */}
+								{profileImageUploadField}
 							</div>
 						) : null}
 
@@ -364,6 +475,7 @@ export default function UserProfileCard({
 						{/* ---------------------------------------------------------------- */}
 						{isAdminEditMode ? (
 							<div className="grid grid-cols-1 gap-4">
+								{/* Nombre */}
 								<div>
 									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 										Nombre
@@ -377,6 +489,7 @@ export default function UserProfileCard({
 									/>
 								</div>
 
+								{/* Correo electrónico */}
 								<div>
 									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 										Correo electrónico
@@ -390,17 +503,8 @@ export default function UserProfileCard({
 									/>
 								</div>
 
-								<div>
-									<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-										URL de imagen de perfil
-									</label>
-									<input
-										type="text"
-										value={formData.profile_image_url}
-										onChange={handleChange("profile_image_url")}
-										className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
-									/>
-								</div>
+								{/* Foto de perfil */}
+								{profileImageUploadField}
 							</div>
 						) : null}
 
