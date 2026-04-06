@@ -1,0 +1,52 @@
+En esta sección se debe indicar el marco tecnológico utilizado para la construcción del sistema: entorno de desarrollo (IDE), lenguaje de programación, herramientas de ayuda a la construcción y despliegue, control de versiones, repositorio de componentes, integración contínua, etc.
+
+\subsection{Gestión de imágenes de perfil}
+
+Se ha implementado un mecanismo completo para la gestión de imágenes de perfil de usuario, que permite subir, actualizar y visualizar dichas imágenes dentro del sistema.
+
+\subsubsection{Flujo de subida de imagen}
+
+El proceso de subida de imágenes se realiza mediante un endpoint específico (\texttt{/api/profile/\allowbreak upload-image}) que recibe el archivo desde el cliente en formato \texttt{multipart/\allowbreak form-data}.
+
+El flujo de procesamiento es el siguiente:
+
+\begin{enumerate}
+    \item El usuario selecciona una imagen desde la interfaz de edición de perfil.
+    \item El archivo es enviado al servidor mediante una petición HTTP.
+    \item Se validan las condiciones del archivo:
+    \begin{itemize}
+        \item Tipo de archivo (debe ser una imagen).
+        \item Tamaño máximo permitido (5 MB).
+    \end{itemize}
+    \item El archivo se convierte a formato Base64 para su envío a Cloudinary.
+    \item Se realiza la subida al servicio externo, obteniendo una URL pública.
+    \item Se devuelve la URL generada al cliente para su posterior almacenamiento.
+\end{enumerate}
+
+\subsubsection{Actualización y persistencia}
+
+Una vez subida la imagen, la URL proporcionada por Cloudinary se almacena en el campo \texttt{profile\_image\_url} del usuario. Esta información se utiliza posteriormente para renderizar la imagen en la interfaz.
+
+\subsubsection{Eliminación de imágenes anteriores}
+
+Para evitar la acumulación innecesaria de imágenes en el servicio externo, se ha implementado un mecanismo que elimina la imagen anterior del usuario cuando se sube una nueva. Para ello, se utiliza el identificador público (\texttt{public\_id}) proporcionado por Cloudinary.
+
+\subsubsection{Gestión de errores y fallback visual}
+
+Se ha implementado un sistema de tolerancia a fallos en la visualización de imágenes. En caso de que la imagen no esté disponible (por ejemplo, si ha sido eliminada manualmente del servicio externo), el sistema muestra automáticamente una representación alternativa basada en la inicial del nombre del usuario.
+
+Este comportamiento se encapsula en un componente reutilizable denominado \texttt{UserAvatar}, que gestiona:
+
+\begin{itemize}
+    \item La visualización de la imagen si está disponible.
+    \item La detección de errores de carga.
+    \item La generación de un fallback visual basado en la inicial del usuario.
+\end{itemize}
+
+Este enfoque mejora la robustez de la interfaz y evita la aparición de elementos visuales incorrectos o rotos.
+
+\subsubsection{Componente reutilizable de avatar}
+
+Para garantizar la consistencia visual en toda la aplicación, se ha desarrollado un componente reutilizable encargado de representar la imagen de perfil del usuario. Este componente abstrae la lógica de renderizado y permite su uso en distintas vistas, como listados, perfiles o tarjetas de usuario.
+
+Gracias a esta abstracción, cualquier cambio en la lógica de visualización del avatar se centraliza en un único punto, facilitando el mantenimiento del sistema.

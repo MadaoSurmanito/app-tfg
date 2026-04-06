@@ -1,0 +1,17 @@
+En el diseño del sistema se ha optado por externalizar el almacenamiento de imágenes de perfil de los usuarios mediante el uso de un servicio especializado en gestión de activos multimedia, en lugar de almacenar directamente dichos archivos en la base de datos o en el propio servidor de la aplicación.
+
+Para ello, se ha integrado el servicio Cloudinary, el cual permite gestionar de forma eficiente la subida, almacenamiento y entrega de imágenes a través de una red de distribución de contenidos (CDN).
+
+Esta decisión se fundamenta en los siguientes aspectos:
+
+\begin{itemize}
+    \item \textbf{Escalabilidad}: El almacenamiento de imágenes en un servicio externo evita el crecimiento descontrolado del tamaño de la base de datos y permite gestionar grandes volúmenes de contenido multimedia sin afectar al rendimiento del sistema.
+
+    \item \textbf{Rendimiento}: Cloudinary optimiza automáticamente la entrega de imágenes, reduciendo tiempos de carga mediante técnicas como compresión y distribución geográfica.
+
+    \item \textbf{Separación de responsabilidades}: Se delega la gestión de archivos multimedia a un servicio especializado, permitiendo que la aplicación se centre en la lógica de negocio.
+
+    \item \textbf{Simplicidad del modelo de datos}: En la base de datos únicamente se almacena la URL de la imagen (\texttt{profile\_image\_url}), evitando la necesidad de gestionar binarios.
+\end{itemize}
+
+De este modo, la arquitectura del sistema distingue claramente entre el almacenamiento de datos estructurados (base de datos relacional) y el almacenamiento de contenido multimedia (servicio externo).
