@@ -3,11 +3,29 @@ Este capítulo recoge la arquitectura física planteada para el sistema, las ins
 \section{Arquitectura Física}
 En este apartado, describimos los principales elementos hardware que forman la arquitectura física de nuestro sistema. Se debe incluir un modelo de despliegue en el cual se describe cómo los elementos software son instalados y ejecutados en los elementos hardware (físicos o virtuales). También se incluyen las especificaciones y los requisitos del hardware (servidores, etc.), así como de los elementos software (sistemas operativos, servicios, aplicaciones, etc.) necesarios.
 
+Además de los componentes locales, el sistema integra servicios externos que forman parte de la arquitectura lógica del sistema. En particular, se utiliza el servicio Cloudinary para el almacenamiento y gestión de imágenes de perfil de usuario.
+
+Cloudinary actúa como un sistema externo de almacenamiento multimedia accesible a través de API, permitiendo desacoplar la gestión de archivos del servidor principal de la aplicación.
+
 \section{Instrucciones de despliegue}
 A continuación, se describen las instrucciones de instalación del sistema sobre la infraestructura física descrita anteriormente.
 
 \subsection{Requisitos previos}
 Requisitos hardware y software para la correcta instalación del sistema.
+
+\subsubsection{Servicios externos}
+
+Para el correcto funcionamiento del sistema es necesario disponer de una cuenta en el servicio Cloudinary, utilizado para la gestión de imágenes de perfil.
+
+Se deben configurar las siguientes variables de entorno:
+
+\begin{itemize}
+    \item \texttt{CLOUDINARY\_CLOUD\_NAME}
+    \item \texttt{CLOUDINARY\_API\_KEY}
+    \item \texttt{CLOUDINARY\_API\_SECRET}
+\end{itemize}
+
+Estas credenciales permiten la autenticación con el servicio y son necesarias para la subida y gestión de imágenes desde la aplicación.
 
 \subsection{Inventario de componentes}
 Lista de los componentes hardware y software que se incluyen en la versión del producto.
@@ -15,8 +33,22 @@ Lista de los componentes hardware y software que se incluyen en la versión del 
 \subsection{Procedimientos de instalación}
 Procedimientos de instalación y configuración de cada componente hardware y software (base y desarrollado) para asegurar la correcta instalación y explotación del sistema, así como aquellos procedimientos necesarios de migración/carga de datos.
 
+Como parte de la configuración del sistema, se deben definir las variables de entorno correspondientes a los servicios externos utilizados, incluyendo Cloudinary.
+
+Una vez configuradas dichas variables, el sistema podrá gestionar correctamente la subida y recuperación de imágenes de perfil.
+
 \subsection{Pruebas de implantación}
-Descripción de las pruebas a realizar después de la instalación del sistema. 
+Descripción de las pruebas a realizar después de la instalación del sistema.
 
 \section{Instrucciones para la operación del sistema y mantenimiento del nivel de servicio}
-Procedimientos necesarios para asegurar el correcto funcionamiento, rendimiento, disponibilidad y seguridad del sistema: back-ups, chequeo de logs, etc. También, es preciso indicar claramente aquellas actuaciones precisas necesarias para el mantenimiento preventivo del sistema y así prevenir posibles fallos en el mismo. 
+Procedimientos necesarios para asegurar el correcto funcionamiento, rendimiento, disponibilidad y seguridad del sistema: back-ups, chequeo de logs, etc. También, es preciso indicar claramente aquellas actuaciones precisas necesarias para el mantenimiento preventivo del sistema y así prevenir posibles fallos en el mismo.
+
+En relación con la gestión de imágenes de perfil, se recomienda realizar tareas periódicas de mantenimiento sobre el servicio Cloudinary, tales como:
+
+\begin{itemize}
+    \item Eliminación de imágenes obsoletas o no referenciadas.
+    \item Monitorización del espacio de almacenamiento disponible.
+    \item Revisión de errores de carga de imágenes.
+\end{itemize}
+
+Adicionalmente, el sistema implementa mecanismos de tolerancia a fallos en la carga de imágenes, mostrando una representación alternativa (inicial del usuario) en caso de error.

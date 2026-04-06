@@ -1,15 +1,8 @@
 En este capítulo se recoge el diseño de la arquitectura del sistema informático, la parametrización del software base (opcional), el diseño físico de datos y el diseño detallado de la interfaz de usuario.
 
 \section{Arquitectura del Sistema}
-En esta sección se define la arquitectura general del sistema, especificando la infraestructura tecnológica necesaria para dar soporte al software y la estructura de los componentes que lo forman. Nos centraremos, en este caso, en la arquitectura lógica o de desarrollo del software, dejando para un capítulo posterior la arquitectura física o de despliegue. 
-
-\subsection{Diseño de alto nivel}
-Para describir la arquitectura se puede emplear el modelo C4~\cite{c4model}, el cual permite representar la arquitectura del software mediante varios diagramas a distintos niveles de abstracción, a saber, el \textit{diagrama de contexto} (reflejando las interacciones entre el sistema, sus usuarios y los sistemas externos), el \textit{diagrama de contenedores} (reflejando el conjunto de aplicaciones, servicios y almacenes de datos que componen el sistema) y los \textit{diagramas de componentes} (representando los componentes o módulos que conforman las aplicaciones o servicios a desarrollar).
-
-Existen diferentes patrones o estilos arquitectónicos. Por ejemplo, en los sistemas web de información es común la utilización del patrón Layers (Capas), con el cual estructuramos el sistema en un número apropiado de capas, de forma que todos los componentes de una misma capa trabajan en el mismo nivel de abstracción y los servicios proporcionados por la capa superior utilizan internamente los servicios proporcionados por la capa inmediatamente inferior. 
-
-\subsection{Diseño detallado}
-En el nivel de abstracción más bajo de los propuestos en el modelo C4, nos encontramos con los diagramas de clases UML que representan fielmente la estructura de código fuente. Adicionalmente, se puede definir la interacción existente entre las clases de objetos que permitan responder a eventos externos, mediante diagramas de secuencia o de comunicación.
+\label{sec:SystemArchitecture}
+\input{./sections/development/design/systemarchitecture.tex}
 
 \section{Parametrización del software base}
 En esta sección (opcional), se detallan las modificaciones a realizar sobre el software base, que son requeridas para la correcta construcción del sistema. En esta sección incluiremos las  actuaciones necesarias sobre la interfaz de administración del sistema, sobre el código fuente o sobre el modelo de datos.
