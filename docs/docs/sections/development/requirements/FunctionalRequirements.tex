@@ -24,8 +24,10 @@ La identificación de los requisitos funcionales se ha realizado mediante identi
 
 \begin{itemize}
     \item El sistema debe permitir a los usuarios autenticarse mediante credenciales de acceso.
+    \item El sistema debe validar las credenciales introducidas de forma segura antes de conceder acceso al sistema.
     \item El sistema debe permitir el acceso únicamente a usuarios que se encuentren activos y autorizados.
     \item El sistema debe impedir el acceso a cuentas no autorizadas, denegadas o desactivadas.
+    \item El sistema debe registrar los intentos de acceso, tanto exitosos como fallidos, con el fin de garantizar la trazabilidad y seguridad del sistema.
 \end{itemize}
 
 \vspace{-0.75em}
@@ -53,6 +55,26 @@ La identificación de los requisitos funcionales se ha realizado mediante identi
     \item Entre dichos criterios podrán contemplarse condiciones como la existencia de actividad comercial reciente, el cumplimiento de consumo mínimo o la validación mediante visita comercial.
     \item El sistema debe permitir registrar y consultar el estado de las cuentas de usuario.
     \item El sistema debe mantener un registro de las acciones administrativas relacionadas con la gestión de usuarios.
+\end{itemize}
+
+\vspace{-0.75em}
+\subsubsection{RF-M1-05 Gestión de sesiones}
+\vspace{-1em}
+
+\begin{itemize}
+    \item El sistema debe permitir la creación de sesiones de usuario tras un proceso de autenticación válido.
+    \item El sistema debe permitir la finalización de sesiones activas por parte del usuario o del sistema.
+    \item El sistema debe garantizar que las sesiones revocadas o expiradas no puedan ser reutilizadas.
+\end{itemize}
+
+\vspace{-0.75em}
+\subsubsection{RF-M1-06 Gestión de perfil de usuario}
+\vspace{-1em}
+
+\begin{itemize}
+    \item El sistema debe permitir a los usuarios consultar y modificar su información personal.
+    \item El sistema debe permitir la actualización de datos como nombre, teléfono, empresa o imagen de perfil.
+    \item El sistema debe permitir la modificación de credenciales de acceso, garantizando el cumplimiento de las políticas de seguridad definidas.
 \end{itemize}
 
 % ------------------------------------------------------------------------------
@@ -97,7 +119,7 @@ La identificación de los requisitos funcionales se ha realizado mediante identi
     \item El sistema debe permitir organizar y consultar las rutas de visitas de los agentes comerciales.
     \item El sistema debe facilitar la visualización de los clientes asignados a una jornada o recorrido determinado.
     \item El sistema debe permitir consultar la información de contacto y localización de los clientes incluidos en cada ruta comercial.
-    \item El sistema debe permitir seleccionanr la ubicación de un cliente en particular para generar indicaciones de navegación desde la ubicación actual del agente comercial.
+    \item El sistema debe permitir seleccionar la ubicación de un cliente en particular para generar indicaciones de navegación desde la ubicación actual del agente comercial.
     \item Además, el sistema deberá estar integrado con un servicio externo de navegación para facilitar la localización de los clientes durante las visitas comerciales. Esta integración permitirá generar rutas optimizadas y proporcionar indicaciones en tiempo real a los agentes comerciales durante sus desplazamientos.
 \end{itemize}
 
