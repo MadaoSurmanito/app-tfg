@@ -5,6 +5,8 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	ManyToOne,
+	OneToMany,
+	OneToOne,
 	JoinColumn,
 	Index,
 } from "typeorm";
@@ -12,6 +14,9 @@ import type { Relation } from "typeorm";
 
 import { Role } from "./Role";
 import { UserStatus } from "./UserStatus";
+import { Client } from "./Client";
+import { CommercialVisit } from "./CommercialVisit";
+import { CommercialRoute } from "./CommercialRoute";
 
 @Entity("users")
 @Index("users_role_id_index", ["role_id"])
@@ -54,6 +59,28 @@ export class User {
 	})
 	@JoinColumn({ name: "status_id" })
 	status!: Relation<UserStatus>;
+
+	// Clientes profesionales para los que este usuario actúa como comercial responsable.
+	@OneToMany(() => Client, (client) => client.assignedCommercial)
+	assignedClients!: Relation<Client[]>;
+
+	// Cliente profesional vinculado a esta cuenta de usuario.
+	@OneToOne(() => Client, (client) => client.linkedUser)
+	linkedClient!: Relation<Client | null>;
+
+	// Visitas comerciales realizadas por este usuario en su rol de comercial.
+	@OneToMany(
+		() => CommercialVisit,
+		(commercialVisit) => commercialVisit.commercial,
+	)
+	commercialVisits!: Relation<CommercialVisit[]>;
+
+	// Rutas comerciales asignadas a este usuario en su rol de comercial.
+	@OneToMany(
+		() => CommercialRoute,
+		(commercialRoute) => commercialRoute.commercial,
+	)
+	commercialRoutes!: Relation<CommercialRoute[]>;
 
 	@Column({ type: "text", nullable: true })
 	profile_image_url!: string | null;
