@@ -1,8 +1,8 @@
 import { MigrationInterface } from "typeorm";
 import { QueryRunner } from "typeorm";
 
-export class M1CreateAuditTables1774500000003 implements MigrationInterface {
-	name = "M1CreateAuditTables1774500000003";
+export class M1CreateAuditTables1774468576290 implements MigrationInterface {
+	name = "M1CreateAuditTables1774468576290";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`

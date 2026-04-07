@@ -1,8 +1,8 @@
 import { MigrationInterface } from "typeorm";
 import { QueryRunner } from "typeorm";
 
-export class M1CreateLookupTables1774500000001 implements MigrationInterface {
-	name = "M1CreateLookupTables1774500000001";
+export class M1CreateLookupTables1774468574504 implements MigrationInterface {
+	name = "M1CreateLookupTables1774468574504";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public`);

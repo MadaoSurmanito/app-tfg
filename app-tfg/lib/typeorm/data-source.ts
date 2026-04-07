@@ -13,6 +13,12 @@ import { User } from "./entities/User";
 import { UserRequest } from "./entities/UserRequest";
 import { UserManagementLog } from "./entities/UserManagementLog";
 import { UserAccessLog } from "./entities/UserAccessLog";
+import { CommercialVisitStatus } from "./entities/CommercialVisitStatus";
+import { CommercialRouteStatus } from "./entities/CommercialRouteStatus";
+import { Client } from "./entities/Client";
+import { CommercialVisit } from "./entities/CommercialVisit";
+import { CommercialRoute } from "./entities/CommercialRoute";
+import { RouteVisit } from "./entities/RouteVisit";
 
 export const entities = [
 	Role,
@@ -26,6 +32,12 @@ export const entities = [
 	UserRequest,
 	UserManagementLog,
 	UserAccessLog,
+	CommercialVisitStatus,
+	CommercialRouteStatus,
+	Client,
+	CommercialVisit,
+	CommercialRoute,
+	RouteVisit,
 ];
 
 function createDataSource() {
