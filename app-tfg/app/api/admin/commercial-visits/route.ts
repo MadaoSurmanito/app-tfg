@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import {
 	createCommercialVisit,
+	CreateCommercialVisitError,
 	listCommercialVisitsByClient,
 } from "@/lib/typeorm/services/commercial/commercial-visit";
 
@@ -12,6 +13,7 @@ type CreateCommercialVisitBody = {
 	notes?: string | null;
 };
 
+// GET /api/admin/commercial-visits?clientId=...
 export async function GET(request: Request) {
 	try {
 		const session = await auth();
@@ -21,11 +23,11 @@ export async function GET(request: Request) {
 		}
 
 		const { searchParams } = new URL(request.url);
-		const clientId = searchParams.get("clientId");
+		const clientId = String(searchParams.get("clientId") ?? "");
 
 		if (!clientId) {
 			return NextResponse.json(
-				{ error: "clientId es obligatorio" },
+				{ error: "El parámetro clientId es obligatorio" },
 				{ status: 400 },
 			);
 		}
@@ -43,6 +45,7 @@ export async function GET(request: Request) {
 	}
 }
 
+// POST /api/admin/commercial-visits
 export async function POST(request: Request) {
 	try {
 		const session = await auth();
@@ -57,7 +60,7 @@ export async function POST(request: Request) {
 			clientId: String(body.clientId ?? ""),
 			commercialId: String(body.commercialId ?? ""),
 			scheduledAt: new Date(String(body.scheduledAt ?? "")),
-			notes: body.notes ?? undefined,
+			notes: body.notes ?? null,
 		});
 
 		return NextResponse.json(
@@ -69,6 +72,13 @@ export async function POST(request: Request) {
 		);
 	} catch (error) {
 		console.error("[admin/commercial-visits][POST] error:", error);
+
+		if (error instanceof CreateCommercialVisitError) {
+			return NextResponse.json(
+				{ error: error.message, code: error.code },
+				{ status: error.status },
+			);
+		}
 
 		return NextResponse.json(
 			{ error: "Error al crear la visita comercial" },
