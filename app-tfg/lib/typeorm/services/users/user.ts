@@ -7,11 +7,13 @@ import { UserStatus } from "@/lib/typeorm/entities/UserStatus";
 import { UserAdminActionType } from "@/lib/typeorm/entities/UserAdminActionType";
 import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
 import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
+import { createClientFromUser } from "@/lib/typeorm/services/commercial/client-internal";
 import {
 	REQUEST_SOURCE_TYPE_IDS,
 	REQUEST_STATUS_IDS,
 	USER_ADMIN_ACTION_TYPE_IDS,
 	USER_STATUS_IDS,
+	ROLE_IDS,
 } from "@/lib/typeorm/constants/catalog-ids";
 
 // --------------------------------------------------------------------------
@@ -300,6 +302,17 @@ export async function registerUserByAdmin(input: RegisterUserByAdminInput) {
 				last_login_at: null,
 			}),
 		);
+
+		// --------------------------------------------------------------------------
+		// Creación automática de cliente si el usuario es tipo CLIENT
+		// --------------------------------------------------------------------------
+		if (roleId === ROLE_IDS.CLIENT) {
+			await createClientFromUser(manager, {
+				userId: createdUser.id,
+				name,
+				company,
+			});
+		}
 
 		const reviewedAt = new Date();
 

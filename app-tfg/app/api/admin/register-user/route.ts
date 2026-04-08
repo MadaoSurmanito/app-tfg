@@ -20,7 +20,7 @@ function resolveRoleIdFromType(type: string | undefined) {
 		return ROLE_IDS.COMMERCIAL;
 	}
 
-	if (type === "cliente") {
+	if (type === "cliente") {	
 		return ROLE_IDS.CLIENT;
 	}
 
