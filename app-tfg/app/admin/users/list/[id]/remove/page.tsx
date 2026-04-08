@@ -3,6 +3,8 @@ import Link from "next/link";
 import { requireAdminSession } from "@/lib/auth/require-session";
 import { getUserById } from "@/lib/typeorm/services/users/user";
 import PageTransition from "@/app/components/animations/PageTransition";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 
 // Recibe el ID del usuario a desactivar a través de los parámetros de la URL.
 type Props = {
@@ -87,17 +89,14 @@ export default async function RemoveUserPage({ params }: Props) {
 
 					{/* CASO 3: ACCIÓN DISPONIBLE                                        */}
 					{!isSelf && !isAlreadyInactive ? (
-						<form
+						<SafeForm
 							action={`/api/admin/users/${id}/remove`}
-							method="POST"
 							className="mt-6 flex flex-wrap gap-3"
+							disableUntilHydrated={false}
 						>
-							<button
-								type="submit"
-								className="rounded-xl bg-yellow-500 px-4 py-2 text-sm font-medium text-black transition hover:bg-yellow-400"
-							>
+							<SubmitButton className="rounded-xl bg-yellow-500 px-4 py-2 text-sm font-medium text-black hover:bg-yellow-400">
 								Desactivar usuario
-							</button>
+							</SubmitButton>
 
 							<Link
 								href={`/admin/users/usuarios/${id}`}
@@ -105,7 +104,7 @@ export default async function RemoveUserPage({ params }: Props) {
 							>
 								Cancelar
 							</Link>
-						</form>
+						</SafeForm>
 					) : null}
 
 					{/* ACCIÓN ALTERNATIVA CUANDO NO SE PUEDE EJECUTAR                   */}

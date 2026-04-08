@@ -3,6 +3,8 @@
 import { useState } from "react";
 import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
 import PageTransition from "@/app/components/animations/PageTransition";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 
 // admin/users/registrar
 // Página de registro manual de usuarios desde el panel de administración.
@@ -99,7 +101,7 @@ export default function AdminRegisterUserPage() {
 	return (
 		<PageTransition>
 			<div className="mx-auto mt-12 w-full max-w-sm">
-				<form
+				<SafeForm
 					onSubmit={handleAdminSubmit}
 					className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md"
 				>
@@ -125,6 +127,7 @@ export default function AdminRegisterUserPage() {
 						name="name"
 						type="text"
 						placeholder="Nombre completo"
+						autoComplete="name"
 						required
 						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 					/>
@@ -142,6 +145,7 @@ export default function AdminRegisterUserPage() {
 						name="company"
 						type="text"
 						placeholder="Empresa"
+						autoComplete="organization"
 						required
 						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 					/>
@@ -166,13 +170,13 @@ export default function AdminRegisterUserPage() {
 					/>
 
 					{/* ACCIÓN PRINCIPAL */}
-					<button
-						type="submit"
-						disabled={loading}
-						className="mt-2 rounded-lg bg-black py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+					<SubmitButton
+						isSubmitting={loading}
+						submittingText="Registrando..."
+						className="mt-2 rounded-lg bg-black font-medium text-white hover:opacity-90"
 					>
-						{loading ? "Registrando..." : "Registrar usuario"}
-					</button>
+						Registrar usuario
+					</SubmitButton>
 
 					{/* FEEDBACK */}
 					{/* Muestra mensajes de error o de éxito tras el intento de registro. */}
@@ -180,7 +184,7 @@ export default function AdminRegisterUserPage() {
 					{success && (
 						<p className="text-center text-sm text-green-600">{success}</p>
 					)}
-				</form>
+				</SafeForm>
 			</div>
 		</PageTransition>
 	);

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 
 type Solicitud = {
 	id: string;
@@ -77,9 +79,7 @@ export default function SolicitudReviewCard({
 						<p className="text-xs font-medium uppercase text-black/70">
 							Teléfono
 						</p>
-						<p className="mt-1 text-sm text-black">
-							{solicitud.phone || "-"}
-						</p>
+						<p className="mt-1 text-sm text-black">{solicitud.phone || "-"}</p>
 					</div>
 
 					<div className="glass-section rounded-xl p-4 sm:col-span-2">
@@ -93,7 +93,11 @@ export default function SolicitudReviewCard({
 				</div>
 
 				{showRejectionReason ? (
-					<form action={actionHref} method="POST" className="mt-6">
+					<SafeForm
+						action={actionHref}
+						className="mt-6"
+						disableUntilHydrated={false}
+					>
 						<label
 							htmlFor="rejection_reason"
 							className="mb-2 block text-sm font-medium text-black/85"
@@ -110,12 +114,11 @@ export default function SolicitudReviewCard({
 						/>
 
 						<div className="mt-6 flex flex-wrap gap-3">
-							<button
-								type="submit"
-								className={`rounded-lg px-4 py-2 font-medium text-white transition ${actionClasses}`}
+							<SubmitButton
+								className={`rounded-lg px-4 py-2 font-medium text-white ${actionClasses}`}
 							>
 								{actionLabel}
-							</button>
+							</SubmitButton>
 
 							<Link
 								href="/admin/solicitudes"
@@ -124,17 +127,16 @@ export default function SolicitudReviewCard({
 								Cancelar
 							</Link>
 						</div>
-					</form>
+					</SafeForm>
 				) : (
 					<div className="mt-6 flex flex-wrap gap-3">
-						<form action={actionHref} method="POST">
-							<button
-								type="submit"
-								className={`rounded-lg px-4 py-2 font-medium text-white transition ${actionClasses}`}
+						<SafeForm action={actionHref} disableUntilHydrated={false}>
+							<SubmitButton
+								className={`rounded-lg px-4 py-2 font-medium text-white ${actionClasses}`}
 							>
 								{actionLabel}
-							</button>
-						</form>
+							</SubmitButton>
+						</SafeForm>
 
 						<Link
 							href="/admin/solicitudes"

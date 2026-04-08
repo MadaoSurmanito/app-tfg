@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
 import UserAvatar from "@/app/components/users/UserAvatar";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 import {
 	formatDate,
 	getRoleClassesLight,
@@ -348,7 +350,7 @@ export default function UserProfileCard({
 	// ============================================================================
 	// ENVÍO DEL FORMULARIO
 	// ============================================================================
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		if (!submitUrl || !requestPayload) return;
@@ -411,7 +413,7 @@ export default function UserProfileCard({
 				</div>
 			) : null}
 
-			<form
+			<SafeForm
 				onSubmit={handleSubmit}
 				className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md"
 			>
@@ -699,13 +701,13 @@ export default function UserProfileCard({
 				{/* ==================================================================== */}
 				{!isViewMode ? (
 					<div className="mt-6 flex flex-wrap gap-3">
-						<button
-							type="submit"
-							disabled={isSaving}
-							className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+						<SubmitButton
+							isSubmitting={isSaving}
+							submittingText="Guardando..."
+							className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
 						>
-							{isSaving ? "Guardando..." : (submitLabel ?? "Guardar cambios")}
-						</button>
+							{submitLabel ?? "Guardar cambios"}
+						</SubmitButton>
 
 						{/* ---------------------------------------------------------------- */}
 						{/* MODO 2: EDIT -> botón de restablecer                              */}
@@ -733,7 +735,7 @@ export default function UserProfileCard({
 						) : null}
 					</div>
 				) : null}
-			</form>
+			</SafeForm>
 		</div>
 	);
 }

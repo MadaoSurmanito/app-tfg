@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import PageTransition from "../components/animations/PageTransition";
 import PasswordFieldWithStrength from "../components/users/PasswordFieldWithStrength";
+import SafeForm from "../components/forms/SafeForm";
+import SubmitButton from "../components/forms/SubmitButton";
 
 export default function RegisterPage() {
 	const [leaving, setLeaving] = useState(false);
@@ -32,10 +34,8 @@ export default function RegisterPage() {
 		const password = String(formData.get("password") ?? "");
 		const confirmPassword = String(formData.get("confirm_password") ?? "");
 
-
-
 		// Validación básica de campos requeridos del formulario público
-		if (!email || !name || !company || !password || !confirmPassword ) {
+		if (!email || !name || !company || !password || !confirmPassword) {
 			setError("Por favor, completa todos los campos requeridos");
 			setLoading(false);
 			return;
@@ -82,6 +82,7 @@ export default function RegisterPage() {
 
 			// Tras mostrar confirmación, redirigimos al login
 			setTimeout(() => {
+				setLeaving(true);
 				router.push("/login");
 			}, 2000);
 		} catch {
@@ -94,12 +95,13 @@ export default function RegisterPage() {
 	return (
 		<main className="app-bg min-h-[100svh] w-full px-4 py-4 text-slate-800">
 			<HeaderTitle title="KinEstilistas" />
+
 			<PageTransition
 				isLeaving={leaving}
 				className="mx-auto max-w-2xl rounded-2xl p-6 text-center"
 			>
 				<div className="mx-auto mt-6 w-full max-w-sm">
-					<form
+					<SafeForm
 						onSubmit={handleSubmit}
 						className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-md"
 					>
@@ -111,6 +113,7 @@ export default function RegisterPage() {
 							name="name"
 							type="text"
 							placeholder="Nombre completo"
+							autoComplete="name"
 							required
 							className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 						/>
@@ -128,6 +131,7 @@ export default function RegisterPage() {
 							name="company"
 							type="text"
 							placeholder="Empresa"
+							autoComplete="organization"
 							required
 							className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 						/>
@@ -148,13 +152,13 @@ export default function RegisterPage() {
 							showConfirm
 						/>
 
-						<button
-							type="submit"
-							disabled={loading}
-							className="mt-2 rounded-lg bg-black py-3 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+						<SubmitButton
+							isSubmitting={loading}
+							submittingText="Enviando..."
+							className="mt-2 rounded-lg bg-black font-medium text-white hover:opacity-90"
 						>
-							{loading ? "Enviando..." : "Solicitar acceso"}
-						</button>
+							Solicitar acceso
+						</SubmitButton>
 
 						{error && (
 							<p className="text-center text-sm text-red-600">{error}</p>
@@ -163,7 +167,7 @@ export default function RegisterPage() {
 						{success && (
 							<p className="text-center text-sm text-green-600">{success}</p>
 						)}
-					</form>
+					</SafeForm>
 				</div>
 
 				<div className="mx-auto mt-6 w-full max-w-sm text-center">

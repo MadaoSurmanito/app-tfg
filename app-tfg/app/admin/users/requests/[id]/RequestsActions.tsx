@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 
 type Props = {
 	solicitudId: string;
@@ -129,7 +131,7 @@ export default function RequestsActions({ solicitudId }: Props) {
 
 			{/* BLOQUE DE RECHAZO */}
 			{/* Recoge el motivo del rechazo para dejar constancia en el sistema. */}
-			<form
+			<SafeForm
 				onSubmit={handleRejectSubmit}
 				className="rounded-2xl border border-red-200 bg-white p-6 shadow-md"
 			>
@@ -160,15 +162,16 @@ export default function RequestsActions({ solicitudId }: Props) {
 						/>
 					</div>
 
-					<button
-						type="submit"
-						disabled={approveLoading || rejectLoading}
-						className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+					<SubmitButton
+						isSubmitting={rejectLoading}
+						disabled={approveLoading}
+						submittingText="Rechazando..."
+						className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700"
 					>
-						{rejectLoading ? "Rechazando..." : "Confirmar rechazo"}
-					</button>
+						Confirmar rechazo
+					</SubmitButton>
 				</div>
-			</form>
+			</SafeForm>
 
 			{/* FEEDBACK DE ERROR */}
 			{/* Se muestra un mensaje común si falla cualquiera de las dos acciones. */}

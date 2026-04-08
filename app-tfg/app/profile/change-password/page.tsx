@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import HeaderTitle from "@/app/components/basics/HeaderTitle";
 import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 
 // Página para cambiar la contraseña propia
 export default async function ChangePasswordPage() {
@@ -16,9 +18,9 @@ export default async function ChangePasswordPage() {
 			<HeaderTitle title="Cambiar contraseña" />
 
 			<div className="mx-auto mt-6 w-full max-w-2xl">
-				<form
+				<SafeForm
 					action="/api/account/change-password"
-					method="POST"
+					disableUntilHydrated={false}
 					className="rounded-2xl border border-white/15 bg-white/10 p-6 shadow-lg backdrop-blur"
 				>
 					<div className="space-y-4">
@@ -47,14 +49,11 @@ export default async function ChangePasswordPage() {
 					</div>
 
 					<div className="mt-6">
-						<button
-							type="submit"
-							className="rounded-xl bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700"
-						>
+						<SubmitButton className="rounded-xl bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700">
 							Cambiar contraseña
-						</button>
+						</SubmitButton>
 					</div>
-				</form>
+				</SafeForm>
 			</div>
 		</>
 	);
