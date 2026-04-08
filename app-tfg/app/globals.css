@@ -30,7 +30,7 @@ body {
 	inset: 0;
 	z-index: -2;
 	background-image: url("/bgs/fondo-default-PC.jpg");
-  background-attachment: fixed;
+	background-attachment: fixed;
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -48,4 +48,40 @@ body {
 		rgba(15, 23, 42, 0.35),
 		rgba(15, 23, 42, 0.55)
 	);
+}
+
+@keyframes pageEnter {
+	from {
+		opacity: 0;
+		transform: translateY(16px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes pageEnterIOS {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.page-enter {
+	animation-name: pageEnter;
+	animation-fill-mode: both;
+	animation-timing-function: ease-out;
+	will-change: opacity, transform;
+}
+
+.page-enter-ios {
+	animation-name: pageEnterIOS;
+	animation-fill-mode: both;
+	animation-timing-function: ease-out;
+	will-change: opacity, transform;
 }

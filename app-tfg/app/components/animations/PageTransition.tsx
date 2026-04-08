@@ -37,13 +37,24 @@ export default function PageTransition({
 
 	// Detecta iOS y lanza la animación de entrada al montar
 	useEffect(() => {
-		setIsIOS(isIOSDevice());
+		const ios = isIOSDevice();
+		setIsIOS(ios);
 
-		const enterTimer = setTimeout(() => {
+		const enterTimer = window.setTimeout(() => {
 			setPhase("entered");
 		}, 30);
 
-		return () => clearTimeout(enterTimer);
+		// Failsafe extra para Safari/PWA:
+		// aunque algo raro ocurra con el primer timeout o con la hidratación,
+		// forzamos igualmente el estado visible poco después.
+		const visibleFallbackTimer = window.setTimeout(() => {
+			setPhase((current) => (current === "entering" ? "entered" : current));
+		}, 220);
+
+		return () => {
+			window.clearTimeout(enterTimer);
+			window.clearTimeout(visibleFallbackTimer);
+		};
 	}, []);
 
 	// Cuando isLeaving pasa a true, activa la fase de salida
@@ -55,19 +66,19 @@ export default function PageTransition({
 
 		setPhase("leaving");
 
-		const exitTimer = setTimeout(() => {
+		const exitTimer = window.setTimeout(() => {
 			if (!exitCallbackCalledRef.current) {
 				exitCallbackCalledRef.current = true;
 				onExited?.();
 			}
 		}, durationMs);
 
-		return () => clearTimeout(exitTimer);
+		return () => window.clearTimeout(exitTimer);
 	}, [isLeaving, durationMs, onExited]);
 
 	const baseTransition = isIOS
-		? `transition-opacity ease-out`
-		: `transition-all ease-out`;
+		? "transition-opacity ease-out"
+		: "transition-all ease-out";
 
 	const durationStyle = {
 		transitionDuration: `${durationMs}ms`,
