@@ -32,7 +32,6 @@ export async function createClientFromUser(
 		contact_name: input.name,
 		address: "Pendiente",
 		city: "Pendiente",
-		assigned_commercial_id: input.userId, // temporal (luego lo podrás cambiar)
 		linked_user_id: input.userId,
 		notes: "Cliente creado automáticamente",
 	});

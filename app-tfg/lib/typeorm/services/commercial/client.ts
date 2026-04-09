@@ -21,7 +21,6 @@ type CreateClientInput = {
 	city: string;
 	postalCode?: string | null;
 	province?: string | null;
-	assignedCommercialId: string;
 	linkedUserId: string;
 	notes?: string | null;
 };
@@ -35,7 +34,6 @@ type UpdateClientInput = {
 	city: string;
 	postalCode?: string | null;
 	province?: string | null;
-	assignedCommercialId: string;
 	notes?: string | null;
 };
 
@@ -56,14 +54,6 @@ export async function createClient(input: CreateClientInput) {
 	return ds.transaction(async (manager) => {
 		const clientRepo = manager.getRepository(Client);
 		const userRepo = manager.getRepository(User);
-
-		const assignedCommercial = await userRepo.findOne({
-			where: { id: input.assignedCommercialId },
-		});
-
-		if (!assignedCommercial || assignedCommercial.role_id !== ROLE_IDS.COMMERCIAL) {
-			throw new CreateClientError("Comercial inválido");
-		}
 
 		const linkedUser = await userRepo.findOne({
 			where: { id: input.linkedUserId },
@@ -89,7 +79,6 @@ export async function createClient(input: CreateClientInput) {
 			city: normalizeText(input.city),
 			postal_code: normalizeText(input.postalCode) || null,
 			province: normalizeText(input.province) || null,
-			assigned_commercial_id: input.assignedCommercialId,
 			linked_user_id: input.linkedUserId,
 			notes: normalizeText(input.notes) || null,
 		});
@@ -106,7 +95,6 @@ export async function getClientById(id: string) {
 	return repo.findOne({
 		where: { id },
 		relations: {
-			assignedCommercial: true,
 			linkedUser: true,
 		},
 	});
@@ -119,7 +107,6 @@ export async function listClients() {
 
 	return repo.find({
 		relations: {
-			assignedCommercial: true,
 			linkedUser: true,
 		},
 		order: { created_at: "DESC" },
@@ -135,7 +122,9 @@ export async function updateClient(input: UpdateClientInput) {
 
 		const client = await repo.findOne({ where: { id: input.clientId } });
 
-		if (!client) throw new Error("Cliente no encontrado");
+		if (!client) {
+			throw new Error("Cliente no encontrado");
+		}
 
 		client.name = normalizeText(input.name);
 		client.contact_name = normalizeText(input.contactName) || null;
@@ -144,9 +133,7 @@ export async function updateClient(input: UpdateClientInput) {
 		client.city = normalizeText(input.city);
 		client.postal_code = normalizeText(input.postalCode) || null;
 		client.province = normalizeText(input.province) || null;
-		client.assigned_commercial_id = input.assignedCommercialId;
 		client.notes = normalizeText(input.notes) || null;
-
 		client.updated_at = new Date();
 
 		await repo.save(client);

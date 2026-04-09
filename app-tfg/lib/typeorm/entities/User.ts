@@ -60,10 +60,6 @@ export class User {
 	@JoinColumn({ name: "status_id" })
 	status!: Relation<UserStatus>;
 
-	// Clientes profesionales para los que este usuario actúa como comercial responsable.
-	@OneToMany(() => Client, (client) => client.assignedCommercial)
-	assignedClients!: Relation<Client[]>;
-
 	// Cliente profesional vinculado a esta cuenta de usuario.
 	@OneToOne(() => Client, (client) => client.linkedUser)
 	linkedClient!: Relation<Client | null>;

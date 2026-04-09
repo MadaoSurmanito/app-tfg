@@ -16,7 +16,6 @@ type CreateClientBody = {
 	city?: string;
 	postalCode?: string | null;
 	province?: string | null;
-	assignedCommercialId?: string;
 	linkedUserId?: string;
 	notes?: string | null;
 };
@@ -62,7 +61,6 @@ export async function POST(request: Request) {
 			city: String(body.city ?? ""),
 			postalCode: body.postalCode ?? null,
 			province: body.province ?? null,
-			assignedCommercialId: String(body.assignedCommercialId ?? ""),
 			linkedUserId: String(body.linkedUserId ?? ""),
 			notes: body.notes ?? null,
 		});

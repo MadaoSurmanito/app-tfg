@@ -13,7 +13,6 @@ import type { Relation } from "typeorm";
 import { User } from "./User";
 
 @Entity("clients")
-@Index("clients_assigned_commercial_id_index", ["assigned_commercial_id"])
 @Index("clients_linked_user_id_index", ["linked_user_id"])
 @Index("clients_name_index", ["name"])
 export class Client {
@@ -41,15 +40,8 @@ export class Client {
 	@Column({ type: "text", nullable: true })
 	province!: string | null;
 
-	@Column({ type: "uuid" })
-	assigned_commercial_id!: string;
-
 	@Column({ type: "uuid", unique: true })
 	linked_user_id!: string;
-
-	@ManyToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
-	@JoinColumn({ name: "assigned_commercial_id" })
-	assignedCommercial!: Relation<User>;
 
 	@ManyToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "linked_user_id" })
