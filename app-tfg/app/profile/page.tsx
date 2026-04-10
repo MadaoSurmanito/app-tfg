@@ -8,6 +8,7 @@ import BottomNav from "@/app/components/basics/BottomNav";
 import { requireUserSession } from "@/lib/auth/require-session";
 // profile/page
 // Página de perfil del usuario autenticado, donde puede consultar y editar su información personal.
+
 // Solo accesible para usuarios autenticados, sin importar su rol.
 export default async function ProfilePage() {
 	// CONTROL DE ACCESO
@@ -16,7 +17,6 @@ export default async function ProfilePage() {
 
 	const user = await getUserById(session.user.id);
 	const role = user?.role.code;
-
 	// Si el usuario no existe o su rol no es válido, se redirige a la página de inicio.
 	if (!user) {
 		redirect("/");
@@ -61,6 +61,21 @@ export default async function ProfilePage() {
 										code: user.status.code as "active" | "inactive" | "blocked",
 									},
 								}}
+								clientProfile={
+									user.linkedClient
+										? {
+												id: user.linkedClient.id,
+												name: user.linkedClient.name,
+												contact_name: user.linkedClient.contact_name,
+												tax_id: user.linkedClient.tax_id,
+												address: user.linkedClient.address,
+												city: user.linkedClient.city,
+												postal_code: user.linkedClient.postal_code,
+												province: user.linkedClient.province,
+												notes: user.linkedClient.notes,
+											}
+										: null
+								}
 							/>
 						</div>
 					</section>

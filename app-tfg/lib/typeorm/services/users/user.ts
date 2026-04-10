@@ -176,7 +176,8 @@ export async function deactivateUser(input: DeactivateUserInput) {
 	});
 }
 
-// Servicio para obtener un usuario por su ID, incluyendo su rol y estado. Devuelve null si no se encuentra el usuario.
+// Servicio para obtener un usuario por su ID, incluyendo su rol y estado.
+// Devuelve null si no se encuentra el usuario.
 export async function getUserById(id: string) {
 	const ds = await getDataSource();
 	const repo = ds.getRepository(User);
@@ -186,6 +187,7 @@ export async function getUserById(id: string) {
 		relations: {
 			role: true,
 			status: true,
+			linkedClient: true,
 		},
 	});
 }
