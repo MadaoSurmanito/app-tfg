@@ -5,7 +5,7 @@ import {
 import {
 	FormDataState,
 	UserProfileCardUser,
-} from "@/app/components/users/user-profile-card-types";
+} from "@/app/components/users/profile/user-profile-card-types";
 
 // ----------------------------------------------------------------------------
 // HELPERS DE USER PROFILE CARD

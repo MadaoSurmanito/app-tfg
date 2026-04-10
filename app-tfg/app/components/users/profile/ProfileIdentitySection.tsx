@@ -1,7 +1,7 @@
 "use client";
 
 import UserAvatar from "@/app/components/users/UserAvatar";
-import ProfileImageUploadField from "@/app/components/users/ProfileImageUploadField";
+import ProfileImageUploadField from "@/app/components/users/profile/ProfileImageUploadField";
 import {
 	getRoleClassesLight,
 	getRoleLabel,
@@ -11,7 +11,7 @@ import {
 import {
 	FormDataState,
 	UserProfileCardUser,
-} from "@/app/components/users/user-profile-card-types";
+} from "@/app/components/users/profile/user-profile-card-types";
 
 type Props = {
 	user: UserProfileCardUser;

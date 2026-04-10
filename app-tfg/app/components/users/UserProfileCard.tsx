@@ -3,19 +3,19 @@
 import { useMemo, useRef, useState } from "react";
 import SafeForm from "@/app/components/forms/SafeForm";
 import ClientProfileFieldsSection from "@/app/components/clients/ClientProfileFieldsSection";
-import ProfileIdentitySection from "@/app/components/users/ProfileIdentitySection";
-import ProfileDetailsSection from "@/app/components/users/ProfileDetailsSection";
-import ProfilePasswordSection from "@/app/components/users/ProfilePasswordSection";
-import ProfileFeedbackMessages from "@/app/components/users/ProfileFeedbackMessages";
-import ProfileActionsSection from "@/app/components/users/ProfileActionsSection";
+import ProfileIdentitySection from "@/app/components/users/profile/ProfileIdentitySection";
+import ProfileDetailsSection from "@/app/components/users/profile/ProfileDetailsSection";
+import ProfilePasswordSection from "@/app/components/users/profile/ProfilePasswordSection";
+import ProfileFeedbackMessages from "@/app/components/users/profile/ProfileFeedbackMessages";
+import ProfileActionsSection from "@/app/components/users/profile/ProfileActionsSection";
 import {
 	type FormDataState,
 	type UserProfileCardProps,
-} from "@/app/components/users/user-profile-card-types";
+} from "@/app/components/users/profile/user-profile-card-types";
 import {
 	buildInitialFormData,
 	toDateString,
-} from "@/app/components/users/user-profile-card-utils";
+} from "@/app/components/users/profile/user-profile-card-utils";
 
 export default function UserProfileCard({
 	user,

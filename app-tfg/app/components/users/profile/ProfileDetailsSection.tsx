@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/utils/user-utils";
 import {
 	FormDataState,
 	CatalogOption,
-} from "@/app/components/users/user-profile-card-types";
+} from "@/app/components/users/profile/user-profile-card-types";
 
 type Props = {
 	formData: FormDataState;
