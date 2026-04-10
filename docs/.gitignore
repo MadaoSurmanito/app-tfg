@@ -13,3 +13,6 @@
 
 # PDF generado (opcional)
 main.pdf
+
+# Ignorar el directorio de ejemplo
+/docs-example
