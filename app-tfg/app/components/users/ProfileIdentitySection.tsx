@@ -1,0 +1,166 @@
+"use client";
+
+import UserAvatar from "@/app/components/users/UserAvatar";
+import ProfileImageUploadField from "@/app/components/users/ProfileImageUploadField";
+import {
+	getRoleClassesLight,
+	getRoleLabel,
+	getStatusClassesLight,
+	getStatusLabel,
+} from "@/lib/utils/user-utils";
+import {
+	FormDataState,
+	UserProfileCardUser,
+} from "@/app/components/users/user-profile-card-types";
+
+type Props = {
+	user: UserProfileCardUser;
+	formData: FormDataState;
+	isViewMode: boolean;
+	isSelfEditMode: boolean;
+	isAdminEditMode: boolean;
+	displayedProfileImage?: string | null;
+	profileImageStatusText: string | null;
+	isUploadingImage: boolean;
+	fileInputRef: React.RefObject<HTMLInputElement | null>;
+	onChange: (
+		field: keyof FormDataState,
+	) => (
+		e: React.ChangeEvent<
+			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+		>,
+	) => void;
+	onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onOpenFilePicker: () => void;
+};
+
+export default function ProfileIdentitySection({
+	user,
+	formData,
+	isViewMode,
+	isSelfEditMode,
+	isAdminEditMode,
+	displayedProfileImage,
+	profileImageStatusText,
+	isUploadingImage,
+	fileInputRef,
+	onChange,
+	onFileChange,
+	onOpenFilePicker,
+}: Props) {
+	return (
+		<div className="flex flex-col gap-6 md:flex-row md:items-start">
+			<UserAvatar name={user.name} imageUrl={displayedProfileImage} size="xl" />
+
+			<div className="min-w-0 flex-1">
+				{/* ---------------------------------------------------------------- */}
+				{/* MODO 1: VIEW                                                     */}
+				{/* ---------------------------------------------------------------- */}
+				{isViewMode ? (
+					<>
+						<h2 className="text-xl font-semibold text-slate-800">
+							{user.name}
+						</h2>
+						<p className="mt-1 text-sm text-slate-600">{user.email}</p>
+					</>
+				) : null}
+
+				{/* ---------------------------------------------------------------- */}
+				{/* MODO 2: EDIT (perfil propio)                                      */}
+				{/* ---------------------------------------------------------------- */}
+				{isSelfEditMode ? (
+					<div className="grid grid-cols-1 gap-4">
+						<div>
+							<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+								Nombre
+							</label>
+							<input
+								type="text"
+								value={formData.name}
+								onChange={onChange("name")}
+								className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+								required
+							/>
+						</div>
+
+						<div>
+							<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+								Correo electrónico
+							</p>
+							<p className="mt-1 text-sm text-slate-600">{user.email}</p>
+						</div>
+
+						<ProfileImageUploadField
+							displayedProfileImage={displayedProfileImage}
+							isUploadingImage={isUploadingImage}
+							profileImageStatusText={profileImageStatusText}
+							fileInputRef={fileInputRef}
+							onFileChange={onFileChange}
+							onOpenFilePicker={onOpenFilePicker}
+						/>
+					</div>
+				) : null}
+
+				{/* ---------------------------------------------------------------- */}
+				{/* MODO 3: ADMIN-EDIT                                                */}
+				{/* ---------------------------------------------------------------- */}
+				{isAdminEditMode ? (
+					<div className="grid grid-cols-1 gap-4">
+						<div>
+							<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+								Nombre
+							</label>
+							<input
+								type="text"
+								value={formData.name}
+								onChange={onChange("name")}
+								className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+								required
+							/>
+						</div>
+
+						<div>
+							<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+								Correo electrónico
+							</label>
+							<input
+								type="email"
+								value={formData.email}
+								onChange={onChange("email")}
+								className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+								required
+							/>
+						</div>
+
+						<ProfileImageUploadField
+							displayedProfileImage={displayedProfileImage}
+							isUploadingImage={isUploadingImage}
+							profileImageStatusText={profileImageStatusText}
+							fileInputRef={fileInputRef}
+							onFileChange={onFileChange}
+							onOpenFilePicker={onOpenFilePicker}
+						/>
+					</div>
+				) : null}
+
+				<div className="mt-3 flex flex-wrap gap-2">
+					<span
+						className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getRoleClassesLight(
+							user.role.code,
+						)}`}
+					>
+						{getRoleLabel(user.role.code)}
+					</span>
+
+					<span
+						className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusClassesLight(
+							user.status.code,
+						)}`}
+					>
+						{getStatusLabel(user.status.code)}
+					</span>
+				</div>
+			</div>
+		</div>
+	);
+}

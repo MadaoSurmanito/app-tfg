@@ -141,3 +141,16 @@ export async function updateClient(input: UpdateClientInput) {
 		return client;
 	});
 }
+
+// Obtener cliente por usuario vinculado
+export async function getClientByLinkedUserId(linkedUserId: string) {
+	const ds = await getDataSource();
+	const repo = ds.getRepository(Client);
+
+	return repo.findOne({
+		where: { linked_user_id: linkedUserId },
+		relations: {
+			linkedUser: true,
+		},
+	});
+}
