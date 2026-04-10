@@ -173,6 +173,7 @@ export default function UserProfileCard({
 		if (isSelfEditMode) {
 			return {
 				name: formData.name,
+				email: formData.email,
 				company: formData.company,
 				phone: formData.phone,
 				profile_image_url: formData.profile_image_url,
@@ -187,6 +188,7 @@ export default function UserProfileCard({
 							city: formData.city,
 							postal_code: formData.postal_code,
 							province: formData.province,
+							notes: formData.notes,
 						}
 					: null,
 			};

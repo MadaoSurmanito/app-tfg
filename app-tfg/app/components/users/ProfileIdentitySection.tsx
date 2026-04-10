@@ -84,10 +84,16 @@ export default function ProfileIdentitySection({
 						</div>
 
 						<div>
-							<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+							<label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
 								Correo electrónico
-							</p>
-							<p className="mt-1 text-sm text-slate-600">{user.email}</p>
+							</label>
+							<input
+								type="email"
+								value={formData.email}
+								onChange={onChange("email")}
+								className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-slate-400"
+								required
+							/>
 						</div>
 
 						<ProfileImageUploadField

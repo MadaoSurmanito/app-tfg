@@ -45,6 +45,7 @@ export default async function ProfilePage() {
 							<UserProfileCard
 								mode="edit"
 								submitUrl="/api/profile"
+								allowPasswordChange
 								user={{
 									id: user.id,
 									name: user.name,

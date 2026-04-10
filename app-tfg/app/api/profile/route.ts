@@ -8,6 +8,7 @@ import { Client } from "@/lib/typeorm/entities/Client";
 
 type UpdateProfileRequestBody = {
 	name?: string;
+	email?: string;
 	company?: string | null;
 	phone?: string | null;
 	profile_image_url?: string | null;
@@ -29,6 +30,18 @@ type UpdateProfileRequestBody = {
 // Normaliza un texto: si es null o undefined lo convierte a cadena vacía, y recorta espacios al inicio y al final
 function normalizeText(value: string | null | undefined) {
 	return String(value ?? "").trim();
+}
+
+// Normaliza un correo electrónico para almacenarlo y compararlo correctamente
+function normalizeEmail(value: string | null | undefined) {
+	return String(value ?? "")
+		.trim()
+		.toLowerCase();
+}
+
+// Valida el formato básico de un correo electrónico
+function isValidEmail(value: string) {
+	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 // Valida que una URL sea una imagen válida de Cloudinary (o que sea null/undefined)
@@ -60,6 +73,7 @@ export async function PATCH(request: Request) {
 		const body = (await request.json()) as UpdateProfileRequestBody;
 
 		const name = normalizeText(body.name);
+		const email = normalizeEmail(body.email);
 		const company = normalizeText(body.company) || null;
 		const phone = normalizeText(body.phone) || null;
 		const profileImageUrl = normalizeText(body.profile_image_url) || null;
@@ -81,6 +95,26 @@ export async function PATCH(request: Request) {
 				{
 					message: "El nombre es obligatorio",
 					code: "INVALID_NAME",
+				},
+				{ status: 400 },
+			);
+		}
+
+		if (!email) {
+			return NextResponse.json(
+				{
+					message: "El correo electrónico es obligatorio",
+					code: "INVALID_EMAIL",
+				},
+				{ status: 400 },
+			);
+		}
+
+		if (!isValidEmail(email)) {
+			return NextResponse.json(
+				{
+					message: "El correo electrónico no es válido",
+					code: "INVALID_EMAIL_FORMAT",
 				},
 				{ status: 400 },
 			);
@@ -127,10 +161,25 @@ export async function PATCH(request: Request) {
 				throw new Error("USER_NOT_FOUND");
 			}
 
+			// Si el usuario intenta cambiar su correo, comprobamos que no exista ya
+			// otro usuario con ese mismo email.
+			if (user.email !== email) {
+				const existingUserWithEmail = await userRepo.findOne({
+					where: { email },
+					select: {
+						id: true,
+						email: true,
+					},
+				});
+
+				if (existingUserWithEmail && existingUserWithEmail.id !== user.id) {
+					throw new Error("EMAIL_ALREADY_IN_USE");
+				}
+			}
+
 			user.name = name;
-
+			user.email = email;
 			user.company = company;
-
 			user.phone = phone;
 			user.profile_image_url = profileImageUrl;
 
@@ -172,8 +221,8 @@ export async function PATCH(request: Request) {
 		return NextResponse.json(
 			{
 				message: password
-					? "Perfil y contraseña actualizados correctamente"
-					: "Perfil actualizado correctamente",
+					? "Perfil, correo y contraseña actualizados correctamente"
+					: "Perfil y correo actualizados correctamente",
 			},
 			{ status: 200 },
 		);
@@ -187,6 +236,16 @@ export async function PATCH(request: Request) {
 					code: "USER_NOT_FOUND",
 				},
 				{ status: 404 },
+			);
+		}
+
+		if (error instanceof Error && error.message === "EMAIL_ALREADY_IN_USE") {
+			return NextResponse.json(
+				{
+					message: "Ya existe un usuario con ese correo electrónico",
+					code: "EMAIL_ALREADY_IN_USE",
+				},
+				{ status: 409 },
 			);
 		}
 
