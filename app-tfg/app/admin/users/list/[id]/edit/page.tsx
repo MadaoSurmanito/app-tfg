@@ -16,6 +16,7 @@ type Props = {
 // así como su rol, estado y contraseña.
 export default async function EditUsuarioPage({ params }: Props) {
 	// PARÁMETROS Y CARGA DE DATOS
+
 	// Obtiene el ID del usuario a editar desde la URL.
 	const { id } = await params;
 
@@ -37,14 +38,24 @@ export default async function EditUsuarioPage({ params }: Props) {
 	// RENDER
 	return (
 		<PageTransition>
-			{/* TARJETA DE PERFIL EN MODO EDICIÓN */}
 			<UserProfileCard
 				mode="admin-edit"
-				title="Editar usuario"
-				subtitle="Modifica la información, el rol, el estado y la contraseña del usuario."
-				backHref={`/admin/users/list/${usuario.id}`}
-				submitLabel="Guardar cambios"
 				submitUrl={`/api/admin/users/${usuario.id}`}
+				clientProfile={
+					usuario.linkedClient
+						? {
+								id: usuario.linkedClient.id,
+								name: usuario.linkedClient.name,
+								contact_name: usuario.linkedClient.contact_name,
+								tax_id: usuario.linkedClient.tax_id,
+								address: usuario.linkedClient.address,
+								city: usuario.linkedClient.city,
+								postal_code: usuario.linkedClient.postal_code,
+								province: usuario.linkedClient.province,
+								notes: usuario.linkedClient.notes,
+							}
+						: null
+				}
 				roles={roles.map((role) => ({
 					id: role.id,
 					name: role.name,

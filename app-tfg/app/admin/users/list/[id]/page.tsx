@@ -14,6 +14,7 @@ type Props = {
 // Permite visualizar toda la información del usuario en modo lectura.
 export default async function UsuarioDetallePage({ params }: Props) {
 	// PARÁMETROS Y CARGA DE DATOS
+
 	// Obtiene el ID del usuario desde la URL.
 	const { id } = await params;
 
@@ -28,11 +29,9 @@ export default async function UsuarioDetallePage({ params }: Props) {
 	// RENDER
 	return (
 		<PageTransition>
-			<div className="mx-auto w-full max-w-4xl">
+			<div className="space-y-4">
 				{/* BOTÓN DE NAVEGACIÓN ATRÁS */}
-				<div className="mb-4">
-					<BackButton />
-				</div>
+				<BackButton />
 
 				{/* TARJETA DE PERFIL EN MODO VISUALIZACIÓN */}
 				<UserProfileCard
@@ -53,6 +52,21 @@ export default async function UsuarioDetallePage({ params }: Props) {
 							code: user.status.code as "active" | "inactive" | "blocked",
 						},
 					}}
+					clientProfile={
+						user.linkedClient
+							? {
+									id: user.linkedClient.id,
+									name: user.linkedClient.name,
+									contact_name: user.linkedClient.contact_name,
+									tax_id: user.linkedClient.tax_id,
+									address: user.linkedClient.address,
+									city: user.linkedClient.city,
+									postal_code: user.linkedClient.postal_code,
+									province: user.linkedClient.province,
+									notes: user.linkedClient.notes,
+								}
+							: null
+					}
 				/>
 			</div>
 		</PageTransition>
