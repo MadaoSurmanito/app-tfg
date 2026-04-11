@@ -5,6 +5,13 @@ import { randomUUID } from "crypto";
 import { findUserForLogin } from "@/lib/typeorm/services/auth/find-user-for-login";
 import { logAccessEvent } from "@/lib/typeorm/services/auth/log-access-event";
 import { registerSuccessfulLogin } from "@/lib/typeorm/services/auth/register-successful-login";
+import {
+	applyRateLimit,
+	getClientIpFromHeaders,
+	normalizeRateLimitEmail,
+	RATE_LIMIT_POLICIES,
+	resolveRateLimitIdentifier,
+} from "@/lib/security/rate-limit";
 
 // -----------------------------------------------------------------------------
 // EXTENSIÓN DE TIPOS DE SESIÓN
@@ -85,6 +92,62 @@ function getCompactErrorMessage(error: unknown): string {
 }
 
 // -----------------------------------------------------------------------------
+// HELPERS PARA RATE LIMIT DEL LOGIN
+// -----------------------------------------------------------------------------
+// Aplica una limitación adicional específica al flujo de login.
+// La idea es frenar ataques de fuerza bruta antes de llegar a:
+//
+// - búsqueda del usuario en BD
+// - comparación bcrypt
+// - escritura de logs de acceso
+//
+// Si el límite salta, devolvemos null de forma silenciosa para no dar pistas
+// al atacante y para evitar cargar todavía más la base de datos bajo ataque.
+function isLoginRateLimited(headers: Headers, identifier: string) {
+	const ipAddress = getClientIpFromHeaders(headers);
+
+	const ipPolicy = RATE_LIMIT_POLICIES.LOGIN_IP;
+	const ipRateLimitIdentifier = resolveRateLimitIdentifier(ipPolicy, {
+		ipAddress,
+		userId: null,
+		email: null,
+	});
+
+	const ipRateLimitResult = applyRateLimit(ipPolicy, ipRateLimitIdentifier);
+
+	if (!ipRateLimitResult.success) {
+		console.warn("[login] intento bloqueado por rate limit de IP.");
+		return true;
+	}
+
+	if (identifier) {
+		const identifierPolicy = RATE_LIMIT_POLICIES.LOGIN_IDENTIFIER;
+		const identifierRateLimitIdentifier = resolveRateLimitIdentifier(
+			identifierPolicy,
+			{
+				ipAddress,
+				userId: null,
+				email: identifier,
+			},
+		);
+
+		const identifierRateLimitResult = applyRateLimit(
+			identifierPolicy,
+			identifierRateLimitIdentifier,
+		);
+
+		if (!identifierRateLimitResult.success) {
+			console.warn(
+				"[login] intento bloqueado por rate limit de identificador.",
+			);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// -----------------------------------------------------------------------------
 // CONFIGURACIÓN PRINCIPAL DE AUTH
 // -----------------------------------------------------------------------------
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -113,22 +176,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 				try {
 					// Normalizamos el identificador para que el login no dependa
 					// de mayúsculas, minúsculas o espacios accidentales.
-					const identifier = String(credentials?.identifier ?? "")
-						.trim()
-						.toLowerCase();
+					const identifier = normalizeRateLimitEmail(
+						String(credentials?.identifier ?? ""),
+					);
 
 					// La contraseña se toma tal cual.
 					const password = String(credentials?.password ?? "");
 
 					// Intentamos capturar IP real del cliente desde cabeceras
 					// habituales de proxy o balanceador.
-					const ipAddress =
-						request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-						request.headers.get("x-real-ip") ||
-						null;
+					const ipAddress = getClientIpFromHeaders(request.headers);
 
 					// Capturamos el user agent para trazabilidad de accesos.
 					const userAgent = request.headers.get("user-agent") || null;
+
+					// Antes de tocar la BD, aplicamos rate limiting específico
+					// para el flujo de autenticación.
+					if (isLoginRateLimited(request.headers, identifier)) {
+						return null;
+					}
 
 					// Si faltan credenciales, registramos el intento fallido y
 					// devolvemos null para que Auth.js trate el login como inválido.

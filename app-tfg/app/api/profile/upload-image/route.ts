@@ -55,9 +55,14 @@ export async function POST(request: Request) {
 			where: { id: session.user.id },
 		});
 
-		const previousPublicId = extractPublicIdFromUrl(
-			user?.profile_image_url,
-		);
+		if (!user) {
+			return NextResponse.json(
+				{ message: "Usuario no encontrado", code: "USER_NOT_FOUND" },
+				{ status: 404 },
+			);
+		}
+
+		const previousPublicId = extractPublicIdFromUrl(user.profile_image_url);
 
 		// Convertimos a base64
 		const arrayBuffer = await file.arrayBuffer();

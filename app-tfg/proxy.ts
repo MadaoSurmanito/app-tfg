@@ -1,5 +1,12 @@
 import { auth } from "@/auth";
 import { NextResponse, userAgent } from "next/server";
+import {
+	applyRateLimit,
+	createRateLimitExceededResponse,
+	getClientIpFromHeaders,
+	resolveApiRateLimitPolicy,
+	resolveRateLimitIdentifier,
+} from "@/lib/security/rate-limit";
 
 // -----------------------------------------------------------------------------
 // HELPERS DE COMPATIBILIDAD DE NAVEGADOR
@@ -89,16 +96,51 @@ function isUnsupportedBrowser(req: Parameters<typeof userAgent>[0]) {
 // Este proxy se ejecuta antes de servir las rutas que indique el matcher.
 // Aquí centralizamos:
 //
-// 1. Bloqueo de navegadores no compatibles.
-// 2. Protección de rutas privadas.
-// 3. Redirección según rol si un usuario autenticado intenta entrar en login/register.
+// 1. Rate limiting global para API routes.
+// 2. Bloqueo de navegadores no compatibles.
+// 3. Protección de rutas privadas.
+// 4. Redirección según rol si un usuario autenticado intenta entrar en login/register.
 //
 // En Next.js 16, el archivo recomendado es proxy.ts en la raíz del proyecto,
-// y puede hacer redirecciones antes de completar la request.
+// y puede hacer redirecciones o responder directamente antes de completar la request.
 export default auth((req) => {
 	const { nextUrl } = req;
 	const session = req.auth;
 	const pathname = nextUrl.pathname;
+	const method = req.method.toUpperCase();
+
+	// -------------------------------------------------------------------------
+	// RATE LIMITING GLOBAL PARA API ROUTES
+	// -------------------------------------------------------------------------
+	// Aplicamos rate limiting antes de llegar a los Route Handlers de /api.
+	// Esto permite cortar tráfico abusivo de forma centralizada sin tener que
+	// repetir lógica endpoint por endpoint.
+	const isApiRoute = pathname.startsWith("/api");
+
+	if (isApiRoute) {
+		// Dejamos pasar métodos auxiliares que no nos interesa limitar aquí.
+		if (method === "OPTIONS" || method === "HEAD") {
+			return NextResponse.next();
+		}
+
+		const policy = resolveApiRateLimitPolicy(pathname, method);
+		const ipAddress = getClientIpFromHeaders(req.headers);
+
+		const identifier = resolveRateLimitIdentifier(policy, {
+			ipAddress,
+			userId: session?.user?.id ?? null,
+			email: session?.user?.email ?? null,
+		});
+
+		const rateLimitResult = applyRateLimit(policy, identifier);
+
+		if (!rateLimitResult.success) {
+			return createRateLimitExceededResponse(policy, rateLimitResult);
+		}
+
+		// Si no se supera el límite, dejamos continuar hacia el Route Handler.
+		return NextResponse.next();
+	}
 
 	// -------------------------------------------------------------------------
 	// CONTROL DE COMPATIBILIDAD DE NAVEGADOR
@@ -177,17 +219,21 @@ export default auth((req) => {
 // MATCHER
 // -----------------------------------------------------------------------------
 // Hacemos que el proxy se aplique prácticamente a toda la aplicación,
-// excluyendo:
+// incluyendo:
 // - API routes
+//
+// y excluyendo:
 // - recursos internos de Next
 // - favicon
 // - manifest
 // - la propia página de navegador no compatible
 //
-// Esto es importante porque, si solo matcheáramos /admin, /login, etc.,
-// el bloqueo por navegador antiguo no se aplicaría al resto de páginas.
+// Esto es importante porque queremos que el rate limiting global también
+// se aplique a /api/*, mientras que el control de navegador y auth siguen
+// cubriendo el resto de páginas de la aplicación.
 export const config = {
 	matcher: [
+		"/api/:path*",
 		"/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|unsupported-browser).*)",
 	],
 };

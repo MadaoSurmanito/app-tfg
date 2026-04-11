@@ -28,6 +28,7 @@ function normalizeEmail(value: string | null | undefined) {
 		.trim()
 		.toLowerCase();
 }
+
 // --------------------------------------------------------------------------
 // Tipos de datos para los inputs de los servicios
 // --------------------------------------------------------------------------
@@ -64,11 +65,52 @@ type UpdateUserInput = {
 	confirmPassword?: string;
 };
 
+// Input para listar usuarios de forma paginada.
+// Se añade como alternativa al listado legacy para permitir búsquedas y limitar
+// el tamaño de respuesta en endpoints más sensibles o costosos.
+type ListUsersPaginatedInput = {
+	page?: number;
+	pageSize?: number;
+	search?: string | null;
+};
+
+// Tipo de retorno para el listado paginado de usuarios.
+type ListUsersPaginatedResult = {
+	items: User[];
+	page: number;
+	pageSize: number;
+	total: number;
+	totalPages: number;
+};
+
 // Tipo auxiliar para mapear los IDs de las acciones del catálogo, utilizado en el servicio de actualización de usuario para registrar cambios de rol, estado y contraseña.
 type CatalogActionRow = {
 	id: number;
 	code: string;
 };
+
+// --------------------------------------------------------------------------
+// Helpers internos de paginación
+// --------------------------------------------------------------------------
+function normalizePage(value: number | null | undefined) {
+	const page = Number(value);
+
+	if (!Number.isInteger(page) || page <= 0) {
+		return 1;
+	}
+
+	return page;
+}
+
+function normalizePageSize(value: number | null | undefined) {
+	const pageSize = Number(value);
+
+	if (!Number.isInteger(pageSize) || pageSize <= 0) {
+		return 20;
+	}
+
+	return Math.min(pageSize, 50);
+}
 
 // --------------------------------------------------------------------------
 // SERVICIOS
@@ -206,6 +248,52 @@ export async function listUsers() {
 			created_at: "DESC",
 		},
 	});
+}
+
+// Servicio para listar usuarios de forma paginada.
+// Esta variante permite reducir el coste del endpoint en escenarios con muchos
+// usuarios y facilita incorporar búsqueda incremental desde la interfaz.
+export async function listUsersPaginated(
+	input: ListUsersPaginatedInput = {},
+): Promise<ListUsersPaginatedResult> {
+	const ds = await getDataSource();
+	const repo = ds.getRepository(User);
+
+	const page = normalizePage(input.page);
+	const pageSize = normalizePageSize(input.pageSize);
+	const search = normalizeText(input.search);
+
+	const qb = repo
+		.createQueryBuilder("u")
+		.leftJoinAndSelect("u.role", "role")
+		.leftJoinAndSelect("u.status", "status")
+		.orderBy("u.created_at", "DESC")
+		.skip((page - 1) * pageSize)
+		.take(pageSize);
+
+	if (search) {
+		qb.andWhere(
+			`
+				LOWER(u.name) LIKE LOWER(:search)
+				OR LOWER(u.email) LIKE LOWER(:search)
+				OR LOWER(COALESCE(u.company, '')) LIKE LOWER(:search)
+				OR LOWER(COALESCE(u.phone, '')) LIKE LOWER(:search)
+			`,
+			{
+				search: `%${search}%`,
+			},
+		);
+	}
+
+	const [items, total] = await qb.getManyAndCount();
+
+	return {
+		items,
+		page,
+		pageSize,
+		total,
+		totalPages: total > 0 ? Math.ceil(total / pageSize) : 1,
+	};
 }
 
 // Servicio único para dar de alta usuarios desde administración.
@@ -359,6 +447,7 @@ export async function registerUserByAdmin(input: RegisterUserByAdminInput) {
 		});
 	});
 }
+
 // Servicio para actualizar los datos de un usuario, incluyendo su rol, estado y contraseña. Registra las acciones de cambio de rol, estado y contraseña en el log de administración de usuarios para auditoría.
 export class UpdateUserError extends Error {
 	status: number;
