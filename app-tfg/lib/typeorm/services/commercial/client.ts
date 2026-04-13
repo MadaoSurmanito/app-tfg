@@ -92,35 +92,50 @@ export async function getClientById(id: string) {
 	const ds = await getDataSource();
 	const repo = ds.getRepository(Client);
 
-	return repo.findOne({
-		where: { id },
-		relations: {
-			linkedUser: true,
-		},
-	});
+	return repo
+		.createQueryBuilder("client")
+		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect(
+			"client.commercialAssignments",
+			"activeAssignment",
+			"activeAssignment.unassigned_at IS NULL",
+		)
+		.leftJoinAndSelect("activeAssignment.commercial", "commercial")
+		.leftJoinAndSelect("commercial.user", "commercialUser")
+		.where("client.id = :id", { id })
+		.orderBy("activeAssignment.assigned_at", "DESC")
+		.getOne();
 }
 
-// Listar clientes
+// Obtener cliente por ID sin relaciones (para uso interno en otros servicios)
 export async function listClients() {
 	const ds = await getDataSource();
 	const repo = ds.getRepository(Client);
 
-	return repo.find({
-		relations: {
-			linkedUser: true,
-		},
-		order: { created_at: "DESC" },
-	});
+	return repo
+		.createQueryBuilder("client")
+		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect(
+			"client.commercialAssignments",
+			"activeAssignment",
+			"activeAssignment.unassigned_at IS NULL",
+		)
+		.leftJoinAndSelect("activeAssignment.commercial", "commercial")
+		.leftJoinAndSelect("commercial.user", "commercialUser")
+		.orderBy("client.created_at", "DESC")
+		.getMany();
 }
 
-// Actualizar cliente
+// Actualizar datos de cliente
 export async function updateClient(input: UpdateClientInput) {
 	const ds = await getDataSource();
 
 	return ds.transaction(async (manager) => {
 		const repo = manager.getRepository(Client);
 
-		const client = await repo.findOne({ where: { id: input.clientId } });
+		const client = await repo.findOne({
+			where: { id: input.clientId },
+		});
 
 		if (!client) {
 			throw new Error("Cliente no encontrado");
@@ -147,10 +162,59 @@ export async function getClientByLinkedUserId(linkedUserId: string) {
 	const ds = await getDataSource();
 	const repo = ds.getRepository(Client);
 
-	return repo.findOne({
-		where: { linked_user_id: linkedUserId },
-		relations: {
-			linkedUser: true,
-		},
-	});
+	return repo
+		.createQueryBuilder("client")
+		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect(
+			"client.commercialAssignments",
+			"activeAssignment",
+			"activeAssignment.unassigned_at IS NULL",
+		)
+		.leftJoinAndSelect("activeAssignment.commercial", "commercial")
+		.leftJoinAndSelect("commercial.user", "commercialUser")
+		.where("client.linked_user_id = :linkedUserId", { linkedUserId })
+		.getOne();
+}
+
+// Listar clientes asignados a un comercial
+export async function listClientsByCommercialId(commercialId: string) {
+	const ds = await getDataSource();
+	const repo = ds.getRepository(Client);
+
+	return repo
+		.createQueryBuilder("client")
+		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.innerJoinAndSelect(
+			"client.commercialAssignments",
+			"activeAssignment",
+			"activeAssignment.unassigned_at IS NULL AND activeAssignment.commercial_id = :commercialId",
+			{ commercialId },
+		)
+		.leftJoinAndSelect("activeAssignment.commercial", "commercial")
+		.leftJoinAndSelect("commercial.user", "commercialUser")
+		.orderBy("client.created_at", "DESC")
+		.getMany();
+}
+
+// Obtener cliente por ID para comercial (solo si tiene asignación activa con ese comercial)
+export async function getClientByIdForCommercial(
+	clientId: string,
+	commercialId: string,
+) {
+	const ds = await getDataSource();
+	const repo = ds.getRepository(Client);
+
+	return repo
+		.createQueryBuilder("client")
+		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.innerJoinAndSelect(
+			"client.commercialAssignments",
+			"activeAssignment",
+			"activeAssignment.unassigned_at IS NULL AND activeAssignment.commercial_id = :commercialId",
+			{ commercialId },
+		)
+		.leftJoinAndSelect("activeAssignment.commercial", "commercial")
+		.leftJoinAndSelect("commercial.user", "commercialUser")
+		.where("client.id = :clientId", { clientId })
+		.getOne();
 }
