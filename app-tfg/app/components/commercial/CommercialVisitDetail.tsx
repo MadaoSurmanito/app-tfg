@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import DataTable from "@/app/components/DataTable";
+import H1Title from "@/app/components/H1Title";
 import PageTransition from "@/app/components/animations/PageTransition";
+import SafeForm from "@/app/components/forms/SafeForm";
+import SubmitButton from "@/app/components/forms/SubmitButton";
 
 import {
 	type CommercialVisit,
@@ -22,6 +26,26 @@ type ApiErrorResponse = {
 	error?: string;
 	code?: string;
 };
+
+type InfoRow = {
+	id: string;
+	label: string;
+	value: string;
+};
+
+const infoColumns = [
+	{
+		key: "label",
+		header: "Campo",
+		className: "w-1/3",
+		render: (item: InfoRow) => item.label,
+	},
+	{
+		key: "value",
+		header: "Valor",
+		render: (item: InfoRow) => item.value,
+	},
+];
 
 export default function CommercialVisitDetail({ visitId }: Props) {
 	const [visit, setVisit] = useState<CommercialVisit | null>(null);
@@ -79,8 +103,98 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 
 	const canEditSchedule = useMemo(() => visit?.status_id === 1, [visit]);
 
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-		e.preventDefault();
+	const visitRows = useMemo<InfoRow[]>(() => {
+		if (!visit) {
+			return [];
+		}
+
+		return [
+			{
+				id: "status",
+				label: "Estado",
+				value: getVisitStatusLabel(visit.status_id),
+			},
+			{
+				id: "scheduledAt",
+				label: "Fecha actual",
+				value: formatVisitDateTime(visit.scheduled_at),
+			},
+			{
+				id: "notes",
+				label: "Notas",
+				value: visit.notes || "-",
+			},
+			{
+				id: "result",
+				label: "Resultado",
+				value: visit.result || "-",
+			},
+		];
+	}, [visit]);
+
+	const clientRows = useMemo<InfoRow[]>(() => {
+		if (!visit) {
+			return [];
+		}
+
+		return [
+			{
+				id: "clientName",
+				label: "Cliente",
+				value: visit.client?.name ?? "-",
+			},
+			{
+				id: "contactName",
+				label: "Contacto",
+				value: visit.client?.contact_name || "-",
+			},
+			{
+				id: "email",
+				label: "Correo",
+				value: visit.client?.linkedUser?.email || "-",
+			},
+			{
+				id: "location",
+				label: "Ubicación",
+				value:
+					[visit.client?.city, visit.client?.province]
+						.filter(Boolean)
+						.join(" · ") || "-",
+			},
+		];
+	}, [visit]);
+
+	const commercialRows = useMemo<InfoRow[]>(() => {
+		if (!visit) {
+			return [];
+		}
+
+		return [
+			{
+				id: "commercialName",
+				label: "Comercial",
+				value: visit.commercial?.user?.name ?? "-",
+			},
+			{
+				id: "commercialEmail",
+				label: "Correo",
+				value: visit.commercial?.user?.email ?? "-",
+			},
+			{
+				id: "employeeCode",
+				label: "Código interno",
+				value: visit.commercial?.employee_code ?? "-",
+			},
+			{
+				id: "territory",
+				label: "Territorio",
+				value: visit.commercial?.territory ?? "-",
+			},
+		];
+	}, [visit]);
+
+	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+		event.preventDefault();
 
 		try {
 			setSaving(true);
@@ -141,6 +255,11 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 					</Link>
 				</div>
 
+				<H1Title
+					title={visit?.client?.name ?? "Detalle de visita"}
+					subtitle="Consulta la información principal de la visita y actualiza su estado, fecha o resultado."
+				/>
+
 				{loading ? (
 					<section className="glass-card rounded-3xl border border-white/30 bg-white/70 p-6 shadow-xl backdrop-blur">
 						<p className="text-sm text-slate-600">Cargando visita...</p>
@@ -159,25 +278,7 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 				{!loading && !error && visit ? (
 					<>
 						<section className="glass-card rounded-3xl border border-white/30 bg-white/75 p-6 shadow-xl backdrop-blur">
-							<div className="flex flex-wrap items-start justify-between gap-4">
-								<div>
-									<p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-										M2 · Visita comercial
-									</p>
-
-									<h1 className="mt-2 text-3xl font-bold text-slate-900">
-										{visit.client?.name ?? "Cliente"}
-									</h1>
-
-									<p className="mt-2 text-sm text-slate-600">
-										{visit.client?.contact_name || "Sin persona de contacto"}
-									</p>
-
-									<p className="mt-1 text-sm text-slate-500">
-										{visit.client?.linkedUser?.email || "-"}
-									</p>
-								</div>
-
+							<div className="mb-4 flex flex-wrap items-center gap-3">
 								<span
 									className={`rounded-full px-3 py-1 text-xs font-semibold ${getVisitStatusClasses(
 										visit.status_id,
@@ -187,26 +288,27 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 								</span>
 							</div>
 
-							<div className="mt-5 grid gap-4 md:grid-cols-2">
-								<div>
-									<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-										Fecha actual
-									</p>
-									<p className="mt-1 text-sm font-medium text-slate-900">
-										{formatVisitDateTime(visit.scheduled_at)}
-									</p>
-								</div>
+							<div className="grid gap-6 xl:grid-cols-3">
+								<DataTable
+									data={visitRows}
+									columns={infoColumns}
+									getRowKey={(item) => item.id}
+									emptyMessage="No hay datos de la visita."
+								/>
 
-								<div>
-									<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-										Ubicación
-									</p>
-									<p className="mt-1 text-sm font-medium text-slate-900">
-										{[visit.client?.city, visit.client?.province]
-											.filter(Boolean)
-											.join(" · ") || "-"}
-									</p>
-								</div>
+								<DataTable
+									data={clientRows}
+									columns={infoColumns}
+									getRowKey={(item) => item.id}
+									emptyMessage="No hay datos del cliente."
+								/>
+
+								<DataTable
+									data={commercialRows}
+									columns={infoColumns}
+									getRowKey={(item) => item.id}
+									emptyMessage="No hay datos del comercial."
+								/>
 							</div>
 						</section>
 
@@ -215,7 +317,7 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 								Actualizar visita
 							</h2>
 
-							<form
+							<SafeForm
 								onSubmit={handleSubmit}
 								className="mt-5 grid gap-4 md:grid-cols-2"
 							>
@@ -279,13 +381,13 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 								</div>
 
 								<div className="md:col-span-2 flex flex-wrap items-center gap-3">
-									<button
-										type="submit"
-										disabled={saving}
+									<SubmitButton
+										isSubmitting={saving}
+										submittingText="Guardando..."
 										className="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
 									>
-										{saving ? "Guardando..." : "Guardar cambios"}
-									</button>
+										Guardar cambios
+									</SubmitButton>
 
 									{success ? (
 										<p className="text-sm font-medium text-emerald-700">
@@ -293,7 +395,7 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 										</p>
 									) : null}
 								</div>
-							</form>
+							</SafeForm>
 						</section>
 					</>
 				) : null}
