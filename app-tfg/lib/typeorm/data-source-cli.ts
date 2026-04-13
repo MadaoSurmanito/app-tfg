@@ -16,6 +16,8 @@ import { UserAccessLog } from "./entities/UserAccessLog";
 import { CommercialVisitStatus } from "./entities/CommercialVisitStatus";
 import { CommercialRouteStatus } from "./entities/CommercialRouteStatus";
 import { Client } from "./entities/Client";
+import { Commercial } from "./entities/Commercial";
+import { ClientCommercialAssignment } from "./entities/ClientCommercialAssignment";
 import { CommercialVisit } from "./entities/CommercialVisit";
 import { CommercialRoute } from "./entities/CommercialRoute";
 import { RouteVisit } from "./entities/RouteVisit";
@@ -38,6 +40,8 @@ export default new DataSource({
 		CommercialVisitStatus,
 		CommercialRouteStatus,
 		Client,
+		Commercial,
+		ClientCommercialAssignment,
 		CommercialVisit,
 		CommercialRoute,
 		RouteVisit,

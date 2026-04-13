@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import type { Relation } from "typeorm";
 
-import { User } from "./User";
+import { Commercial } from "./Commercial";
 import { CommercialRouteStatus } from "./CommercialRouteStatus";
 
 @Entity("commercial_routes")
@@ -32,9 +32,9 @@ export class CommercialRoute {
 	@Column({ type: "smallint" })
 	status_id!: number;
 
-	@ManyToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+	@ManyToOne(() => Commercial, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "commercial_id" })
-	commercial!: Relation<User>;
+	commercial!: Relation<Commercial>;
 
 	@ManyToOne(() => CommercialRouteStatus, {
 		onDelete: "RESTRICT",

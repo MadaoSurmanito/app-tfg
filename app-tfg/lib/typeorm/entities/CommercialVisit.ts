@@ -9,7 +9,7 @@ import {
 import type { Relation } from "typeorm";
 
 import { Client } from "./Client";
-import { User } from "./User";
+import { Commercial } from "./Commercial";
 import { CommercialVisitStatus } from "./CommercialVisitStatus";
 
 @Entity("commercial_visits")
@@ -37,9 +37,9 @@ export class CommercialVisit {
 	@JoinColumn({ name: "client_id" })
 	client!: Relation<Client>;
 
-	@ManyToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+	@ManyToOne(() => Commercial, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "commercial_id" })
-	commercial!: Relation<User>;
+	commercial!: Relation<Commercial>;
 
 	@ManyToOne(() => CommercialVisitStatus, {
 		onDelete: "RESTRICT",

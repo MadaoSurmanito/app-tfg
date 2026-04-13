@@ -5,12 +5,14 @@ import {
 	CreateDateColumn,
 	UpdateDateColumn,
 	ManyToOne,
+	OneToMany,
 	JoinColumn,
 	Index,
 } from "typeorm";
 import type { Relation } from "typeorm";
 
 import { User } from "./User";
+import { ClientCommercialAssignment } from "./ClientCommercialAssignment";
 
 @Entity("clients")
 @Index("clients_linked_user_id_index", ["linked_user_id"])
@@ -46,6 +48,12 @@ export class Client {
 	@ManyToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
 	@JoinColumn({ name: "linked_user_id" })
 	linkedUser!: Relation<User>;
+
+	@OneToMany(
+		() => ClientCommercialAssignment,
+		(clientCommercialAssignment) => clientCommercialAssignment.client,
+	)
+	commercialAssignments!: Relation<ClientCommercialAssignment[]>;
 
 	@Column({ type: "text", nullable: true })
 	notes!: string | null;
