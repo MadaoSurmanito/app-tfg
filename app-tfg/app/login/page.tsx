@@ -50,9 +50,9 @@ export default function LoginPage() {
 			if (userData?.user?.role === "admin") {
 				router.push("/admin");
 			} else if (userData?.user?.role === "commercial") {
-				router.push("/comerciales");
+				router.push("/commercials");
 			} else {
-				router.push("/clientes");
+				router.push("/clients");
 			}
 		} catch {
 			setError("Error al iniciar sesión");

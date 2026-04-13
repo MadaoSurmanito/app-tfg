@@ -27,22 +27,22 @@ const sections = [
 			{
 				title: "Clientes",
 				icon: <ClientsIcon className="h-6 w-6" />,
-				href: "/comerciales/clients",
+				href: "/commercials/clients",
 			},
 			{
 				title: "Visitas",
 				icon: <VisitsIcon className="h-6 w-6" />,
-				href: "/comerciales/visits",
+				href: "/commercials/visits",
 			},
 			{
 				title: "Rutas",
 				icon: <RouteIcon className="h-6 w-6" />,
-				href: "/comerciales/routes",
+				href: "/commercials/routes",
 			},
 			{
 				title: "Actividad",
 				icon: <ActivityIcon className="h-6 w-6" />,
-				href: "/comerciales/activity",
+				href: "/commercials/activity",
 			},
 		],
 	},
@@ -53,27 +53,27 @@ const sections = [
 			{
 				title: "Catálogo",
 				icon: <CatalogIcon className="h-6 w-6" />,
-				href: "/comerciales/catalog",
+				href: "/commercials/catalog",
 			},
 			{
 				title: "Coloración",
 				icon: <ColorIcon className="h-6 w-6" />,
-				href: "/comerciales/color",
+				href: "/commercials/color",
 			},
 			{
 				title: "Productos",
 				icon: <ProductsIcon className="h-6 w-6" />,
-				href: "/comerciales/products",
+				href: "/commercials/products",
 			},
 			{
 				title: "Pedidos",
 				icon: <OrderIcon className="h-6 w-6" />,
-				href: "/comerciales/orders",
+				href: "/commercials/orders",
 			},
 			{
 				title: "Cobros",
 				icon: <PaymentsIcon className="h-6 w-6" />,
-				href: "/comerciales/payments",
+				href: "/commercials/payments",
 			},
 		],
 	},
@@ -84,23 +84,23 @@ const sections = [
 			{
 				title: "Promociones",
 				icon: <PromotionsIcon className="h-6 w-6" />,
-				href: "/comerciales/promotions",
+				href: "/commercials/promotions",
 			},
 			{
 				title: "Formaciones",
 				icon: <TrainingIcon className="h-6 w-6" />,
-				href: "/comerciales/training",
+				href: "/commercials/training",
 			},
 			{
 				title: "Informes",
 				icon: <ReportsIcon className="h-6 w-6" />,
-				href: "/comerciales/reports",
+				href: "/commercials/reports",
 			},
 		],
 	},
 ];
 
-export default function ComercialesHome() {
+export default function CommercialsHome() {
 	return (
 		<PageTransition>
 			<RouteMapCard />
