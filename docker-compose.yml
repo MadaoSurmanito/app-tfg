@@ -12,11 +12,11 @@ services:
       - db_data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d:ro
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: kinestilistas_tunnel
-    command: tunnel --no-autoupdate --url http://host.docker.internal:3000
-    restart: unless-stopped
+  # cloudflared:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: kinestilistas_tunnel
+  #   command: tunnel --no-autoupdate --url http://host.docker.internal:3000
+  #   restart: unless-stopped
 
 volumes:
   db_data:
