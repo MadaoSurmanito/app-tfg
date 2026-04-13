@@ -15,7 +15,7 @@ El desarrollo del proyecto se realizó en dos equipos con las siguientes caracte
     \item Espacio en disco disponible: superior a 10 GB.
 \end{itemize}
 
-No se requieren características hardware especiales más allá de las necesarias para ejecutar herramientas modernas de desarrollo web, contenedores Docker y utilidades de compilación documental.
+No se requieren características hardware especiales más allá de las necesarias para ejecutar herramientas actuales de desarrollo web, contenedores Docker y utilidades de compilación documental.
 
 \subsection{Requisitos software}
 
@@ -38,22 +38,42 @@ Las herramientas utilizadas durante el desarrollo del proyecto han sido las sigu
 
 Next.js permite integrar en un único proyecto tanto la capa de presentación como la lógica de servidor, lo que simplifica la arquitectura general del sistema y facilita su mantenimiento. Sobre esta base, el proyecto adopta una organización full-stack en la que la persistencia de datos, la autenticación, la protección de rutas y la lógica de negocio se coordinan dentro de una misma solución software.
 
-\subsubsection*{Herramientas adicionales}
+\subsubsection*{Herramientas de control de versiones y edición}
 
-Para la elaboración de la memoria técnica y la gestión del proyecto se emplearon las siguientes herramientas:
+Para la gestión del proyecto y la edición del código fuente se emplearon las siguientes herramientas:
 
 \begin{itemize}
     \item Git para el control de versiones.
     \item GitHub como repositorio remoto del proyecto.
     \item Visual Studio Code como entorno principal de edición.
+\end{itemize}
+
+Estas herramientas permiten mantener un historial trazable de cambios, trabajar sobre distintas ramas de desarrollo y centralizar la evolución del proyecto tanto a nivel de implementación como de documentación.
+
+\subsubsection*{Herramienta de inspección y validación manual de la base de datos}
+
+Durante el desarrollo se utilizó DBeaver 26.0.0 como herramienta de apoyo para la visualización, inspección y comprobación manual de los datos almacenados en PostgreSQL.
+
+Su empleo ha resultado útil para revisar tablas, relaciones, registros y restricciones, así como para validar manualmente el efecto de determinadas migraciones y comprobar el estado real de la base de datos durante la implementación de nuevas funcionalidades.
+
+\subsubsection*{Herramienta de exposición temporal de servicios locales}
+
+Para realizar determinadas pruebas externas durante el desarrollo se empleó la funcionalidad de reenvío de puertos de Visual Studio Code, basada en Microsoft dev tunnels. Esta herramienta permite generar direcciones públicas temporales asociadas a servicios ejecutados en local, facilitando la validación de accesibilidad desde otros dispositivos o redes sin necesidad de desplegar la aplicación en un entorno público estable.
+
+Su uso se limitó a tareas puntuales de comprobación y validación técnica durante el desarrollo, por lo que no forma parte de la infraestructura base del sistema ni del entorno previsto para despliegue en producción.
+
+\subsubsection*{Herramientas para documentación técnica}
+
+Para la elaboración y compilación de la memoria del TFG se emplearon las siguientes herramientas:
+
+\begin{itemize}
     \item MiKTeX como distribución \LaTeX.
     \item Strawberry Perl, necesario para la ejecución de \texttt{latexmk}.
-    \item DBeaver para la gestión visual de la base de datos PostgreSQL.
 \end{itemize}
 
 \subsection{Instalación del entorno local}
 
-El repositorio se estructura en dos bloques principales: la aplicación software, ubicada en el directorio \texttt{app-tfg/}, y la documentación técnica en \LaTeX, ubicada en \texttt{docs//}. Esta organización permite separar con claridad la evolución del producto software de la evolución de la memoria, manteniendo la coherencia entre ambas.
+El repositorio se estructura en dos bloques principales: la aplicación software, ubicada en el directorio \texttt{app-tfg/}, y la documentación técnica en \LaTeX, ubicada en \texttt{docs/docs/}. Esta organización permite separar con claridad la evolución del producto software de la evolución de la memoria, manteniendo la coherencia entre ambas.
 
 \subsubsection*{Obtención del código fuente}
 
