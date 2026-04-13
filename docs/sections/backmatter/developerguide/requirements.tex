@@ -1,0 +1,176 @@
+\section{Preparación del entorno de trabajo}
+
+En esta sección se describen los requisitos hardware y software necesarios para el desarrollo del proyecto, así como la configuración del entorno de trabajo adoptado. La aplicación se ha desarrollado como una solución web full-stack monolítica basada en Next.js, integrando en una misma base de código tanto la interfaz de usuario como la lógica de servidor necesaria para la gestión del sistema.
+
+Para la persistencia de datos se emplea PostgreSQL, ejecutado como servicio independiente mediante contenedores Docker. Sobre esta base se articula una capa de acceso a datos estructurada mediante TypeORM, lo que permite modelar entidades, gestionar relaciones y versionar la evolución del esquema de base de datos a través de migraciones. Asimismo, se documenta la configuración del sistema de control de versiones y del entorno utilizado para la redacción de la memoria técnica.
+
+\subsection{Requisitos hardware}
+
+El desarrollo del proyecto se realizó en dos equipos con las siguientes características:
+
+\begin{itemize}
+    \item Sistema operativo: Windows 11 de 64 bits.
+    \item Procesador: Intel Core i5-8600K (equipo de sobremesa) / Intel Core i5-11400H (portátil).
+    \item Memoria RAM: 16 GB.
+    \item Espacio en disco disponible: superior a 10 GB.
+\end{itemize}
+
+No se requieren características hardware especiales más allá de las necesarias para ejecutar herramientas modernas de desarrollo web, contenedores Docker y utilidades de compilación documental.
+
+\subsection{Requisitos software}
+
+Las herramientas utilizadas durante el desarrollo del proyecto han sido las siguientes:
+
+\subsubsection*{Entorno de desarrollo}
+
+\begin{itemize}
+    \item Node.js 20 o superior.
+    \item npm, incluido con la instalación de Node.js.
+    \item Next.js 16.
+    \item React 19.
+    \item TypeScript 5.
+    \item PostgreSQL 16.
+    \item Docker y Docker Compose para la ejecución del servicio de base de datos.
+    \item TypeORM 0.3.x como tecnología de persistencia y gestión de migraciones.
+    \item Auth.js / NextAuth para la autenticación y gestión de sesiones.
+    \item Cloudinary como servicio externo para la gestión de archivos multimedia.
+\end{itemize}
+
+Next.js permite integrar en un único proyecto tanto la capa de presentación como la lógica de servidor, lo que simplifica la arquitectura general del sistema y facilita su mantenimiento. Sobre esta base, el proyecto adopta una organización full-stack en la que la persistencia de datos, la autenticación, la protección de rutas y la lógica de negocio se coordinan dentro de una misma solución software.
+
+\subsubsection*{Herramientas adicionales}
+
+Para la elaboración de la memoria técnica y la gestión del proyecto se emplearon las siguientes herramientas:
+
+\begin{itemize}
+    \item Git para el control de versiones.
+    \item GitHub como repositorio remoto del proyecto.
+    \item Visual Studio Code como entorno principal de edición.
+    \item MiKTeX como distribución \LaTeX.
+    \item Strawberry Perl, necesario para la ejecución de \texttt{latexmk}.
+    \item DBeaver para la gestión visual de la base de datos PostgreSQL.
+\end{itemize}
+
+\subsection{Instalación del entorno local}
+
+El repositorio se estructura en dos bloques principales: la aplicación software, ubicada en el directorio \texttt{app-tfg/}, y la documentación técnica en \LaTeX, ubicada en \texttt{docs//}. Esta organización permite separar con claridad la evolución del producto software de la evolución de la memoria, manteniendo la coherencia entre ambas.
+
+\subsubsection*{Obtención del código fuente}
+
+El código fuente del proyecto se obtiene clonando el repositorio remoto mediante Git. Una vez descargado, el desarrollador debe situarse en el directorio \texttt{app-tfg/}, que contiene la aplicación principal.
+
+\begin{lstlisting}[language=bash]
+git clone <url-del-repositorio>
+cd <raiz-del-repositorio>/app-tfg
+\end{lstlisting}
+
+\subsubsection*{Instalación de dependencias}
+
+Una vez dentro del directorio de la aplicación, deben instalarse las dependencias definidas en el archivo \texttt{package.json}:
+
+\begin{lstlisting}[language=bash]
+npm install
+\end{lstlisting}
+
+Este proceso instala tanto las bibliotecas de ejecución del sistema como las herramientas auxiliares necesarias para tareas de compilación, tipado, migraciones y validación técnica del proyecto.
+
+\subsubsection*{Configuración de la base de datos PostgreSQL}
+
+La base de datos PostgreSQL se ejecuta mediante un contenedor Docker definido en el archivo \texttt{docker-compose.yml}, ubicado en la raíz del repositorio. El servicio puede iniciarse mediante:
+
+\begin{lstlisting}[language=bash]
+docker compose up -d
+\end{lstlisting}
+
+El servidor de base de datos queda disponible en el puerto \texttt{5432}. Además, el contenedor incorpora un directorio de inicialización, \texttt{./db/init}, que permite preparar automáticamente una base mínima en la primera ejecución del servicio.
+
+Para detener la base de datos se emplea:
+
+\begin{lstlisting}[language=bash]
+docker compose down
+\end{lstlisting}
+
+En caso de requerir una reinicialización completa del entorno de persistencia, incluyendo la eliminación de volúmenes persistentes, puede ejecutarse:
+
+\begin{lstlisting}[language=bash]
+docker compose down -v
+\end{lstlisting}
+
+\subsubsection*{Persistencia y evolución del esquema de datos}
+
+La comunicación entre la aplicación y PostgreSQL no se articula únicamente mediante consultas aisladas, sino a través de una capa de persistencia estructurada con TypeORM. Esta decisión facilita la definición del modelo de datos mediante entidades, mejora la mantenibilidad del código y permite controlar la evolución del esquema relacional mediante migraciones versionadas.
+
+Una vez disponible el servicio de base de datos y configuradas las variables de entorno necesarias para la conexión, la aplicación puede aplicar las migraciones pendientes mediante los scripts definidos en \texttt{package.json}:
+
+\begin{lstlisting}[language=bash]
+npm run migration:run
+\end{lstlisting}
+
+Asimismo, el proyecto incorpora utilidades para consultar el estado de las migraciones aplicadas o revertir cambios concretos cuando resulta necesario durante el desarrollo:
+
+\begin{lstlisting}[language=bash]
+npm run migration:show
+npm run migration:revert
+\end{lstlisting}
+
+Este enfoque resulta especialmente adecuado para un proyecto en evolución, ya que permite incorporar nuevas entidades y relaciones de forma trazable, reproducible y alineada con el resto de la documentación técnica.
+
+\subsubsection*{Ejecución en entorno de desarrollo}
+
+Para iniciar la aplicación en modo desarrollo se utiliza el siguiente comando:
+
+\begin{lstlisting}[language=bash]
+npm run dev
+\end{lstlisting}
+
+Una vez arrancado el servidor, la aplicación queda accesible en la dirección:
+
+\begin{center}
+    \texttt{http://localhost:3000}
+\end{center}
+
+Este modo de ejecución resulta apropiado para el desarrollo iterativo del sistema, ya que permite comprobar de forma inmediata los cambios realizados tanto en la interfaz como en la lógica interna del proyecto.
+
+\subsubsection*{Compilación y validación previa}
+
+Antes de considerar estable una modificación relevante, resulta recomendable verificar que la aplicación compila correctamente en un entorno equivalente al de ejecución real. Para ello pueden emplearse los siguientes comandos:
+
+\begin{lstlisting}[language=bash]
+npm run build
+npm run start
+\end{lstlisting}
+
+Adicionalmente, el proyecto dispone de scripts de validación estática y comprobación de tipos que permiten detectar errores de forma temprana:
+
+\begin{lstlisting}[language=bash]
+npm run lint
+npm run typecheck
+\end{lstlisting}
+
+\subsubsection*{Control de versiones}
+
+El control de versiones del proyecto se gestiona mediante Git. Este sistema permite registrar la evolución del código fuente, mantener un historial de cambios y facilitar el trabajo sobre distintas ramas de desarrollo. El repositorio local puede inicializarse mediante:
+
+\begin{lstlisting}[language=bash]
+git init
+git add .
+git commit -m "Initial commit"
+\end{lstlisting}
+
+Posteriormente, el proyecto se vincula con su repositorio remoto en GitHub, desde donde se centraliza el seguimiento del desarrollo y la gestión de versiones.
+
+\subsubsection*{Entorno de documentación en \LaTeX}
+
+La memoria del TFG se desarrolla en \LaTeX utilizando MiKTeX junto con Strawberry Perl, necesario para la ejecución de \texttt{latexmk}. La edición y compilación del documento se realizan mediante Visual Studio Code con soporte para flujos de trabajo \LaTeX.
+
+La compilación del documento puede realizarse desde el directorio de la documentación mediante:
+
+\begin{lstlisting}[language=bash]
+latexmk -pdf -shell-escape main.tex
+\end{lstlisting}
+
+También es posible compilar el documento utilizando la funcionalidad integrada del editor, siempre que el entorno esté correctamente configurado.
+
+\paragraph{Configuración del PATH}
+
+Durante la instalación del entorno de documentación puede ser necesario añadir manualmente al \texttt{PATH} del sistema las rutas correspondientes a MiKTeX y Strawberry Perl, de forma que el comando \texttt{latexmk} quede disponible desde la terminal. Tras actualizar la variable de entorno y reiniciar la sesión, el entorno de compilación queda correctamente configurado.
