@@ -16,7 +16,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "DEFAULT_API",
 		keyPrefix: "@kinestilistas/ratelimit/default-api",
 		maxRequests: 120,
-		windowMs: 60 * 1000,
+		windowMs: 60 * 1000, // 1 minuto
 		scope: "ip",
 		message:
 			"Demasiadas peticiones a la API. Inténtalo de nuevo en unos segundos.",
@@ -26,7 +26,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "AUTH_API",
 		keyPrefix: "@kinestilistas/ratelimit/auth-api",
 		maxRequests: 40,
-		windowMs: 60 * 1000,
+		windowMs: 60 * 1000, // 1 minuto
 		scope: "ip",
 		message:
 			"Se han realizado demasiadas operaciones de autenticación en poco tiempo.",
@@ -36,7 +36,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "REGISTER_REQUEST",
 		keyPrefix: "@kinestilistas/ratelimit/register-request",
 		maxRequests: 5,
-		windowMs: 30 * 60 * 1000,
+		windowMs: 30 * 60 * 1000, // 30 minutos
 		scope: "ip",
 		message:
 			"Has enviado demasiadas solicitudes de registro en poco tiempo. Espera antes de volver a intentarlo.",
@@ -46,7 +46,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "ADMIN_GENERIC_READ",
 		keyPrefix: "@kinestilistas/ratelimit/admin-read",
 		maxRequests: 60,
-		windowMs: 60 * 1000,
+		windowMs: 60 * 1000, // 1 minuto
 		scope: "user_or_ip",
 		message:
 			"Se han realizado demasiadas consultas de administración en poco tiempo.",
@@ -56,7 +56,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "ADMIN_GENERIC_WRITE",
 		keyPrefix: "@kinestilistas/ratelimit/admin-write",
 		maxRequests: 30,
-		windowMs: 60 * 1000,
+		windowMs: 60 * 1000, // 1 minuto
 		scope: "user_or_ip",
 		message:
 			"Se han realizado demasiadas operaciones de administración en poco tiempo.",
@@ -66,7 +66,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "ADMIN_USERS_READ",
 		keyPrefix: "@kinestilistas/ratelimit/admin-users-read",
 		maxRequests: 30,
-		windowMs: 60 * 1000,
+		windowMs: 60 * 1000, // 1 minuto
 		scope: "user_or_ip",
 		message:
 			"Se han realizado demasiadas consultas del listado de usuarios en poco tiempo.",
@@ -76,7 +76,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "ADMIN_USERS_WRITE",
 		keyPrefix: "@kinestilistas/ratelimit/admin-users-write",
 		maxRequests: 15,
-		windowMs: 60 * 1000,
+		windowMs: 60 * 1000, // 1 minuto
 		scope: "user_or_ip",
 		message:
 			"Se han realizado demasiadas modificaciones de usuarios en poco tiempo.",
@@ -86,7 +86,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "PROFILE_IMAGE_UPLOAD",
 		keyPrefix: "@kinestilistas/ratelimit/profile-image-upload",
 		maxRequests: 10,
-		windowMs: 10 * 60 * 1000,
+		windowMs: 10 * 60 * 1000, // 10 minutos
 		scope: "user_or_ip",
 		message:
 			"Has subido demasiadas imágenes de perfil en poco tiempo. Espera antes de volver a intentarlo.",
@@ -96,7 +96,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "LOGIN_IP",
 		keyPrefix: "@kinestilistas/ratelimit/login-ip",
 		maxRequests: 10,
-		windowMs: 10 * 60 * 1000,
+		windowMs: 10 * 60 * 1000, // 10 minutos
 		scope: "ip",
 		message:
 			"Se han detectado demasiados intentos de acceso desde esta IP en poco tiempo.",
@@ -106,7 +106,7 @@ export const RATE_LIMIT_POLICIES = {
 		name: "LOGIN_IDENTIFIER",
 		keyPrefix: "@kinestilistas/ratelimit/login-identifier",
 		maxRequests: 8,
-		windowMs: 15 * 60 * 1000,
+		windowMs: 15 * 60 * 1000, // 15 minutos
 		scope: "email_or_ip",
 		message:
 			"Se han detectado demasiados intentos de acceso para esta cuenta en poco tiempo.",
