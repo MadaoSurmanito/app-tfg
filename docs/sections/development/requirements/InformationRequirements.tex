@@ -10,9 +10,7 @@ El modelo de información del módulo M1 se ha diseñado con el objetivo de gara
 
 \subsubsection*{Usuario}
 
-El sistema debe almacenar información básica de cada usuario registrado en la plataforma. Esta información permite identificar al usuario, gestionar su acceso al sistema y mantener información básica de contacto.
-
-Los datos asociados a un usuario incluyen:
+El sistema debe almacenar información básica de cada usuario registrado en la plataforma. Esta información permite identificar al usuario, gestionar su acceso al sistema y mantener datos básicos de contacto. Los datos asociados a un usuario incluyen:
 
 \begin{itemize}
     \item Identificador del usuario.
@@ -31,10 +29,7 @@ Los datos asociados a un usuario incluyen:
 
 \subsubsection*{Rol}
 
-El sistema debe gestionar los diferentes roles que determinan los permisos y
-responsabilidades de los usuarios dentro de la aplicación.
-
-Los datos asociados a un rol incluyen:
+El sistema debe gestionar los diferentes roles que determinan los permisos y responsabilidades de los usuarios dentro de la aplicación. Los datos asociados a un rol incluyen:
 
 \begin{itemize}
     \item Identificador del rol.
@@ -45,11 +40,7 @@ Los datos asociados a un rol incluyen:
 
 \subsubsection*{Solicitud de registro}
 
-El sistema debe almacenar las solicitudes de registro realizadas por usuarios
-que desean acceder a la plataforma. Estas solicitudes podrán ser revisadas por
-un administrador antes de conceder o denegar el acceso.
-
-Los datos asociados a una solicitud de registro incluyen:
+El sistema debe almacenar las solicitudes de registro realizadas por usuarios que desean acceder a la plataforma. Estas solicitudes podrán ser revisadas por un administrador antes de conceder o denegar el acceso. Los datos asociados a una solicitud de registro incluyen:
 
 \begin{itemize}
     \item Identificador de la solicitud.
@@ -64,15 +55,13 @@ Los datos asociados a una solicitud de registro incluyen:
     \item Fecha de realización de la solicitud.
     \item Fecha de revisión de la solicitud.
     \item Usuario que realizó la revisión.
-    \item Motivo de rechazo (en caso de que la solicitud sea denegada).
+    \item Motivo de rechazo, en caso de denegación.
     \item Usuario creado a partir de la solicitud, en caso de aprobación.
 \end{itemize}
 
 \subsubsection*{Registro de administración de usuarios}
 
-El sistema debe mantener un historial de las acciones administrativas realizadas sobre las cuentas de usuario con el objetivo de disponer de trazabilidad sobre los cambios efectuados en el sistema.
-
-Los datos asociados a cada registro de administración incluyen:
+El sistema debe mantener un historial de las acciones administrativas realizadas sobre las cuentas de usuario con el objetivo de disponer de trazabilidad sobre los cambios efectuados en el sistema. Los datos asociados a cada registro de administración incluyen:
 
 \begin{itemize}
     \item Identificador del registro.
@@ -90,10 +79,7 @@ Los datos asociados a cada registro de administración incluyen:
 
 \subsubsection*{Registro de acceso}
 
-El sistema debe registrar los eventos relacionados con el acceso al sistema con el objetivo de mejorar la seguridad, detectar accesos indebidos y disponer
-de información para auditoría.
-
-Los datos asociados a un registro de acceso incluyen:
+El sistema debe registrar los eventos relacionados con el acceso al sistema con el objetivo de mejorar la seguridad, detectar accesos indebidos y disponer de información para auditoría. Los datos asociados a un registro de acceso incluyen:
 
 \begin{itemize}
     \item Identificador del registro de acceso.
@@ -104,7 +90,7 @@ Los datos asociados a un registro de acceso incluyen:
     \item Motivo del fallo de acceso, en caso de error.
     \item Identificador de sesión asociado al acceso.
     \item Dirección IP desde la que se realizó el acceso.
-    \item Información del agente de usuario (navegador o dispositivo).
+    \item Información del agente de usuario.
     \item Fecha y hora del evento de acceso.
     \item Fecha de revocación de la sesión, en caso de existir.
     \item Fecha de expiración de la sesión.
@@ -114,9 +100,11 @@ Los datos asociados a un registro de acceso incluyen:
 \subsection{RI-M2}
 % ------------------------------------------------------------------------------
 
+El modelo de información del módulo M2 se ha ampliado durante el proceso de desarrollo con el fin de reflejar con mayor precisión la operativa comercial real del sistema. En consecuencia, además de la ficha básica del cliente profesional, se incorporan estructuras orientadas a representar el perfil comercial, las asignaciones entre clientes y comerciales, las visitas planificadas o realizadas y las rutas de trabajo.
+
 \subsubsection*{Cliente}
 
-El sistema debe almacenar la información básica de cada cliente profesional atendido por el distribuidor. Esta información permite identificar cada establecimiento, registrar los datos comerciales relevantes, mantener la relación entre la peluquería como entidad de negocio y su cuenta de acceso en la plataforma, y facilitar al agente comercial la consulta de los datos de contacto y localización necesarios para la planificación de visitas y rutas comerciales.
+El sistema debe almacenar la información básica de cada cliente profesional atendido por el distribuidor. Esta información permite identificar cada establecimiento, registrar sus datos de contacto y localización, mantener su relación con la cuenta de acceso correspondiente dentro del sistema y servir de base para el seguimiento comercial posterior.
 
 Los datos asociados a un cliente incluyen:
 
@@ -129,43 +117,95 @@ Los datos asociados a un cliente incluyen:
     \item Localidad o ciudad.
     \item Código postal.
     \item Provincia o zona.
-    \item Usuario comercial responsable del cliente.
     \item Usuario asociado al cliente dentro del sistema.
     \item Observaciones o notas comerciales.
     \item Fecha de creación del registro del cliente.
     \item Fecha de última actualización de la información del cliente.
 \end{itemize}
 
-Esta información podrá ser utilizada por el sistema para mostrar al comercial los datos necesarios para localizar al cliente durante la planificación y ejecución de rutas comerciales.
+\subsubsection*{Comercial}
+
+El sistema debe permitir representar a los usuarios de tipo comercial mediante una estructura de información específica asociada a su cuenta de usuario. Esta información permite distinguir el perfil operativo del comercial dentro del sistema y registrar datos complementarios de uso interno.
+
+Los datos asociados a un comercial incluyen:
+
+\begin{itemize}
+    \item Identificador del comercial.
+    \item Usuario asociado al perfil comercial.
+    \item Código interno o identificador profesional, cuando exista.
+    \item Territorio, zona o ámbito de trabajo asignado.
+    \item Notas internas asociadas al perfil comercial.
+    \item Fecha de creación del perfil comercial.
+    \item Fecha de última actualización del perfil comercial.
+\end{itemize}
+
+\subsubsection*{Asignación cliente-comercial}
+
+El sistema debe permitir registrar la relación entre un cliente profesional y un comercial determinado. Esta estructura evita modelar la responsabilidad comercial como un simple atributo fijo del cliente y permite reflejar cambios, reasignaciones y trazabilidad histórica.
+
+Los datos asociados a una asignación cliente-comercial incluyen:
+
+\begin{itemize}
+    \item Identificador de la asignación.
+    \item Cliente asociado.
+    \item Comercial asignado.
+    \item Fecha y hora de asignación.
+    \item Fecha y hora de finalización de la asignación, en caso de existir.
+    \item Usuario que registró la asignación, cuando dicha información esté disponible.
+    \item Usuario que registró la finalización de la asignación, cuando corresponda.
+    \item Notas asociadas a la asignación.
+\end{itemize}
+
+\subsubsection*{Estado de visita comercial}
+
+El sistema debe gestionar un catálogo de estados de visita comercial que permita clasificar la situación de cada visita registrada.
+
+Los datos asociados a un estado de visita comercial incluyen:
+
+\begin{itemize}
+    \item Identificador del estado.
+    \item Código del estado.
+    \item Nombre del estado.
+\end{itemize}
 
 \subsubsection*{Visita comercial}
 
-El sistema debe permitir registrar las visitas comerciales realizadas por los agentes a los clientes profesionales. Estas visitas permiten documentar la actividad comercial y registrar observaciones o resultados obtenidos durante la interacción con el cliente.
+El sistema debe permitir registrar las visitas comerciales realizadas o planificadas por los agentes a los clientes profesionales. Estas visitas permiten documentar la actividad comercial y registrar observaciones o resultados obtenidos durante la interacción con el cliente.
 
 Los datos asociados a una visita comercial incluyen:
 
 \begin{itemize}
     \item Identificador de la visita.
     \item Cliente visitado.
-    \item Usuario comercial que realiza la visita.
-    \item Fecha y hora de la visita.
-    \item Estado de la visita (planificada, realizada o cancelada).
+    \item Comercial que realiza o planifica la visita.
+    \item Fecha y hora previstas para la visita.
+    \item Estado de la visita.
     \item Observaciones registradas durante la visita.
     \item Resultado o conclusión de la visita.
 \end{itemize}
 
-Esta información podrá ser utilizada por el sistema para mostrar al comercial los datos necesarios para localizar al cliente durante la planificación y ejecución de rutas comerciales.
+\subsubsection*{Estado de ruta comercial}
+
+El sistema debe gestionar un catálogo de estados de ruta comercial que permita reflejar la situación operativa de cada ruta registrada.
+
+Los datos asociados a un estado de ruta comercial incluyen:
+
+\begin{itemize}
+    \item Identificador del estado.
+    \item Código del estado.
+    \item Nombre del estado.
+\end{itemize}
 
 \subsubsection*{Ruta comercial}
 
-El sistema debe permitir organizar las rutas de trabajo de los agentes comerciales. Una ruta representa la planificación de visitas que un comercial debe realizar durante una jornada o recorrido determinado. Para ello, el sistema debe permitir consultar la información de contacto y localización de los clientes incluidos en la ruta y servir de apoyo a la generación de indicaciones de navegación mediante servicios externos.
+El sistema debe permitir organizar las rutas de trabajo de los agentes comerciales. Una ruta representa la planificación de visitas que un comercial debe realizar durante una jornada o recorrido determinado.
 
 Los datos asociados a una ruta comercial incluyen:
 
 \begin{itemize}
     \item Identificador de la ruta.
-    \item Usuario comercial responsable de la ruta.
-    \item Fecha de la ruta comercial.
+    \item Comercial responsable de la ruta.
+    \item Fecha de la ruta.
     \item Nombre o descripción de la ruta.
     \item Estado de la ruta.
     \item Fecha de creación de la ruta.
@@ -173,15 +213,15 @@ Los datos asociados a una ruta comercial incluyen:
 
 \subsubsection*{Visita en ruta}
 
-El sistema debe permitir registrar las visitas que forman parte de una ruta comercial concreta. Esta información permite definir las visitas comerciales incluidas en la ruta y el orden previsto en el que deben realizarse, facilitando así la organización del recorrido comercial diario.
+El sistema debe permitir registrar la inclusión de visitas comerciales concretas dentro de una ruta, así como el orden previsto de ejecución de cada una de ellas.
 
-Los datos asociados a una visita dentro de una ruta incluyen:
+Los datos asociados a una visita en ruta incluyen:
 
 \begin{itemize}
     \item Identificador del registro.
     \item Ruta comercial asociada.
-    \item Visita comercial incluida en la ruta.
-    \item Orden previsto de la visita dentro de la ruta.
+    \item Visita comercial incluida.
+    \item Orden de la visita dentro de la ruta.
 \end{itemize}
 
 % ------------------------------------------------------------------------------

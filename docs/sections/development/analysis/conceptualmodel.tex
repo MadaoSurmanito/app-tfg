@@ -279,70 +279,119 @@ La clase \textit{Registro de acceso} almacena los eventos relacionados con el ac
 % ------------------------------------------------------------------------------
 \subsection{Modelo conceptual de datos M2}
 % ------------------------------------------------------------------------------
+% ------------------------------------------------------------------------------
+\subsection{Modelo conceptual de datos M2}
+% ------------------------------------------------------------------------------
 
 La \autoref{fig:mcd-m2} muestra el modelo conceptual correspondiente al módulo de gestión comercial y clientes.
 
 % \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=\textwidth]{figures/MCD/M2_ModeloConceptual.pdf}
-%     \caption{Modelo conceptual de datos del módulo M2.}
-%     \label{fig:mcd-m2}
+% 	\centering
+% 	\includegraphics[width=\textwidth]{figures/MCD/M2_ModeloConceptual.pdf}
+% 	\caption{Modelo conceptual de datos del módulo M2.}
+% 	\label{fig:mcd-m2}
 % \end{figure}
+
+Durante el proceso de desarrollo, el modelo conceptual inicialmente previsto para este módulo fue ampliado con el fin de representar con mayor precisión la realidad operativa del sistema. En particular, se incorporaron entidades específicas para el perfil comercial y para la asignación entre clientes y comerciales, además de consolidarse las estructuras relativas a visitas y rutas comerciales. Esta ampliación aporta mayor trazabilidad al dominio y separa con más claridad la identidad del usuario, la identidad del cliente profesional y la organización de la actividad comercial.
 
 \subsubsection{Clase Cliente}
 
-La clase \textit{Cliente} representa a cada establecimiento profesional atendido por el distribuidor. En ella se almacena la información necesaria para identificar al cliente como entidad comercial, registrar los datos propios del establecimiento, mantener su vinculación con el usuario de acceso correspondiente dentro del sistema y facilitar la consulta de la información de contacto y localización necesaria para la planificación de visitas y rutas comerciales.
+La clase \textit{Cliente} representa a cada establecimiento profesional atendido por el distribuidor. En ella se almacena la información necesaria para identificar al cliente como entidad comercial, registrar los datos propios del establecimiento, mantener su vinculación con el usuario de acceso correspondiente dentro del sistema y facilitar la consulta de la información de contacto y localización relevante para el seguimiento comercial.
 
 \textbf{Atributos}
 
 \begin{itemize}
-
-      \item \textit{id}
-            Identificador único del cliente.
-      \item \textit{name}
-            Nombre del establecimiento o peluquería.
-      \item \textit{contact\_name}
-            Nombre de la persona de contacto del establecimiento.
-      \item \textit{tax\_id}
-            Identificador fiscal del cliente.
-      \item \textit{address}
-            Dirección del establecimiento.
-      \item \textit{city}
-            Localidad o ciudad del cliente.
-      \item \textit{postal\_code}
-            Código postal del establecimiento.
-      \item \textit{province}
-            Provincia o zona geográfica del cliente.
-      \item \textit{assigned\_commercial}
-            Usuario comercial responsable del cliente.
-      \item \textit{linked\_user}
-            Usuario asociado al cliente dentro del sistema.
-      \item \textit{notes}
-            Observaciones o notas comerciales asociadas al cliente.
-      \item \textit{created\_at}
-            Fecha de creación del registro del cliente.
-      \item \textit{updated\_at}
-            Fecha de última actualización de la información del cliente.
-
+      \item \textit{id} Identificador único del cliente.
+      \item \textit{name} Nombre del establecimiento o peluquería.
+      \item \textit{contact\_name} Nombre de la persona de contacto del establecimiento.
+      \item \textit{tax\_id} Identificador fiscal del cliente.
+      \item \textit{address} Dirección del establecimiento.
+      \item \textit{city} Localidad o ciudad del cliente.
+      \item \textit{postal\_code} Código postal del establecimiento.
+      \item \textit{province} Provincia o zona geográfica del cliente.
+      \item \textit{linked\_user} Usuario asociado al cliente dentro del sistema.
+      \item \textit{notes} Observaciones o notas comerciales asociadas al cliente.
+      \item \textit{created\_at} Fecha de creación del registro del cliente.
+      \item \textit{updated\_at} Fecha de última actualización de la información del cliente.
 \end{itemize}
 
 \textbf{Restricciones textuales}
 
 \begin{itemize}
+      \item \textbf{RT-C1 — Identificación obligatoria del cliente} Todo cliente debe disponer de información suficiente para su identificación dentro del sistema.
+      \item \textbf{RT-C2 — Vinculación obligatoria con usuario} Todo cliente debe estar asociado a un único usuario del sistema que represente su cuenta de acceso a la plataforma.
+      \item \textbf{RT-C3 — Correspondencia entre cliente y usuario cliente} El usuario asociado a un cliente debe corresponder a una cuenta válida del sistema destinada al acceso del establecimiento.
+      \item \textbf{RT-C4 — Coherencia temporal del registro del cliente} Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del cliente.
+      \item \textbf{RT-C5 — Identificación fiscal consistente} Si un cliente dispone de identificador fiscal, este debe ser coherente con el formato admitido por el sistema.
+\end{itemize}
 
-      \item \textbf{RT-C1 — Identificación obligatoria del cliente}
-            Todo cliente debe disponer de información suficiente para su identificación dentro del sistema.
-      \item \textbf{RT-C2 — Comercial responsable válido}
-            Todo cliente debe estar asociado a un usuario válido del sistema que actúe como comercial responsable.
-      \item \textbf{RT-C3 — Vinculación obligatoria con usuario}
-            Todo cliente debe estar asociado a un único usuario del sistema que represente su cuenta de acceso a la plataforma.
-      \item \textbf{RT-C4 — Correspondencia entre cliente y usuario cliente}
-            Todo usuario con rol cliente debe corresponder a una única entidad \textit{Cliente} dentro del sistema.
-      \item \textbf{RT-C5 — Coherencia temporal del registro del cliente}
-            Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del cliente.
-      \item \textbf{RT-C6 — Identificación fiscal consistente}
-            Si un cliente dispone de un identificador fiscal, este debe ser válido.
+\subsubsection{Clase Comercial}
 
+La clase \textit{Comercial} representa el perfil operativo de un usuario cuya función principal dentro del sistema es desarrollar actividad comercial. Esta entidad permite separar la información general del usuario de aquella información complementaria específica del desempeño comercial.
+
+\textbf{Atributos}
+
+\begin{itemize}
+      \item \textit{id} Identificador único del comercial.
+      \item \textit{user} Usuario asociado al perfil comercial.
+      \item \textit{employee\_code} Código interno o identificador profesional del comercial.
+      \item \textit{territory} Territorio, zona o ámbito de trabajo asignado.
+      \item \textit{notes} Notas internas asociadas al perfil comercial.
+      \item \textit{created\_at} Fecha de creación del perfil comercial.
+      \item \textit{updated\_at} Fecha de actualización del perfil comercial.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+      \item \textbf{RT-CO1 — Vinculación obligatoria con usuario} Todo comercial debe estar asociado a un único usuario existente en el sistema.
+      \item \textbf{RT-CO2 — Coherencia entre usuario y perfil comercial} El usuario vinculado a un comercial debe corresponder a un perfil autorizado para desarrollar funciones comerciales.
+      \item \textbf{RT-CO3 — Unicidad del perfil comercial} Un mismo usuario no puede disponer de más de un perfil comercial activo dentro del sistema.
+      \item \textbf{RT-CO4 — Coherencia temporal del perfil comercial} Si el atributo \textit{updated\_at} tiene valor, este debe ser posterior o igual a la fecha de creación del perfil.
+\end{itemize}
+
+\subsubsection{Clase Asignación cliente-comercial}
+
+La clase \textit{Asignación cliente-comercial} representa la relación entre un cliente profesional y un comercial. Su incorporación durante el desarrollo permite evitar que la responsabilidad comercial quede reducida a un atributo fijo en la ficha del cliente, facilitando así la trazabilidad de cambios y reasignaciones.
+
+\textbf{Atributos}
+
+\begin{itemize}
+      \item \textit{id} Identificador único de la asignación.
+      \item \textit{client} Cliente asociado a la asignación.
+      \item \textit{commercial} Comercial asignado al cliente.
+      \item \textit{assigned\_at} Fecha y hora en la que se registra la asignación.
+      \item \textit{unassigned\_at} Fecha y hora de finalización de la asignación, en caso de existir.
+      \item \textit{assigned\_by\_user} Usuario que registra la asignación.
+      \item \textit{unassigned\_by\_user} Usuario que registra la finalización de la asignación.
+      \item \textit{notes} Observaciones asociadas a la asignación.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+      \item \textbf{RT-AC1 — Asociación obligatoria de la asignación} Toda asignación debe vincular un cliente existente con un comercial existente.
+      \item \textbf{RT-AC2 — Inicio obligatorio de la asignación} Toda asignación debe registrar la fecha en la que comienza su vigencia.
+      \item \textbf{RT-AC3 — Coherencia temporal de la asignación} Si existe fecha de finalización, esta debe ser posterior o igual a la fecha de asignación.
+      \item \textbf{RT-AC4 — Trazabilidad opcional de la operación} Cuando el sistema disponga de información sobre el usuario que realiza la asignación o su finalización, dicha información deberá conservarse asociada al registro.
+\end{itemize}
+
+\subsubsection{Clase Estado de visita comercial}
+
+La clase \textit{Estado de visita comercial} representa el catálogo de estados válidos para clasificar una visita comercial dentro del sistema.
+
+\textbf{Atributos}
+
+\begin{itemize}
+      \item \textit{id} Identificador del estado.
+      \item \textit{code} Código del estado.
+      \item \textit{name} Nombre del estado.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+      \item \textbf{RT-EV1 — Identificación única del estado} Cada estado de visita comercial debe disponer de un identificador, un código y un nombre únicos dentro del catálogo.
 \end{itemize}
 
 \subsubsection{Clase Visita comercial}
@@ -352,65 +401,63 @@ La clase \textit{Visita comercial} representa cada visita planificada o realizad
 \textbf{Atributos}
 
 \begin{itemize}
-      \item \textit{id}
-            Identificador único de la visita.
-      \item \textit{client}
-            Cliente asociado a la visita.
-      \item \textit{commercial}
-            Usuario comercial que realiza la visita.
-      \item \textit{scheduled\_at}
-            Fecha y hora previstas para la visita.
-      \item \textit{status}
-            Estado de la visita.
-      \item \textit{notes}
-            Observaciones registradas durante la visita.
-      \item \textit{result}
-            Resultado o conclusión de la visita.
+      \item \textit{id} Identificador único de la visita.
+      \item \textit{client} Cliente asociado a la visita.
+      \item \textit{commercial} Comercial que realiza la visita.
+      \item \textit{scheduled\_at} Fecha y hora previstas para la visita.
+      \item \textit{status} Estado de la visita.
+      \item \textit{notes} Observaciones registradas durante la visita.
+      \item \textit{result} Resultado o conclusión de la visita.
 \end{itemize}
 
 \textbf{Restricciones textuales}
 
 \begin{itemize}
-      \item \textbf{RT-V1 — Asociación obligatoria de la visita}
-            Toda visita comercial debe estar asociada a un cliente y a un usuario comercial.
-      \item \textbf{RT-V2 — Estado válido de la visita}
-            El estado de una visita solo puede tomar valores definidos por el sistema.
-      \item \textbf{RT-V3 — Resultado asociado a visitas realizadas}
-            Solo deben registrarse resultados de visita cuando esta haya sido efectivamente realizada.
-      \item \textbf{RT-V4 — Integración de la visita en el historial comercial}
-            Toda visita comercial asociada a un cliente debe poder ser considerada parte de su historial comercial dentro del sistema.
+      \item \textbf{RT-V1 — Asociación obligatoria de la visita} Toda visita comercial debe estar asociada a un cliente y a un comercial.
+      \item \textbf{RT-V2 — Estado válido de la visita} El estado de una visita solo puede tomar valores definidos por el sistema.
+      \item \textbf{RT-V3 — Resultado asociado a visitas realizadas} Solo deben registrarse resultados de visita cuando exista una ejecución efectiva o una resolución equivalente documentada.
+      \item \textbf{RT-V4 — Integración en el historial comercial} Toda visita asociada a un cliente debe poder formar parte de su historial comercial.
 \end{itemize}
 
-\subsubsection{Clase Ruta comercial}
+\subsubsection{Clase Estado de ruta comercial}
 
-La clase \textit{Ruta comercial} representa la planificación de trabajo de un agente comercial para una jornada o recorrido determinado. Permite organizar el conjunto de visitas que debe realizar un comercial en una fecha concreta y sirve de base para consultar la información de contacto y localización de los clientes incluidos en la ruta y apoyar la obtención de indicaciones de navegación mediante servicios externos.
+La clase \textit{Estado de ruta comercial} representa el catálogo de estados válidos para clasificar una ruta comercial dentro del sistema.
 
 \textbf{Atributos}
 
 \begin{itemize}
-      \item \textit{id}
-            Identificador único de la ruta.
-      \item \textit{commercial}
-            Usuario comercial responsable de la ruta.
-      \item \textit{route\_date}
-            Fecha de la ruta comercial.
-      \item \textit{name}
-            Nombre o descripción de la ruta.
-      \item \textit{status}
-            Estado de la ruta.
-      \item \textit{created\_at}
-            Fecha de creación de la ruta.
+      \item \textit{id} Identificador del estado.
+      \item \textit{code} Código del estado.
+      \item \textit{name} Nombre del estado.
 \end{itemize}
 
 \textbf{Restricciones textuales}
 
 \begin{itemize}
-      \item \textbf{RT-RC1 — Comercial obligatorio en la ruta}
-            Toda ruta comercial debe estar asociada a un usuario comercial responsable.
-      \item \textbf{RT-RC2 — Fecha obligatoria de la ruta}
-            Toda ruta comercial debe estar asociada a una fecha de planificación.
-      \item \textbf{RT-RC3 — Estado válido de la ruta}
-            El estado de una ruta solo puede tomar valores definidos por el sistema.
+      \item \textbf{RT-ER1 — Identificación única del estado} Cada estado de ruta comercial debe disponer de un identificador, un código y un nombre únicos dentro del catálogo.
+\end{itemize}
+
+\subsubsection{Clase Ruta comercial}
+
+La clase \textit{Ruta comercial} representa la planificación de trabajo de un agente comercial para una jornada o recorrido determinado. Permite organizar el conjunto de visitas que debe realizar un comercial en una fecha concreta y sirve de base para estructurar la actividad diaria del área comercial.
+
+\textbf{Atributos}
+
+\begin{itemize}
+      \item \textit{id} Identificador único de la ruta.
+      \item \textit{commercial} Comercial responsable de la ruta.
+      \item \textit{route\_date} Fecha de la ruta comercial.
+      \item \textit{name} Nombre o descripción de la ruta.
+      \item \textit{status} Estado de la ruta.
+      \item \textit{created\_at} Fecha de creación de la ruta.
+\end{itemize}
+
+\textbf{Restricciones textuales}
+
+\begin{itemize}
+      \item \textbf{RT-RC1 — Comercial obligatorio en la ruta} Toda ruta comercial debe estar asociada a un comercial responsable.
+      \item \textbf{RT-RC2 — Fecha obligatoria de la ruta} Toda ruta comercial debe estar asociada a una fecha de planificación.
+      \item \textbf{RT-RC3 — Estado válido de la ruta} El estado de una ruta solo puede tomar valores definidos por el sistema.
 \end{itemize}
 
 \subsubsection{Clase Visita en ruta}
@@ -420,29 +467,19 @@ La clase \textit{Visita en ruta} representa la inclusión de una visita comercia
 \textbf{Atributos}
 
 \begin{itemize}
-      \item \textit{id}
-            Identificador único del registro.
-      \item \textit{route}
-            Ruta comercial a la que pertenece la visita.
-      \item \textit{visit}
-            Visita comercial incluida en la ruta.
-      \item \textit{visit\_order}
-            Orden previsto de la visita dentro de la ruta.
+      \item \textit{id} Identificador único del registro.
+      \item \textit{route} Ruta comercial a la que pertenece la visita.
+      \item \textit{visit} Visita comercial incluida en la ruta.
+      \item \textit{visit\_order} Orden previsto de la visita dentro de la ruta.
 \end{itemize}
 
 \textbf{Restricciones textuales}
 
 \begin{itemize}
-      \item \textbf{RT-VR1 — Asociación obligatoria de visita en ruta}
-            Toda visita en ruta debe estar asociada a una ruta comercial y a una visita comercial existentes.
-      \item \textbf{RT-VR2 — Orden de visita válido}
-            Toda visita incluida en una ruta debe tener un orden de visita definido.
-      \item \textbf{RT-VR3 — Unicidad de visita en una ruta}
-            Una misma visita comercial no debe aparecer más de una vez dentro de la misma ruta.
-      \item \textbf{RT-VR4 — Unicidad del orden dentro de la ruta}
-            No deben existir dos visitas distintas con el mismo orden previsto dentro de una misma ruta comercial.
-      \item \textbf{RT-VR5 — Coherencia entre ruta y visita}
-            Toda visita incluida en una ruta comercial debe estar asociada al mismo usuario comercial responsable de dicha ruta.
+      \item \textbf{RT-VR1 — Asociación obligatoria de visita en ruta} Toda visita en ruta debe estar asociada a una ruta comercial y a una visita comercial existentes.
+      \item \textbf{RT-VR2 — Orden de visita válido} Toda visita incluida en una ruta debe tener un orden definido dentro de la ruta.
+      \item \textbf{RT-VR3 — Unicidad de visita por ruta} Una misma visita no debe aparecer duplicada dentro de una misma ruta.
+      \item \textbf{RT-VR4 — Unicidad del orden dentro de la ruta} No deben existir dos visitas con el mismo orden dentro de una misma ruta.
 \end{itemize}
 
 % ------------------------------------------------------------------------------
@@ -740,7 +777,7 @@ La clase \textit{Línea de pedido} representa cada uno de los productos incluido
             Descuento aplicado a la línea, en caso de existir.
       \item \textit{line\_amount}
             Importe total de la línea.
-            
+
 \end{itemize}
 
 \textbf{Restricciones textuales}
