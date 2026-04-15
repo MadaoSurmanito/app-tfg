@@ -20,9 +20,9 @@ export function mapCommercialVisitsToEntityTableItems(
 			title: visit.client?.name ?? "Cliente",
 			subtitle:
 				visit.client?.contact_name ||
-				visit.client?.linkedUser?.email ||
+				visit.client?.user?.email ||
 				"Sin persona de contacto",
-			imageUrl: visit.client?.linkedUser?.profile_image_url ?? null,
+			imageUrl: visit.client?.user?.profile_image_url ?? null,
 			category: visit.client?.province || "Sin provincia",
 			status: getVisitStatusLabel(visit.status_id),
 			primaryDate: visit.scheduled_at,
@@ -36,7 +36,7 @@ export function mapCommercialVisitsToEntityTableItems(
 			fields: [
 				{
 					label: "Correo",
-					value: visit.client?.linkedUser?.email || "-",
+					value: visit.client?.user?.email || "-",
 				},
 				{
 					label: "Ubicación",
