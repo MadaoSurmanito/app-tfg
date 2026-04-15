@@ -4,7 +4,6 @@ import { Client } from "@/lib/typeorm/entities/Client";
 import { Commercial } from "@/lib/typeorm/entities/Commercial";
 import { Repository } from "typeorm";
 import { COMMERCIAL_VISIT_STATUS_IDS } from "@/lib/typeorm/constants/catalog-ids";
-import { getActiveAssignmentByCommercialAndClient } from "@/lib/typeorm/services/commercial/client-commercial-assignment";
 
 // --------------------------------------------------------------------------
 // Funciones auxiliares para normalización de datos
@@ -17,7 +16,7 @@ function buildCommercialVisitQuery(repo: Repository<CommercialVisit>) {
 	return repo
 		.createQueryBuilder("visit")
 		.leftJoinAndSelect("visit.client", "client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect("visit.commercial", "commercial")
 		.leftJoinAndSelect("commercial.user", "commercialUser")
 		.leftJoinAndSelect("visit.status", "status");
@@ -138,17 +137,13 @@ export async function createCommercialVisit(input: CreateCommercialVisitInput) {
 			);
 		}
 
-		const [client, commercial, activeAssignment] = await Promise.all([
+		const [client, commercial] = await Promise.all([
 			clientRepo.findOne({
 				where: { id: input.clientId },
 			}),
 			commercialRepo.findOne({
 				where: { id: input.commercialId },
 			}),
-			getActiveAssignmentByCommercialAndClient(
-				input.commercialId,
-				input.clientId,
-			),
 		]);
 
 		if (!client) {
@@ -164,14 +159,6 @@ export async function createCommercialVisit(input: CreateCommercialVisitInput) {
 				"Comercial no encontrado",
 				404,
 				"COMMERCIAL_NOT_FOUND",
-			);
-		}
-
-		if (!activeAssignment) {
-			throw new CreateCommercialVisitError(
-				"El cliente no está asignado actualmente a este comercial",
-				409,
-				"CLIENT_NOT_ASSIGNED_TO_COMMERCIAL",
 			);
 		}
 
@@ -312,9 +299,15 @@ export async function updateCommercialVisit(input: UpdateCommercialVisitInput) {
 			visit.scheduled_at = input.scheduledAt;
 		}
 
-		if (input.statusId !== undefined) {
-			const nextStatusId = Number(input.statusId);
+		const nextStatusId =
+			input.statusId !== undefined ? Number(input.statusId) : visit.status_id;
 
+		const nextResult =
+			input.result !== undefined
+				? normalizeText(input.result) || null
+				: visit.result;
+
+		if (input.statusId !== undefined) {
 			if (!isValidCommercialVisitStatus(nextStatusId)) {
 				throw new UpdateCommercialVisitError(
 					"El estado indicado no es válido",
@@ -330,17 +323,22 @@ export async function updateCommercialVisit(input: UpdateCommercialVisitInput) {
 					"INVALID_STATUS_TRANSITION",
 				);
 			}
+		}
 
-			visit.status_id = nextStatusId;
+		if (nextStatusId === COMMERCIAL_VISIT_STATUS_IDS.COMPLETED && !nextResult) {
+			throw new UpdateCommercialVisitError(
+				"Para completar una visita debes indicar un resultado",
+				400,
+				"RESULT_REQUIRED_FOR_COMPLETION",
+			);
 		}
 
 		if (input.notes !== undefined) {
 			visit.notes = normalizeText(input.notes) || null;
 		}
 
-		if (input.result !== undefined) {
-			visit.result = normalizeText(input.result) || null;
-		}
+		visit.status_id = nextStatusId;
+		visit.result = nextResult;
 
 		await repo.save(visit);
 

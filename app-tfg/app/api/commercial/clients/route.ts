@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-
 import { auth } from "@/auth";
-import { listClientsByCommercialId } from "@/lib/typeorm/services/commercial/client";
+import {
+	listClients,
+	listClientsByCommercialId,
+} from "@/lib/typeorm/services/commercial/client";
 import {
 	CommercialProfileError,
 	requireCommercialByUserId,
@@ -14,20 +16,22 @@ type SessionLike = {
 	};
 } | null;
 
-export async function GET() {
+export async function GET(request: Request) {
 	try {
 		const session = (await auth()) as SessionLike;
 
-		if (!session?.user) {
-			return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-		}
-
-		if (session.user.role !== "commercial") {
+		if (!session?.user || session.user.role !== "commercial") {
 			return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 		}
 
 		const commercial = await requireCommercialByUserId(session.user.id);
-		const clients = await listClientsByCommercialId(commercial.id);
+		const { searchParams } = new URL(request.url);
+		const scope = searchParams.get("scope");
+
+		const clients =
+			scope === "all"
+				? await listClients()
+				: await listClientsByCommercialId(commercial.id);
 
 		return NextResponse.json(clients, { status: 200 });
 	} catch (error) {
