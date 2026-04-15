@@ -1,0 +1,43 @@
+import { EntityManager } from "typeorm";
+import { Commercial } from "@/lib/typeorm/entities/Commercial";
+
+// --------------------------------------------------------------------------
+// Servicio interno: creación automática de perfil comercial desde usuario
+// --------------------------------------------------------------------------
+
+type CreateCommercialFromUserInput = {
+	userId: string;
+	territory?: string | null;
+	notes?: string | null;
+};
+
+function normalizeText(value: string | null | undefined) {
+	return String(value ?? "").trim();
+}
+
+// Este servicio NO valida roles ni permisos.
+// Se usa internamente dentro de otros servicios (ej: registerUserByAdmin).
+export async function createCommercialFromUser(
+	manager: EntityManager,
+	input: CreateCommercialFromUserInput,
+) {
+	const repo = manager.getRepository(Commercial);
+
+	const existing = await repo.findOne({
+		where: { id: input.userId },
+	});
+
+	if (existing) {
+		return existing;
+	}
+
+	const commercial = repo.create({
+		id: input.userId,
+		employee_code: null,
+		territory: normalizeText(input.territory) || null,
+		notes:
+			normalizeText(input.notes) || "Perfil comercial creado automáticamente",
+	});
+
+	return repo.save(commercial);
+}

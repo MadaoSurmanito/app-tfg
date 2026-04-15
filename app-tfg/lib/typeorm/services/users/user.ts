@@ -8,6 +8,8 @@ import { UserAdminActionType } from "@/lib/typeorm/entities/UserAdminActionType"
 import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
 import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
 import { createClientFromUser } from "@/lib/typeorm/services/commercial/client-internal";
+import type { EntityManager } from "typeorm";
+import { createCommercialFromUser } from "@/lib/typeorm/services/commercial/commercial-internal";
 import {
 	REQUEST_SOURCE_TYPE_IDS,
 	REQUEST_STATUS_IDS,
@@ -27,6 +29,32 @@ function normalizeEmail(value: string | null | undefined) {
 	return String(value ?? "")
 		.trim()
 		.toLowerCase();
+}
+
+type SyncRoleProfileInput = {
+	userId: string;
+	roleId: number;
+	name: string;
+	company?: string | null;
+};
+
+async function syncRoleProfileForUser(
+	manager: EntityManager,
+	input: SyncRoleProfileInput,
+) {
+	if (input.roleId === ROLE_IDS.CLIENT) {
+		await createClientFromUser(manager, {
+			userId: input.userId,
+			name: input.name,
+			company: input.company,
+		});
+	}
+
+	if (input.roleId === ROLE_IDS.COMMERCIAL) {
+		await createCommercialFromUser(manager, {
+			userId: input.userId,
+		});
+	}
 }
 
 // --------------------------------------------------------------------------
@@ -394,15 +422,14 @@ export async function registerUserByAdmin(input: RegisterUserByAdminInput) {
 		);
 
 		// --------------------------------------------------------------------------
-		// Creación automática de cliente si el usuario es tipo CLIENT
+		// Sincronización automática del perfil derivado según rol
 		// --------------------------------------------------------------------------
-		if (roleId === ROLE_IDS.CLIENT) {
-			await createClientFromUser(manager, {
-				userId: createdUser.id,
-				name,
-				company,
-			});
-		}
+		await syncRoleProfileForUser(manager, {
+			userId: createdUser.id,
+			roleId,
+			name,
+			company,
+		});
 
 		const reviewedAt = new Date();
 
@@ -618,6 +645,13 @@ export async function updateUser(input: UpdateUserInput) {
 		currentUser.updated_at = new Date();
 
 		await userRepo.save(currentUser);
+
+		await syncRoleProfileForUser(manager, {
+			userId: currentUser.id,
+			roleId,
+			name,
+			company,
+		});
 
 		if (previousRoleId !== roleId && roleChangeActionId) {
 			await logRepo.save(
