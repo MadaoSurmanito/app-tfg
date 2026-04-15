@@ -5,14 +5,16 @@ import {
 	updateClient,
 } from "@/lib/typeorm/services/commercial/client";
 
-// Types
-// Context type for routes with [id] parameter
+// --------------------------------------------------------------------------
+// Tipos
+// --------------------------------------------------------------------------
+
 type RouteContext = {
 	params: Promise<{
 		id: string;
 	}>;
 };
-// Body type for updating a client
+
 type UpdateClientBody = {
 	name?: string;
 	contactName?: string | null;
@@ -24,7 +26,6 @@ type UpdateClientBody = {
 	notes?: string | null;
 };
 
-// Helper functions to check permissions
 type SessionLike = {
 	user?: {
 		id: string;
@@ -32,8 +33,22 @@ type SessionLike = {
 	};
 } | null;
 
-// Check if the session user can read the client
-function canReadClient(session: SessionLike, client: any) {
+// --------------------------------------------------------------------------
+// Helpers
+// --------------------------------------------------------------------------
+
+// Compatibilidad temporal:
+// - client.user?.id -> modelo nuevo (PK compartida con users.id)
+// - client.linkedUser?.id -> modelo anterior
+function getClientOwnerUserId(client: any) {
+	return client?.user?.id ?? client?.linkedUser?.id ?? null;
+}
+
+async function canReadClient(
+	session: SessionLike,
+	client: any,
+	_clientId: string,
+) {
 	if (!session?.user) {
 		return false;
 	}
@@ -47,13 +62,12 @@ function canReadClient(session: SessionLike, client: any) {
 	}
 
 	if (session.user.role === "client") {
-		return client.linkedUser?.id === session.user.id;
+		return getClientOwnerUserId(client) === session.user.id;
 	}
 
 	return false;
 }
 
-// Check if the session user can update the client
 function canUpdateClient(session: SessionLike, client: any) {
 	if (!session?.user) {
 		return false;
@@ -64,13 +78,16 @@ function canUpdateClient(session: SessionLike, client: any) {
 	}
 
 	if (session.user.role === "client") {
-		return client.linkedUser?.id === session.user.id;
+		return getClientOwnerUserId(client) === session.user.id;
 	}
 
 	return false;
 }
 
+// --------------------------------------------------------------------------
 // GET /api/clients/[id]
+// --------------------------------------------------------------------------
+
 export async function GET(_: Request, context: RouteContext) {
 	try {
 		const session = (await auth()) as SessionLike;
@@ -89,7 +106,9 @@ export async function GET(_: Request, context: RouteContext) {
 			);
 		}
 
-		if (!canReadClient(session, client)) {
+		const allowed = await canReadClient(session, client, id);
+
+		if (!allowed) {
 			return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 		}
 
@@ -104,7 +123,10 @@ export async function GET(_: Request, context: RouteContext) {
 	}
 }
 
+// --------------------------------------------------------------------------
 // PATCH /api/clients/[id]
+// --------------------------------------------------------------------------
+
 export async function PATCH(request: Request, context: RouteContext) {
 	try {
 		const session = (await auth()) as SessionLike;
