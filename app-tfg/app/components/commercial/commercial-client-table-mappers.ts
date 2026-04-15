@@ -18,9 +18,9 @@ export function mapCommercialClientsToEntityTableItems(
 			title: client.name,
 			subtitle:
 				client.contact_name ||
-				client.linkedUser?.email ||
+				client.user?.email ||
 				"Sin persona de contacto",
-			imageUrl: client.linkedUser?.profile_image_url ?? null,
+			imageUrl: client.user?.profile_image_url ?? null,
 			category: client.province || "Sin provincia",
 			status: activeAssignment ? "Asignado" : "Sin asignación",
 			primaryDate: activeAssignment?.assigned_at ?? client.created_at,
@@ -46,11 +46,11 @@ export function mapCommercialClientsToEntityTableItems(
 				},
 				{
 					label: "Correo",
-					value: client.linkedUser?.email || "-",
+					value: client.user?.email || "-",
 				},
 				{
 					label: "Teléfono",
-					value: client.linkedUser?.phone || "-",
+					value: client.user?.phone || "-",
 				},
 				{
 					label: "Ubicación",
@@ -77,9 +77,9 @@ export function mapCommercialClientsToEntityTableItems(
 				client.postal_code,
 				client.province,
 				client.notes,
-				client.linkedUser?.name,
-				client.linkedUser?.email,
-				client.linkedUser?.phone,
+				client.user?.name,
+				client.user?.email,
+				client.user?.phone,
 				activeAssignment?.commercial?.user?.name,
 				activeAssignment?.commercial?.employee_code,
 				activeAssignment?.commercial?.territory,

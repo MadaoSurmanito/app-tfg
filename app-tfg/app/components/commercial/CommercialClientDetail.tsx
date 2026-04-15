@@ -88,9 +88,9 @@ export default function CommercialClientDetail({ clientId }: Props) {
 			{ label: "Nombre del establecimiento", value: client.name },
 			{ label: "Persona de contacto", value: client.contact_name },
 			{ label: "Identificador fiscal", value: client.tax_id },
-			{ label: "Correo vinculado", value: client.linkedUser?.email },
-			{ label: "Teléfono", value: client.linkedUser?.phone },
-			{ label: "Empresa", value: client.linkedUser?.company },
+			{ label: "Correo vinculado", value: client.user?.email },
+			{ label: "Teléfono", value: client.user?.phone },
+			{ label: "Empresa", value: client.user?.company },
 			{ label: "Dirección", value: client.address },
 			{ label: "Ciudad", value: client.city },
 			{ label: "Código postal", value: client.postal_code },
@@ -135,10 +135,10 @@ export default function CommercialClientDetail({ clientId }: Props) {
 
 	const accountItems = useMemo(
 		() => [
-			{ label: "Nombre", value: client?.linkedUser?.name },
-			{ label: "Correo", value: client?.linkedUser?.email },
-			{ label: "Teléfono", value: client?.linkedUser?.phone },
-			{ label: "Empresa", value: client?.linkedUser?.company },
+			{ label: "Nombre", value: client?.user?.name },
+			{ label: "Correo", value: client?.user?.email },
+			{ label: "Teléfono", value: client?.user?.phone },
+			{ label: "Empresa", value: client?.user?.company },
 		],
 		[client],
 	);
@@ -179,8 +179,8 @@ export default function CommercialClientDetail({ clientId }: Props) {
 						<section className="glass-card rounded-3xl border border-white/30 bg-white/75 p-6 shadow-xl backdrop-blur">
 							<div className="flex flex-col gap-5 lg:flex-row lg:items-start">
 								<UserAvatar
-									name={client.linkedUser?.name ?? client.name}
-									imageUrl={client.linkedUser?.profile_image_url ?? null}
+									name={client.user?.name ?? client.name}
+									imageUrl={client.user?.profile_image_url ?? null}
 									size="xl"
 								/>
 
@@ -199,7 +199,7 @@ export default function CommercialClientDetail({ clientId }: Props) {
 									</p>
 
 									<p className="mt-2 text-sm text-slate-500">
-										{client.linkedUser?.email || "Sin correo vinculado"}
+										{client.user?.email || "Sin correo vinculado"}
 									</p>
 
 									<div className="mt-4 flex flex-wrap gap-2">

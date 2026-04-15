@@ -161,7 +161,7 @@ export async function updateClient(input: UpdateClientInput) {
 }
 
 // Obtener cliente por usuario vinculado
-export async function getClientByLinkedUserId(linkedUserId: string) {
+export async function getClientByUserId(userId: string) {
 	const ds = await getDataSource();
 	const repo = ds.getRepository(Client);
 
@@ -175,7 +175,7 @@ export async function getClientByLinkedUserId(linkedUserId: string) {
 		)
 		.leftJoinAndSelect("activeAssignment.commercial", "commercial")
 		.leftJoinAndSelect("commercial.user", "commercialUser")
-		.where("client.linked_user_id = :linkedUserId", { linkedUserId })
+		.where("client.id = :userId", { userId })
 		.getOne();
 }
 

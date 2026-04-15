@@ -43,7 +43,7 @@ export type CommercialClient = {
 	notes: string | null;
 	created_at: string;
 	updated_at: string;
-	linkedUser: CommercialLinkedUser | null;
+	user: CommercialLinkedUser | null;
 	commercialAssignments?: CommercialClientAssignment[];
 };
 

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-
 import { auth } from "@/auth";
-import { getClientByIdForCommercial } from "@/lib/typeorm/services/commercial/client";
+import { getClientById } from "@/lib/typeorm/services/commercial/client";
 import {
 	CommercialProfileError,
 	requireCommercialByUserId,
@@ -33,12 +32,15 @@ export async function GET(_: Request, context: RouteContext) {
 			return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 		}
 
-		const commercial = await requireCommercialByUserId(session.user.id);
-		const client = await getClientByIdForCommercial(id, commercial.id);
+		// Mantenemos esta comprobación para asegurar que el usuario
+		// tiene perfil comercial válido, pero ya no filtramos por asignación.
+		await requireCommercialByUserId(session.user.id);
+
+		const client = await getClientById(id);
 
 		if (!client) {
 			return NextResponse.json(
-				{ error: "Cliente no encontrado o no asignado a este comercial" },
+				{ error: "Cliente no encontrado" },
 				{ status: 404 },
 			);
 		}
