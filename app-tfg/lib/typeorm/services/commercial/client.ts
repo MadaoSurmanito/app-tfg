@@ -21,7 +21,7 @@ type CreateClientInput = {
 	city: string;
 	postalCode?: string | null;
 	province?: string | null;
-	linkedUserId: string;
+	userId: string;
 	notes?: string | null;
 };
 
@@ -56,7 +56,7 @@ export async function createClient(input: CreateClientInput) {
 		const userRepo = manager.getRepository(User);
 
 		const linkedUser = await userRepo.findOne({
-			where: { id: input.linkedUserId },
+			where: { id: input.userId },
 		});
 
 		if (!linkedUser || linkedUser.role_id !== ROLE_IDS.CLIENT) {
@@ -64,7 +64,7 @@ export async function createClient(input: CreateClientInput) {
 		}
 
 		const existing = await clientRepo.findOne({
-			where: { linked_user_id: input.linkedUserId },
+			where: { id: input.userId },
 		});
 
 		if (existing) {
@@ -72,6 +72,7 @@ export async function createClient(input: CreateClientInput) {
 		}
 
 		const client = clientRepo.create({
+			id: input.userId,
 			name: normalizeText(input.name),
 			contact_name: normalizeText(input.contactName) || null,
 			tax_id: normalizeText(input.taxId) || null,
@@ -79,7 +80,6 @@ export async function createClient(input: CreateClientInput) {
 			city: normalizeText(input.city),
 			postal_code: normalizeText(input.postalCode) || null,
 			province: normalizeText(input.province) || null,
-			linked_user_id: input.linkedUserId,
 			notes: normalizeText(input.notes) || null,
 		});
 
@@ -94,7 +94,7 @@ export async function getClientById(id: string) {
 
 	return repo
 		.createQueryBuilder("client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect(
 			"client.commercialAssignments",
 			"activeAssignment",
@@ -114,7 +114,7 @@ export async function listClients() {
 
 	return repo
 		.createQueryBuilder("client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect(
 			"client.commercialAssignments",
 			"activeAssignment",
@@ -164,7 +164,7 @@ export async function getClientByLinkedUserId(linkedUserId: string) {
 
 	return repo
 		.createQueryBuilder("client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect(
 			"client.commercialAssignments",
 			"activeAssignment",
@@ -183,7 +183,7 @@ export async function listClientsByCommercialId(commercialId: string) {
 
 	return repo
 		.createQueryBuilder("client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.innerJoinAndSelect(
 			"client.commercialAssignments",
 			"activeAssignment",
@@ -206,7 +206,7 @@ export async function getClientByIdForCommercial(
 
 	return repo
 		.createQueryBuilder("client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.innerJoinAndSelect(
 			"client.commercialAssignments",
 			"activeAssignment",

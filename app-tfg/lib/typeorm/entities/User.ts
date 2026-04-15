@@ -60,9 +60,9 @@ export class User {
 	status!: Relation<UserStatus>;
 
 	// Cliente profesional vinculado a esta cuenta de usuario.
-	@OneToOne(() => Client, (client) => client.linkedUser)
-	linkedClient!: Relation<Client | null>;
-
+	@OneToOne(() => Client, (client) => client.user)
+	linkedClient!: Relation<Client>;
+	
 	// Perfil comercial vinculado a esta cuenta de usuario.
 	@OneToOne(() => Commercial, (commercial) => commercial.user)
 	commercialProfile!: Relation<Commercial>;

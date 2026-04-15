@@ -1,24 +1,22 @@
 import {
 	Entity,
-	PrimaryGeneratedColumn,
+	PrimaryColumn,
 	Column,
 	CreateDateColumn,
 	UpdateDateColumn,
-	ManyToOne,
+	OneToOne,
 	OneToMany,
 	JoinColumn,
 	Index,
 } from "typeorm";
 import type { Relation } from "typeorm";
-
 import { User } from "./User";
 import { ClientCommercialAssignment } from "./ClientCommercialAssignment";
 
 @Entity("clients")
-@Index("clients_linked_user_id_index", ["linked_user_id"])
 @Index("clients_name_index", ["name"])
 export class Client {
-	@PrimaryGeneratedColumn("uuid")
+	@PrimaryColumn("uuid")
 	id!: string;
 
 	@Column({ type: "text" })
@@ -42,12 +40,9 @@ export class Client {
 	@Column({ type: "text", nullable: true })
 	province!: string | null;
 
-	@Column({ type: "uuid", unique: true })
-	linked_user_id!: string;
-
-	@ManyToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
-	@JoinColumn({ name: "linked_user_id" })
-	linkedUser!: Relation<User>;
+	@OneToOne(() => User, { onDelete: "RESTRICT", onUpdate: "CASCADE" })
+	@JoinColumn({ name: "id" })
+	user!: Relation<User>;
 
 	@OneToMany(
 		() => ClientCommercialAssignment,

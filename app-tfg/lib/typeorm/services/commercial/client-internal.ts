@@ -20,7 +20,7 @@ export async function createClientFromUser(
 	const repo = manager.getRepository(Client);
 
 	const existing = await repo.findOne({
-		where: { linked_user_id: input.userId },
+		where: { id: input.userId },
 	});
 
 	if (existing) {
@@ -28,11 +28,11 @@ export async function createClientFromUser(
 	}
 
 	const client = repo.create({
+		id: input.userId,
 		name: input.company || input.name,
 		contact_name: input.name,
 		address: "Pendiente",
 		city: "Pendiente",
-		linked_user_id: input.userId,
 		notes: "Cliente creado automáticamente",
 	});
 
