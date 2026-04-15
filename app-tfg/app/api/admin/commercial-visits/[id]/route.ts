@@ -68,10 +68,10 @@ export async function PATCH(request: Request, context: RouteContext) {
 				body.scheduledAt !== undefined
 					? new Date(String(body.scheduledAt))
 					: undefined,
-			statusId:
-				body.statusId !== undefined ? Number(body.statusId) : undefined,
+			statusId: body.statusId !== undefined ? Number(body.statusId) : undefined,
 			notes: body.notes,
 			result: body.result,
+			commercialId: "",
 		});
 
 		return NextResponse.json(updatedVisit, { status: 200 });

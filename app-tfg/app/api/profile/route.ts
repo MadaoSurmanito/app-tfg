@@ -196,7 +196,7 @@ export async function PATCH(request: Request) {
 			if (user.role.code === "client" && body.clientProfile) {
 				const client = await clientRepo.findOne({
 					where: {
-						linked_user_id: user.id,
+						id: user.id,
 					},
 				});
 

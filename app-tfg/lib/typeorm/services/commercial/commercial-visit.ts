@@ -173,9 +173,19 @@ export async function createCommercialVisit(input: CreateCommercialVisitInput) {
 
 		await visitRepo.save(visit);
 
-		return buildCommercialVisitQuery(visitRepo)
+		const createdVisit = await buildCommercialVisitQuery(visitRepo)
 			.where("visit.id = :visitId", { visitId: visit.id })
 			.getOne();
+
+		if (!createdVisit) {
+			throw new CreateCommercialVisitError(
+				"No se pudo recuperar la visita recién creada",
+				500,
+				"VISIT_CREATED_BUT_NOT_RELOADED",
+			);
+		}
+
+		return createdVisit;
 	});
 }
 

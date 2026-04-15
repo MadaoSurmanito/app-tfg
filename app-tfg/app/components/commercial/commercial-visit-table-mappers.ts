@@ -61,7 +61,7 @@ export function mapCommercialVisitsToEntityTableItems(
 			searchText: [
 				visit.client?.name,
 				visit.client?.contact_name,
-				visit.client?.linkedUser?.email,
+				visit.client?.user?.email,
 				visit.client?.city,
 				visit.client?.province,
 				visit.notes,
