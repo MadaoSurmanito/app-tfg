@@ -41,9 +41,12 @@ type UpdateClientInput = {
 // SERVICIOS
 // --------------------------------------------------------------------------
 export class CreateClientError extends Error {
-	constructor(message: string) {
+	status: number;
+
+	constructor(message: string, status = 400) {
 		super(message);
 		this.name = "CreateClientError";
+		this.status = status;
 	}
 }
 

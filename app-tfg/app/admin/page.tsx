@@ -12,6 +12,11 @@ const navItems = [
 		icon: <ClientsIcon className="h-6 w-6" />,
 		href: "/admin/users",
 	},
+	{
+		title: "Asignaciones comerciales",
+		icon: <ClientsIcon className="h-6 w-6" />,
+		href: "/admin/client-commercial-assignments",
+	},
 ];
 
 // Página de inicio para el admin panel.

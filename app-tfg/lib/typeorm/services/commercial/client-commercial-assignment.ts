@@ -51,7 +51,7 @@ export async function getActiveAssignmentByClientId(clientId: string) {
 	return repo
 		.createQueryBuilder("assignment")
 		.leftJoinAndSelect("assignment.client", "client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect("assignment.commercial", "commercial")
 		.leftJoinAndSelect("commercial.user", "commercialUser")
 		.leftJoinAndSelect("assignment.assignedByUser", "assignedByUser")
@@ -72,7 +72,7 @@ export async function getActiveAssignmentByCommercialAndClient(
 	return repo
 		.createQueryBuilder("assignment")
 		.leftJoinAndSelect("assignment.client", "client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect("assignment.commercial", "commercial")
 		.leftJoinAndSelect("commercial.user", "commercialUser")
 		.where("assignment.client_id = :clientId", { clientId })
@@ -91,7 +91,7 @@ export async function listActiveAssignmentsByCommercialId(
 	return repo
 		.createQueryBuilder("assignment")
 		.leftJoinAndSelect("assignment.client", "client")
-		.leftJoinAndSelect("client.linkedUser", "linkedUser")
+		.leftJoinAndSelect("client.user", "user")
 		.leftJoinAndSelect("assignment.commercial", "commercial")
 		.leftJoinAndSelect("commercial.user", "commercialUser")
 		.where("assignment.commercial_id = :commercialId", { commercialId })
@@ -170,7 +170,7 @@ export async function assignClientToCommercial(
 			where: { id: assignment.id },
 			relations: {
 				client: {
-					linkedUser: true,
+					user: true,
 				},
 				commercial: {
 					user: true,
@@ -218,7 +218,7 @@ export async function unassignClientFromCommercial(
 			where: { id: activeAssignment.id },
 			relations: {
 				client: {
-					linkedUser: true,
+					user: true,
 				},
 				commercial: {
 					user: true,
@@ -294,7 +294,7 @@ export async function reassignClientToCommercial(
 			where: { id: newAssignment.id },
 			relations: {
 				client: {
-					linkedUser: true,
+					user: true,
 				},
 				commercial: {
 					user: true,

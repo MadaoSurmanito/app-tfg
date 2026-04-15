@@ -6,8 +6,10 @@ import {
 	listClients,
 } from "@/lib/typeorm/services/commercial/client";
 
-// Types
-// Body type for creating a client
+// --------------------------------------------------------------------------
+// Tipos
+// --------------------------------------------------------------------------
+
 type CreateClientBody = {
 	name?: string;
 	contactName?: string | null;
@@ -16,11 +18,14 @@ type CreateClientBody = {
 	city?: string;
 	postalCode?: string | null;
 	province?: string | null;
-	linkedUserId?: string;
+	userId?: string;
 	notes?: string | null;
 };
 
+// --------------------------------------------------------------------------
 // GET /api/admin/clients
+// --------------------------------------------------------------------------
+
 export async function GET() {
 	try {
 		const session = await auth();
@@ -42,7 +47,10 @@ export async function GET() {
 	}
 }
 
+// --------------------------------------------------------------------------
 // POST /api/admin/clients
+// --------------------------------------------------------------------------
+
 export async function POST(request: Request) {
 	try {
 		const session = await auth();
@@ -61,14 +69,14 @@ export async function POST(request: Request) {
 			city: String(body.city ?? ""),
 			postalCode: body.postalCode ?? null,
 			province: body.province ?? null,
-			linkedUserId: String(body.linkedUserId ?? ""),
+			userId: String(body.userId ?? ""),
 			notes: body.notes ?? null,
 		});
 
 		return NextResponse.json(
 			{
 				message: "Cliente creado correctamente",
-				clientId: createdClient.id,
+				client: createdClient,
 			},
 			{ status: 201 },
 		);
