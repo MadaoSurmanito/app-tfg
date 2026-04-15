@@ -151,7 +151,7 @@ export default function CommercialVisitDetail({ visitId }: Props) {
 			{
 				id: "email",
 				label: "Correo",
-				value: visit.client?.linkedUser?.email || "-",
+				value: visit.client?.user?.email || "-",
 			},
 			{
 				id: "location",

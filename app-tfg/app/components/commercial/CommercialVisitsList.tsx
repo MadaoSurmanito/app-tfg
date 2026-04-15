@@ -40,7 +40,7 @@ export default function CommercialVisitsList() {
 					method: "GET",
 					cache: "no-store",
 				}),
-				fetch("/api/commercial/clients", {
+				fetch("/api/commercial/clients?scope=all", {
 					method: "GET",
 					cache: "no-store",
 				}),
@@ -157,7 +157,7 @@ export default function CommercialVisitsList() {
 							<span className="font-semibold text-slate-900">
 								{clients.length}
 							</span>{" "}
-							clientes disponibles
+							clientes disponibles para programar visitas
 						</div>
 					</div>
 

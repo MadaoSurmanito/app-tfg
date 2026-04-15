@@ -14,7 +14,7 @@ export type CommercialVisitClient = {
 	contact_name: string | null;
 	city: string;
 	province: string | null;
-	linkedUser: CommercialVisitClientUser | null;
+	user: CommercialVisitClientUser | null;
 };
 
 export type CommercialVisitCommercialUser = {
