@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextResponse, userAgent } from "next/server";
+import { NextRequest, NextResponse, userAgent } from "next/server";
 import {
 	applyRateLimit,
 	createRateLimitExceededResponse,
@@ -91,6 +91,60 @@ function isUnsupportedBrowser(req: Parameters<typeof userAgent>[0]) {
 }
 
 // -----------------------------------------------------------------------------
+// HELPERS DE REDIRECCIÓN SEGURA EN TÚNELES / PROXIES
+// -----------------------------------------------------------------------------
+// Cuando la app está detrás de un túnel o de un reverse proxy, usar directamente
+// `new URL("/ruta", nextUrl)` puede provocar URLs incorrectas si el host público
+// no coincide exactamente con el host/puerto interno del servidor.
+//
+// Esto se nota especialmente con túneles como Dev Tunnels, donde la URL pública
+// ya lleva el puerto "embebido" en el subdominio, y añadir además ":3000"
+// genera enlaces rotos como:
+// https://mi-tunel-3000.devtunnels.ms:3000/admin
+//
+// Para evitarlo, reconstruimos el origen público usando cabeceras forwarded
+// cuando estén disponibles, y tratamos de forma especial hosts de túneles.
+function getForwardedHeaderValue(headers: Headers, name: string) {
+	const rawValue = headers.get(name);
+
+	if (!rawValue) return null;
+
+	return rawValue.split(",")[0]?.trim() || null;
+}
+
+// Devuelve el origen público correcto de la request.
+// Prioriza x-forwarded-proto / x-forwarded-host cuando existan.
+function getPublicOrigin(req: NextRequest) {
+	const forwardedProto = getForwardedHeaderValue(
+		req.headers,
+		"x-forwarded-proto",
+	);
+	const forwardedHost = getForwardedHeaderValue(
+		req.headers,
+		"x-forwarded-host",
+	);
+
+	const protocol = forwardedProto || req.nextUrl.protocol.replace(":", "");
+	const hostname = req.nextUrl.hostname;
+	const host = req.nextUrl.host;
+
+	const isTunnelHost =
+		hostname.endsWith(".devtunnels.ms") ||
+		hostname.endsWith(".trycloudflare.com");
+
+	// En túneles públicos NO queremos conservar un puerto extra en la URL final,
+	// porque la URL pública ya identifica correctamente el destino.
+	const publicHost = isTunnelHost ? hostname : forwardedHost || host;
+
+	return `${protocol}://${publicHost}`;
+}
+
+// Construye una URL absoluta segura para redirecciones internas.
+function buildRedirectUrl(req: NextRequest, pathname: string) {
+	return new URL(pathname, getPublicOrigin(req));
+}
+
+// -----------------------------------------------------------------------------
 // PROXY PRINCIPAL
 // -----------------------------------------------------------------------------
 // Este proxy se ejecuta antes de servir las rutas que indique el matcher.
@@ -100,6 +154,9 @@ function isUnsupportedBrowser(req: Parameters<typeof userAgent>[0]) {
 // 2. Bloqueo de navegadores no compatibles.
 // 3. Protección de rutas privadas.
 // 4. Redirección según rol si un usuario autenticado intenta entrar en login/register.
+//
+// Además, aquí resolvemos las redirecciones de forma segura para túneles
+// y proxies inversos, evitando construir URLs incorrectas con puertos extra.
 //
 // En Next.js 16, el archivo recomendado es proxy.ts en la raíz del proyecto,
 // y puede hacer redirecciones o responder directamente antes de completar la request.
@@ -148,7 +205,7 @@ export default auth((req) => {
 	// Si el navegador no es compatible, redirigimos a una página informativa
 	// antes de que intente cargar el resto de la aplicación.
 	if (isUnsupportedBrowser(req)) {
-		const unsupportedUrl = new URL("/unsupported-browser", nextUrl);
+		const unsupportedUrl = buildRedirectUrl(req, "/unsupported-browser");
 		unsupportedUrl.searchParams.set("from", pathname);
 
 		return NextResponse.redirect(unsupportedUrl);
@@ -161,7 +218,7 @@ export default auth((req) => {
 	const role = session?.user?.role;
 
 	const isAdminRoute = pathname.startsWith("/admin");
-	const isCommercialRoute = pathname.startsWith("/commercials");
+	const isCommercialRoute = pathname.startsWith("/comerciales");
 	const isClientRoute = pathname.startsWith("/clientes");
 
 	const isAuthRoute =
@@ -173,7 +230,7 @@ export default auth((req) => {
 	// Si el usuario no está autenticado y trata de entrar a una zona privada,
 	// lo enviamos al login.
 	if (!isLoggedIn && (isAdminRoute || isCommercialRoute || isClientRoute)) {
-		return NextResponse.redirect(new URL("/login", nextUrl));
+		return NextResponse.redirect(buildRedirectUrl(req, "/login"));
 	}
 
 	// -------------------------------------------------------------------------
@@ -182,15 +239,15 @@ export default auth((req) => {
 	// Si ya tiene sesión iniciada, lo redirigimos a su panel correspondiente.
 	if (isLoggedIn && isAuthRoute) {
 		if (role === "admin") {
-			return NextResponse.redirect(new URL("/admin", nextUrl));
+			return NextResponse.redirect(buildRedirectUrl(req, "/admin"));
 		}
 
 		if (role === "commercial") {
-			return NextResponse.redirect(new URL("/commercials", nextUrl));
+			return NextResponse.redirect(buildRedirectUrl(req, "/comerciales"));
 		}
 
 		if (role === "client") {
-			return NextResponse.redirect(new URL("/clients", nextUrl));
+			return NextResponse.redirect(buildRedirectUrl(req, "/clientes"));
 		}
 	}
 
@@ -200,15 +257,15 @@ export default auth((req) => {
 	// Si el usuario intenta entrar en una zona que no corresponde a su rol,
 	// se le redirige al login.
 	if (isAdminRoute && role !== "admin") {
-		return NextResponse.redirect(new URL("/login", nextUrl));
+		return NextResponse.redirect(buildRedirectUrl(req, "/login"));
 	}
 
 	if (isCommercialRoute && role !== "commercial") {
-		return NextResponse.redirect(new URL("/login", nextUrl));
+		return NextResponse.redirect(buildRedirectUrl(req, "/login"));
 	}
 
 	if (isClientRoute && role !== "client") {
-		return NextResponse.redirect(new URL("/login", nextUrl));
+		return NextResponse.redirect(buildRedirectUrl(req, "/login"));
 	}
 
 	// Si no se ha activado ninguna redirección, dejamos continuar la request.
