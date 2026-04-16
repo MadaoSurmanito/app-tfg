@@ -2,30 +2,18 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import {
 	CommercialProfileError,
-	listCommercials,
+	requireCommercialByUserId,
 	upsertCommercialProfile,
 } from "@/lib/typeorm/services/commercial/commercial";
 
-type SessionUser = {
-	id: string;
-	role: string;
-};
-
 type SessionLike = {
-	user?: SessionUser;
+	user?: {
+		id: string;
+		role: string;
+	};
 } | null;
 
-type AdminSession = {
-	user: SessionUser & {
-		role: "admin";
-	};
-};
-
-type UpsertCommercialBody = {
-	userId?: string;
-	employeeCode?: string | null;
-	territory?: string | null;
-	notes?: string | null;
+type UpdateCommercialProfileBody = {
 	workdayStartTime?: string | null;
 	workdayEndTime?: string | null;
 	maxVisitDurationMinutes?: number | string | null;
@@ -38,53 +26,46 @@ type UpsertCommercialBody = {
 	routeEndLng?: number | string | null;
 };
 
-function isAdmin(session: SessionLike): session is AdminSession {
-	return session?.user?.role === "admin";
-}
-
 export async function GET() {
 	try {
 		const session = (await auth()) as SessionLike;
 
-		if (!isAdmin(session)) {
+		if (!session?.user || session.user.role !== "commercial") {
 			return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 		}
 
-		const commercials = await listCommercials();
+		const commercial = await requireCommercialByUserId(session.user.id);
 
-		return NextResponse.json(commercials, { status: 200 });
+		return NextResponse.json(commercial, { status: 200 });
 	} catch (error) {
-		console.error("[admin/commercials][GET] error:", error);
+		console.error("[commercial/profile][GET] error:", error);
+
+		if (error instanceof CommercialProfileError) {
+			return NextResponse.json(
+				{ error: error.message, code: error.code },
+				{ status: error.status },
+			);
+		}
 
 		return NextResponse.json(
-			{ error: "Error al obtener los perfiles comerciales" },
+			{ error: "Error al obtener la configuración comercial" },
 			{ status: 500 },
 		);
 	}
 }
 
-export async function POST(request: Request) {
+export async function PATCH(request: Request) {
 	try {
 		const session = (await auth()) as SessionLike;
 
-		if (!isAdmin(session)) {
+		if (!session?.user || session.user.role !== "commercial") {
 			return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 		}
 
-		const body = (await request.json()) as UpsertCommercialBody;
-
-		if (!body.userId) {
-			return NextResponse.json(
-				{ error: "userId es obligatorio" },
-				{ status: 400 },
-			);
-		}
+		const body = (await request.json()) as UpdateCommercialProfileBody;
 
 		const commercial = await upsertCommercialProfile({
-			userId: body.userId,
-			employeeCode: body.employeeCode,
-			territory: body.territory,
-			notes: body.notes,
+			userId: session.user.id,
 			workdayStartTime: body.workdayStartTime,
 			workdayEndTime: body.workdayEndTime,
 			maxVisitDurationMinutes: body.maxVisitDurationMinutes,
@@ -99,7 +80,7 @@ export async function POST(request: Request) {
 
 		return NextResponse.json(commercial, { status: 200 });
 	} catch (error) {
-		console.error("[admin/commercials][POST] error:", error);
+		console.error("[commercial/profile][PATCH] error:", error);
 
 		if (error instanceof CommercialProfileError) {
 			return NextResponse.json(
@@ -109,7 +90,7 @@ export async function POST(request: Request) {
 		}
 
 		return NextResponse.json(
-			{ error: "Error al guardar el perfil comercial" },
+			{ error: "Error al actualizar la configuración comercial" },
 			{ status: 500 },
 		);
 	}

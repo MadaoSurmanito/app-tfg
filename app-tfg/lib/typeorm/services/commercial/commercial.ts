@@ -7,11 +7,87 @@ function normalizeText(value: string | null | undefined) {
 	return String(value ?? "").trim();
 }
 
+function normalizeTimeValue(value: string | null | undefined) {
+	const normalized = String(value ?? "").trim();
+
+	if (!normalized) {
+		return null;
+	}
+
+	const isValid = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/.test(normalized);
+
+	if (!isValid) {
+		throw new CommercialProfileError(
+			"El formato de hora no es válido. Usa HH:mm o HH:mm:ss",
+			400,
+			"INVALID_TIME_FORMAT",
+		);
+	}
+
+	return normalized.length === 5 ? `${normalized}:00` : normalized;
+}
+
+function normalizePositiveInteger(
+	value: number | string | null | undefined,
+	fieldName: string,
+	code: string,
+) {
+	if (value === undefined) {
+		return undefined;
+	}
+
+	if (value === null || String(value).trim() === "") {
+		return null;
+	}
+
+	const parsed = Number(value);
+
+	if (!Number.isInteger(parsed) || parsed <= 0) {
+		throw new CommercialProfileError(
+			`${fieldName} debe ser un entero positivo`,
+			400,
+			code,
+		);
+	}
+
+	return parsed;
+}
+
+function normalizeCoordinate(
+	value: number | string | null,
+	min: number,
+	max: number,
+	fieldName: string,
+	code: string,
+): string | null {
+	if (value === null || String(value).trim() === "") {
+		return null;
+	}
+
+	const parsed = Number(value);
+
+	if (!Number.isFinite(parsed) || parsed < min || parsed > max) {
+		throw new CommercialProfileError(`${fieldName} no es válida`, 400, code);
+	}
+
+	return parsed.toFixed(6);
+}
+
 type UpsertCommercialProfileInput = {
 	userId: string;
 	employeeCode?: string | null;
 	territory?: string | null;
 	notes?: string | null;
+	workdayStartTime?: string | null;
+	workdayEndTime?: string | null;
+	maxVisitDurationMinutes?: number | string | null;
+	routeStartAddress?: string | null;
+	routeEndAddress?: string | null;
+	returnToStart?: boolean;
+	routeStartLat?: number | string | null;
+	routeStartLng?: number | string | null;
+	routeEndLat?: number | string | null;
+	routeEndLng?: number | string | null;
 };
 
 export class CommercialProfileError extends Error {
@@ -116,6 +192,16 @@ export async function upsertCommercialProfile(
 				employee_code: null,
 				territory: null,
 				notes: null,
+				workday_start_time: null,
+				workday_end_time: null,
+				max_visit_duration_minutes: null,
+				route_start_address: null,
+				route_end_address: null,
+				return_to_start: true,
+				route_start_lat: null,
+				route_start_lng: null,
+				route_end_lat: null,
+				route_end_lng: null,
 			});
 		}
 
@@ -129,6 +215,78 @@ export async function upsertCommercialProfile(
 
 		if (input.notes !== undefined) {
 			commercial.notes = normalizeText(input.notes) || null;
+		}
+
+		if (input.workdayStartTime !== undefined) {
+			commercial.workday_start_time = normalizeTimeValue(
+				input.workdayStartTime,
+			);
+		}
+
+		if (input.workdayEndTime !== undefined) {
+			commercial.workday_end_time = normalizeTimeValue(input.workdayEndTime);
+		}
+
+		if (input.maxVisitDurationMinutes !== undefined) {
+			commercial.max_visit_duration_minutes = normalizePositiveInteger(
+				input.maxVisitDurationMinutes,
+				"La duración máxima de visita",
+				"INVALID_MAX_VISIT_DURATION",
+			) as number | null;
+		}
+
+		if (input.routeStartAddress !== undefined) {
+			commercial.route_start_address =
+				normalizeText(input.routeStartAddress) || null;
+		}
+
+		if (input.routeEndAddress !== undefined) {
+			commercial.route_end_address =
+				normalizeText(input.routeEndAddress) || null;
+		}
+
+		if (input.returnToStart !== undefined) {
+			commercial.return_to_start = Boolean(input.returnToStart);
+		}
+
+		if (input.routeStartLat !== undefined) {
+			commercial.route_start_lat = normalizeCoordinate(
+				input.routeStartLat,
+				-90,
+				90,
+				"La latitud inicial",
+				"INVALID_ROUTE_START_LAT",
+			);
+		}
+
+		if (input.routeStartLng !== undefined) {
+			commercial.route_start_lng = normalizeCoordinate(
+				input.routeStartLng,
+				-180,
+				180,
+				"La longitud inicial",
+				"INVALID_ROUTE_START_LNG",
+			);
+		}
+
+		if (input.routeEndLat !== undefined) {
+			commercial.route_end_lat = normalizeCoordinate(
+				input.routeEndLat,
+				-90,
+				90,
+				"La latitud final",
+				"INVALID_ROUTE_END_LAT",
+			);
+		}
+
+		if (input.routeEndLng !== undefined) {
+			commercial.route_end_lng = normalizeCoordinate(
+				input.routeEndLng,
+				-180,
+				180,
+				"La longitud final",
+				"INVALID_ROUTE_END_LNG",
+			);
 		}
 
 		await commercialRepo.save(commercial);

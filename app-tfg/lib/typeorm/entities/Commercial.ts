@@ -10,7 +10,6 @@ import {
 	Index,
 } from "typeorm";
 import type { Relation } from "typeorm";
-
 import { User } from "./User";
 import { CommercialVisit } from "./CommercialVisit";
 import { CommercialRoute } from "./CommercialRoute";
@@ -38,6 +37,40 @@ export class Commercial {
 
 	@Column({ type: "text", nullable: true })
 	notes!: string | null;
+
+	// --------------------------------------------------------------------------
+	// Configuración operativa para planificación de rutas
+	// --------------------------------------------------------------------------
+	@Column({ type: "time", nullable: true })
+	workday_start_time!: string | null;
+
+	@Column({ type: "time", nullable: true })
+	workday_end_time!: string | null;
+
+	@Column({ type: "smallint", nullable: true })
+	max_visit_duration_minutes!: number | null;
+
+	@Column({ type: "text", nullable: true })
+	route_start_address!: string | null;
+
+	@Column({ type: "text", nullable: true })
+	route_end_address!: string | null;
+
+	@Column({ type: "boolean", default: true })
+	return_to_start!: boolean;
+
+	// PostgreSQL devuelve numeric como string con TypeORM normalmente.
+	@Column({ type: "numeric", precision: 9, scale: 6, nullable: true })
+	route_start_lat!: string | null;
+
+	@Column({ type: "numeric", precision: 9, scale: 6, nullable: true })
+	route_start_lng!: string | null;
+
+	@Column({ type: "numeric", precision: 9, scale: 6, nullable: true })
+	route_end_lat!: string | null;
+
+	@Column({ type: "numeric", precision: 9, scale: 6, nullable: true })
+	route_end_lng!: string | null;
 
 	@OneToMany(
 		() => CommercialVisit,
