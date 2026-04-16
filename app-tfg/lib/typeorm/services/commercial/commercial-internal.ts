@@ -31,7 +31,7 @@ export async function createCommercialFromUser(
 		return existing;
 	}
 
-	const commercial = repo.create({
+	await repo.insert({
 		id: input.userId,
 		employee_code: null,
 		territory: normalizeText(input.territory) || null,
@@ -39,5 +39,10 @@ export async function createCommercialFromUser(
 			normalizeText(input.notes) || "Perfil comercial creado automáticamente",
 	});
 
-	return repo.save(commercial);
+	return repo.findOne({
+		where: { id: input.userId },
+		relations: {
+			user: true,
+		},
+	});
 }
