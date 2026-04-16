@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import PageTransition from "@/app/components/animations/PageTransition";
 
 // --------------------------------------------------------------------------
@@ -112,6 +112,8 @@ function getClientLabel(client: ClientItem) {
 // --------------------------------------------------------------------------
 
 export default function AdminClientCommercialAssignmentsPage() {
+	const searchParams = useSearchParams();
+
 	const [clients, setClients] = useState<ClientItem[]>([]);
 	const [commercials, setCommercials] = useState<CommercialItem[]>([]);
 	const [selectedClientId, setSelectedClientId] = useState("");
@@ -126,6 +128,8 @@ export default function AdminClientCommercialAssignmentsPage() {
 	const [submitting, setSubmitting] = useState(false);
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
+
+	const initialClientId = searchParams.get("clientId") ?? "";
 
 	const filteredClients = useMemo(() => {
 		const term = clientSearch.trim().toLowerCase();
@@ -198,11 +202,22 @@ export default function AdminClientCommercialAssignmentsPage() {
 
 				if (ignore) return;
 
-				setClients(Array.isArray(clientsData) ? clientsData : []);
-				setCommercials(Array.isArray(commercialsData) ? commercialsData : []);
+				const safeClients = Array.isArray(clientsData) ? clientsData : [];
+				const safeCommercials = Array.isArray(commercialsData)
+					? commercialsData
+					: [];
 
-				if (!selectedClientId && clientsData.length > 0) {
-					setSelectedClientId(clientsData[0].id);
+				setClients(safeClients);
+				setCommercials(safeCommercials);
+
+				if (!selectedClientId && safeClients.length > 0) {
+					const requestedClientExists = safeClients.some(
+						(client) => client.id === initialClientId,
+					);
+
+					setSelectedClientId(
+						requestedClientExists ? initialClientId : safeClients[0].id,
+					);
 				}
 			} catch (err) {
 				if (ignore) return;
@@ -214,12 +229,12 @@ export default function AdminClientCommercialAssignmentsPage() {
 			}
 		}
 
-		loadBaseData();
+		void loadBaseData();
 
 		return () => {
 			ignore = true;
 		};
-	}, [selectedClientId]);
+	}, [selectedClientId, initialClientId]);
 
 	useEffect(() => {
 		let ignore = false;
@@ -265,7 +280,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 			}
 		}
 
-		loadCurrentAssignment();
+		void loadCurrentAssignment();
 
 		return () => {
 			ignore = true;
@@ -374,44 +389,49 @@ export default function AdminClientCommercialAssignmentsPage() {
 	return (
 		<PageTransition>
 			<div className="space-y-6">
-				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<div>
-						<h1 className="text-2xl font-bold">
-							Asignaciones cliente-comercial
-						</h1>
-						<p className="text-sm text-white/70">
-							Aquí defines el comercial asignado a cada cliente. Cada cliente
-							debe tener un único comercial activo para su gestión y
-							planificación.
-						</p>
+				<div className="flex flex-wrap gap-3 text-sm text-slate-600">
+					<div className="rounded-full border border-slate-200 bg-white px-4 py-2">
+						<span className="font-semibold text-slate-900">
+							{clients.length}
+						</span>{" "}
+						clientes totales
 					</div>
 
-					<Link
-						href="/admin"
-						className="inline-flex items-center rounded-xl border border-white/10 px-4 py-2 text-sm hover:bg-white/5"
-					>
-						Volver al panel admin
-					</Link>
+					<div className="rounded-full border border-slate-200 bg-white px-4 py-2">
+						<span className="font-semibold text-slate-900">
+							{commercials.length}
+						</span>{" "}
+						comerciales disponibles
+					</div>
+
+					<div className="rounded-full border border-slate-200 bg-white px-4 py-2">
+						<span className="font-semibold text-slate-900">
+							{filteredClients.length}
+						</span>{" "}
+						clientes visibles
+					</div>
 				</div>
 
 				{error ? (
-					<div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+					<div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
 						{error}
 					</div>
 				) : null}
 
 				{success ? (
-					<div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+					<div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
 						{success}
 					</div>
 				) : null}
 
-				<div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-					<section className="glass-card rounded-2xl border border-white/10 p-4">
-						<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+					<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 							<div>
-								<h2 className="text-lg font-semibold">Clientes</h2>
-								<p className="text-sm text-white/60">
+								<h2 className="text-lg font-semibold text-slate-900">
+									Clientes
+								</h2>
+								<p className="mt-1 text-sm text-slate-600">
 									Selecciona un cliente para ver o cambiar su comercial
 									asignado.
 								</p>
@@ -422,17 +442,17 @@ export default function AdminClientCommercialAssignmentsPage() {
 								value={clientSearch}
 								onChange={(event) => setClientSearch(event.target.value)}
 								placeholder="Buscar cliente..."
-								className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none placeholder:text-white/35 sm:max-w-xs"
+								className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-200 sm:max-w-xs"
 							/>
 						</div>
 
-						<div className="max-h-[28rem] space-y-2 overflow-y-auto pr-1">
+						<div className="max-h-[34rem] space-y-3 overflow-y-auto pr-1">
 							{loadingBaseData ? (
-								<div className="rounded-xl border border-white/10 bg-black/10 p-4 text-sm text-white/60">
+								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
 									Cargando clientes...
 								</div>
 							) : filteredClients.length === 0 ? (
-								<div className="rounded-xl border border-white/10 bg-black/10 p-4 text-sm text-white/60">
+								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
 									No hay clientes que coincidan con la búsqueda.
 								</div>
 							) : (
@@ -444,21 +464,43 @@ export default function AdminClientCommercialAssignmentsPage() {
 											key={client.id}
 											type="button"
 											onClick={() => setSelectedClientId(client.id)}
-											className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
+											className={`w-full rounded-2xl border p-4 text-left transition ${
 												isSelected
-													? "border-cyan-400/40 bg-cyan-400/10"
-													: "border-white/10 bg-black/10 hover:bg-white/5"
+													? "border-cyan-300 bg-cyan-50 shadow-sm"
+													: "border-slate-200 bg-white hover:bg-slate-50"
 											}`}
 										>
-											<div className="font-medium">{client.name}</div>
-											<div className="mt-1 text-sm text-white/65">
-												{getClientLabel(client)}
-											</div>
-											{client.contact_name ? (
-												<div className="mt-1 text-xs text-white/45">
-													Contacto: {client.contact_name}
+											<div className="flex items-start justify-between gap-3">
+												<div className="min-w-0">
+													<div className="truncate text-base font-semibold text-slate-900">
+														{client.name}
+													</div>
+													<div className="mt-1 text-sm text-slate-500">
+														{getClientLabel(client)}
+													</div>
 												</div>
-											) : null}
+
+												{isSelected ? (
+													<span className="rounded-full border border-cyan-200 bg-cyan-100 px-3 py-1 text-xs font-medium text-cyan-800">
+														Seleccionado
+													</span>
+												) : null}
+											</div>
+
+											<div className="mt-3 grid gap-2 text-sm text-slate-700 sm:grid-cols-2">
+												<div>
+													<strong className="font-medium text-slate-900">
+														Contacto:
+													</strong>{" "}
+													{client.contact_name || "-"}
+												</div>
+												<div>
+													<strong className="font-medium text-slate-900">
+														Correo:
+													</strong>{" "}
+													{client.user?.email || "-"}
+												</div>
+											</div>
 										</button>
 									);
 								})
@@ -466,76 +508,87 @@ export default function AdminClientCommercialAssignmentsPage() {
 						</div>
 					</section>
 
-					<section className="glass-card rounded-2xl border border-white/10 p-4">
-						<div className="space-y-4">
+					<section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+						<div className="space-y-5">
 							<div>
-								<h2 className="text-lg font-semibold">Comercial asignado</h2>
-								<p className="text-sm text-white/60">
+								<h2 className="text-lg font-semibold text-slate-900">
+									Comercial asignado
+								</h2>
+								<p className="mt-1 text-sm text-slate-600">
 									Esta asignación define la cartera del comercial y la base para
 									sus visitas y futuras rutas.
 								</p>
 							</div>
 
 							{selectedClient ? (
-								<div className="rounded-2xl border border-white/10 bg-black/10 p-4">
-									<div className="text-sm text-white/50">
+								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+									<div className="text-xs font-medium uppercase tracking-wide text-slate-500">
 										Cliente seleccionado
 									</div>
-									<div className="mt-1 text-base font-semibold">
+									<div className="mt-2 text-lg font-semibold text-slate-900">
 										{selectedClient.name}
 									</div>
-									<div className="mt-2 text-sm text-white/65">
+									<div className="mt-2 text-sm text-slate-600">
 										{selectedClient.address || "Dirección sin definir"}
 										{selectedClient.city ? ` · ${selectedClient.city}` : ""}
 										{selectedClient.province
 											? ` · ${selectedClient.province}`
 											: ""}
 									</div>
+									<div className="mt-2 text-sm text-slate-600">
+										<strong className="font-medium text-slate-900">
+											Contacto:
+										</strong>{" "}
+										{selectedClient.contact_name || "-"}
+									</div>
 								</div>
 							) : (
-								<div className="rounded-2xl border border-white/10 bg-black/10 p-4 text-sm text-white/60">
+								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
 									Selecciona un cliente para continuar.
 								</div>
 							)}
 
-							<div className="rounded-2xl border border-white/10 bg-black/10 p-4">
-								<div className="text-sm text-white/50">
+							<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+								<div className="text-xs font-medium uppercase tracking-wide text-slate-500">
 									Comercial actualmente asignado
 								</div>
 
 								{loadingAssignment ? (
-									<div className="mt-2 text-sm text-white/60">
+									<div className="mt-3 text-sm text-slate-600">
 										Cargando asignación actual...
 									</div>
 								) : currentAssignment ? (
-									<div className="mt-2 space-y-2">
-										<div className="font-medium">
+									<div className="mt-3 space-y-2">
+										<div className="text-base font-semibold text-slate-900">
 											{currentAssignment.commercial?.user?.name ||
 												"Comercial sin nombre"}
 										</div>
-										<div className="text-sm text-white/65">
+										<div className="text-sm text-slate-600">
 											{currentAssignment.commercial?.user?.email || "Sin email"}
 										</div>
-										<div className="text-sm text-white/65">
-											Asignado el{" "}
+										<div className="text-sm text-slate-600">
+											<strong className="font-medium text-slate-900">
+												Asignado el:
+											</strong>{" "}
 											{formatDateTime(currentAssignment.assigned_at)}
 										</div>
-										{currentAssignment.notes ? (
-											<div className="text-sm text-white/55">
-												Notas: {currentAssignment.notes}
-											</div>
-										) : null}
+										<div className="text-sm text-slate-600">
+											<strong className="font-medium text-slate-900">
+												Notas:
+											</strong>{" "}
+											{currentAssignment.notes || "-"}
+										</div>
 									</div>
 								) : (
-									<div className="mt-2 text-sm text-white/60">
+									<div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
 										Este cliente no tiene comercial asignado actualmente.
 									</div>
 								)}
 							</div>
 
 							<div>
-								<label className="mb-2 block text-sm font-medium">
-									Seleccionar comercial
+								<label className="mb-2 block text-sm font-medium text-slate-900">
+									Buscar comercial
 								</label>
 
 								<input
@@ -543,7 +596,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 									value={commercialSearch}
 									onChange={(event) => setCommercialSearch(event.target.value)}
 									placeholder="Buscar comercial..."
-									className="mb-3 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none placeholder:text-white/35"
+									className="mb-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
 								/>
 
 								<select
@@ -551,7 +604,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 									onChange={(event) =>
 										setSelectedCommercialId(event.target.value)
 									}
-									className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none"
+									className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
 								>
 									<option value="">Selecciona un comercial</option>
 									{filteredCommercials.map((commercial) => (
@@ -562,21 +615,29 @@ export default function AdminClientCommercialAssignmentsPage() {
 								</select>
 
 								{selectedCommercial ? (
-									<div className="mt-3 rounded-xl border border-white/10 bg-black/10 p-3 text-sm text-white/70">
+									<div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
 										<div>
-											<strong>Comercial:</strong>{" "}
+											<strong className="font-medium text-slate-900">
+												Comercial:
+											</strong>{" "}
 											{selectedCommercial.user?.name || "Sin nombre"}
 										</div>
-										<div>
-											<strong>Email:</strong>{" "}
+										<div className="mt-1">
+											<strong className="font-medium text-slate-900">
+												Email:
+											</strong>{" "}
 											{selectedCommercial.user?.email || "Sin email"}
 										</div>
-										<div>
-											<strong>Territorio:</strong>{" "}
+										<div className="mt-1">
+											<strong className="font-medium text-slate-900">
+												Territorio:
+											</strong>{" "}
 											{selectedCommercial.territory || "No definido"}
 										</div>
-										<div>
-											<strong>Código:</strong>{" "}
+										<div className="mt-1">
+											<strong className="font-medium text-slate-900">
+												Código:
+											</strong>{" "}
 											{selectedCommercial.employee_code || "No definido"}
 										</div>
 									</div>
@@ -584,7 +645,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 							</div>
 
 							<div>
-								<label className="mb-2 block text-sm font-medium">
+								<label className="mb-2 block text-sm font-medium text-slate-900">
 									Notas de la asignación
 								</label>
 								<textarea
@@ -592,7 +653,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 									onChange={(event) => setNotes(event.target.value)}
 									rows={4}
 									placeholder="Notas internas sobre la cartera, responsable habitual, zona, contexto, etc."
-									className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none placeholder:text-white/35"
+									className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
 								/>
 							</div>
 
@@ -606,20 +667,26 @@ export default function AdminClientCommercialAssignmentsPage() {
 										!selectedCommercialId ||
 										sameCommercialSelected,
 									)}
-									className="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-medium text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-								></button>
+									className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+								>
+									{submitting
+										? "Guardando..."
+										: hasCurrentAssignment
+											? "Reasignar comercial"
+											: "Asignar comercial"}
+								</button>
 
 								<button
 									type="button"
 									onClick={handleUnassign}
 									disabled={submitting || !currentAssignment}
-									className="rounded-xl border border-white/10 px-4 py-2 text-sm transition hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
+									className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									Quitar asignación actual
 								</button>
 							</div>
 
-							<p className="text-xs text-white/45">
+							<p className="text-xs text-slate-500">
 								Esta relación define la cartera activa del comercial y
 								condiciona la gestión de clientes, visitas y futuras rutas.
 							</p>

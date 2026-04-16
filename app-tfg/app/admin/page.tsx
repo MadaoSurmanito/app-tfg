@@ -13,11 +13,6 @@ const navItems = [
 		href: "/admin/users",
 	},
 	{
-		title: "Asignaciones comerciales",
-		icon: <ClientsIcon className="h-6 w-6" />,
-		href: "/admin/client-commercial-assignments",
-	},
-	{
 		title: "Clientes",
 		icon: <ClientsIcon className="h-6 w-6" />,
 		href: "/admin/clients",
