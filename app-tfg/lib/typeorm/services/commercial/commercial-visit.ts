@@ -4,6 +4,7 @@ import { Client } from "@/lib/typeorm/entities/Client";
 import { Commercial } from "@/lib/typeorm/entities/Commercial";
 import { Repository } from "typeorm";
 import { COMMERCIAL_VISIT_STATUS_IDS } from "@/lib/typeorm/constants/catalog-ids";
+import { getActiveAssignmentByCommercialAndClient } from "@/lib/typeorm/services/commercial/client-commercial-assignment";
 
 // --------------------------------------------------------------------------
 // Funciones auxiliares para normalización de datos
@@ -137,13 +138,17 @@ export async function createCommercialVisit(input: CreateCommercialVisitInput) {
 			);
 		}
 
-		const [client, commercial] = await Promise.all([
+		const [client, commercial, activeAssignment] = await Promise.all([
 			clientRepo.findOne({
 				where: { id: input.clientId },
 			}),
 			commercialRepo.findOne({
 				where: { id: input.commercialId },
 			}),
+			getActiveAssignmentByCommercialAndClient(
+				input.commercialId,
+				input.clientId,
+			),
 		]);
 
 		if (!client) {
@@ -159,6 +164,14 @@ export async function createCommercialVisit(input: CreateCommercialVisitInput) {
 				"Comercial no encontrado",
 				404,
 				"COMMERCIAL_NOT_FOUND",
+			);
+		}
+
+		if (!activeAssignment) {
+			throw new CreateCommercialVisitError(
+				"El cliente no está asignado actualmente a este comercial",
+				409,
+				"CLIENT_NOT_ASSIGNED_TO_COMMERCIAL",
 			);
 		}
 

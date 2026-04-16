@@ -90,7 +90,7 @@ export default function CommercialVisitsList() {
 	const [filterDateTo, setFilterDateTo] = useState("");
 
 	async function loadClients() {
-		const response = await fetch("/api/commercial/clients?scope=all", {
+		const response = await fetch("/api/commercial/clients", {
 			method: "GET",
 			cache: "no-store",
 		});
@@ -307,7 +307,7 @@ export default function CommercialVisitsList() {
 							<span className="font-semibold text-slate-900">
 								{clients.length}
 							</span>{" "}
-							clientes disponibles para programar visitas
+							clientes asignados disponibles para programar visitas
 						</div>
 
 						<div className="rounded-full border border-slate-200 bg-white px-4 py-2">

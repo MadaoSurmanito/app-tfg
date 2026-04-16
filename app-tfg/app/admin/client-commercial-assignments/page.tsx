@@ -284,7 +284,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 		}
 
 		if (sameCommercialSelected) {
-			setError("Ese comercial ya es el responsable actual de la cartera");
+			setError("Ese comercial ya está asignado actualmente a este cliente");
 			return;
 		}
 
@@ -315,8 +315,8 @@ export default function AdminClientCommercialAssignmentsPage() {
 			setNotes(data.notes ?? "");
 			setSuccess(
 				mode === "assign"
-					? "Cartera principal asignada correctamente"
-					: "Cartera principal reasignada correctamente",
+					? "Comercial asignado correctamente"
+					: "Comercial reasignado correctamente",
 			);
 		} catch (err) {
 			setError(
@@ -359,7 +359,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 
 			setCurrentAssignment(null);
 			setSelectedCommercialId("");
-			setSuccess("Asignación principal eliminada correctamente");
+			setSuccess("Asignación eliminada correctamente");
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -380,8 +380,9 @@ export default function AdminClientCommercialAssignmentsPage() {
 							Asignaciones cliente-comercial
 						</h1>
 						<p className="text-sm text-white/70">
-							Aquí defines el comercial responsable principal de la cartera del
-							cliente. Esto no bloquea que otros comerciales puedan atenderlo.
+							Aquí defines el comercial asignado a cada cliente. Cada cliente
+							debe tener un único comercial activo para su gestión y
+							planificación.
 						</p>
 					</div>
 
@@ -411,8 +412,8 @@ export default function AdminClientCommercialAssignmentsPage() {
 							<div>
 								<h2 className="text-lg font-semibold">Clientes</h2>
 								<p className="text-sm text-white/60">
-									Selecciona un cliente para ver o cambiar su responsable
-									principal.
+									Selecciona un cliente para ver o cambiar su comercial
+									asignado.
 								</p>
 							</div>
 
@@ -468,10 +469,10 @@ export default function AdminClientCommercialAssignmentsPage() {
 					<section className="glass-card rounded-2xl border border-white/10 p-4">
 						<div className="space-y-4">
 							<div>
-								<h2 className="text-lg font-semibold">Responsable principal</h2>
+								<h2 className="text-lg font-semibold">Comercial asignado</h2>
 								<p className="text-sm text-white/60">
-									Usa esta asignación para cartera, organización y futuras
-									rutas.
+									Esta asignación define la cartera del comercial y la base para
+									sus visitas y futuras rutas.
 								</p>
 							</div>
 
@@ -498,7 +499,9 @@ export default function AdminClientCommercialAssignmentsPage() {
 							)}
 
 							<div className="rounded-2xl border border-white/10 bg-black/10 p-4">
-								<div className="text-sm text-white/50">Asignación actual</div>
+								<div className="text-sm text-white/50">
+									Comercial actualmente asignado
+								</div>
 
 								{loadingAssignment ? (
 									<div className="mt-2 text-sm text-white/60">
@@ -525,7 +528,7 @@ export default function AdminClientCommercialAssignmentsPage() {
 									</div>
 								) : (
 									<div className="mt-2 text-sm text-white/60">
-										Este cliente no tiene responsable principal activo.
+										Este cliente no tiene comercial asignado actualmente.
 									</div>
 								)}
 							</div>
@@ -617,9 +620,8 @@ export default function AdminClientCommercialAssignmentsPage() {
 							</div>
 
 							<p className="text-xs text-white/45">
-								Esta relación sirve para cartera y organización interna. No
-								implica que otros comerciales no puedan atender puntualmente al
-								cliente.
+								Esta relación define la cartera activa del comercial y
+								condiciona la gestión de clientes, visitas y futuras rutas.
 							</p>
 						</div>
 					</section>

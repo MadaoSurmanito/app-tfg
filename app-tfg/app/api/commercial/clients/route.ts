@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import {
-	listClients,
-	listClientsByCommercialId,
-} from "@/lib/typeorm/services/commercial/client";
+import { listClientsByCommercialId } from "@/lib/typeorm/services/commercial/client";
 import {
 	CommercialProfileError,
 	requireCommercialByUserId,
@@ -16,7 +13,7 @@ type SessionLike = {
 	};
 } | null;
 
-export async function GET(request: Request) {
+export async function GET() {
 	try {
 		const session = (await auth()) as SessionLike;
 
@@ -25,13 +22,7 @@ export async function GET(request: Request) {
 		}
 
 		const commercial = await requireCommercialByUserId(session.user.id);
-		const { searchParams } = new URL(request.url);
-		const scope = searchParams.get("scope");
-
-		const clients =
-			scope === "all"
-				? await listClients()
-				: await listClientsByCommercialId(commercial.id);
+		const clients = await listClientsByCommercialId(commercial.id);
 
 		return NextResponse.json(clients, { status: 200 });
 	} catch (error) {

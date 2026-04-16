@@ -26,7 +26,7 @@ export default function CommercialClientsList() {
 				setLoading(true);
 				setError("");
 
-				const response = await fetch("/api/commercial/clients?scope=all", {
+				const response = await fetch("/api/commercial/clients", {
 					method: "GET",
 					cache: "no-store",
 				});
