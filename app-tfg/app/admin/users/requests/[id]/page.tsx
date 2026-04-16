@@ -102,10 +102,14 @@ export default async function ReviewSolicitudPage({ params }: Props) {
 						</div>
 					</div>
 				</div>
-
 				{/* ACCIONES DE REVISIÓN */}
 				{/* Delegan la lógica interactiva al componente cliente correspondiente. */}
-				<RequestsActions solicitudId={solicitud.id} />
+				<RequestsActions
+					solicitudId={id}
+					requiresCommercialAssignment={
+						solicitud.requestedRole.name.toLowerCase() === "cliente"
+					}
+				/>{" "}
 			</div>
 		</PageTransition>
 	);

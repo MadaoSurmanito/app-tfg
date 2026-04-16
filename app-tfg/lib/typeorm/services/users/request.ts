@@ -10,13 +10,18 @@ import bcrypt from "bcryptjs";
 import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
 import { USER_ADMIN_ACTION_TYPE_IDS } from "../../constants/catalog-ids";
 import { User } from "@/lib/typeorm/entities/User";
+import { createClientFromUser } from "@/lib/typeorm/services/commercial/client-internal";
+import { createCommercialFromUser } from "@/lib/typeorm/services/commercial/commercial-internal";
+import { assignClientToCommercialInternal } from "@/lib/typeorm/services/commercial/client-commercial-assignment-internal";
 
 // Servicio para manejar las solicitudes de registro de nuevos usuarios. Incluye funciones para crear una nueva solicitud, listar solicitudes pendientes, obtener una solicitud por ID y rechazar una solicitud con una razón específica.
 export async function approveUserRequest(
 	requestId: string,
 	performedByUserId: string,
+	commercialIdInput?: string | null,
 ) {
 	const ds = await getDataSource();
+	const commercialId = String(commercialIdInput ?? "").trim() || null;
 
 	return ds.transaction(async (manager) => {
 		const userRequestRepo = manager.getRepository(UserRequest);
@@ -78,7 +83,32 @@ export async function approveUserRequest(
 		});
 
 		const savedUser = await userRepo.save(user);
+		if (request.requested_role_id === ROLE_IDS.CLIENT) {
+			if (!commercialId) {
+				throw new Error(
+					"Debes indicar el comercial asignado para aprobar una solicitud de cliente",
+				);
+			}
 
+			await createClientFromUser(manager, {
+				userId: savedUser.id,
+				name: request.name,
+				company: request.company,
+			});
+
+			await assignClientToCommercialInternal(manager, {
+				clientId: savedUser.id,
+				commercialId,
+				assignedByUserId: performedByUserId,
+				notes: "Asignación creada automáticamente al aprobar la solicitud",
+			});
+		}
+
+		if (request.requested_role_id === ROLE_IDS.COMMERCIAL) {
+			await createCommercialFromUser(manager, {
+				userId: savedUser.id,
+			});
+		}
 		const reviewedAt = new Date();
 
 		await userRequestRepo.update(
@@ -133,7 +163,6 @@ export async function approveUserRequest(
 		};
 	});
 }
-
 
 // Servicio para manejar las solicitudes de registro de nuevos usuarios. Incluye funciones para crear una nueva solicitud, listar solicitudes pendientes, obtener una solicitud por ID y rechazar una solicitud con una razón específica.
 type CreateRegisterRequestInput = {

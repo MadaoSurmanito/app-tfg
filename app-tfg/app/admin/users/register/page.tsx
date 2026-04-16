@@ -1,6 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+	fetchAdminCommercialOptions,
+	getAdminCommercialLabel,
+	type AdminCommercialOption,
+} from "@/app/admin/users/_shared/admin-commercial-options";
 import PasswordFieldWithStrength from "@/app/components/users/PasswordFieldWithStrength";
 import PageTransition from "@/app/components/animations/PageTransition";
 import SafeForm from "@/app/components/forms/SafeForm";
@@ -14,9 +19,45 @@ export default function AdminRegisterUserPage() {
 	// ESTADO LOCAL
 	// Controla el estado de envío del formulario y los mensajes de feedback.
 	const [loading, setLoading] = useState(false);
+	const [loadingCommercials, setLoadingCommercials] = useState(true);
 	const [error, setError] = useState("");
 	const [success, setSuccess] = useState("");
 	const [userType, setUserType] = useState("comercial");
+	const [commercials, setCommercials] = useState<AdminCommercialOption[]>([]);
+	const [selectedCommercialId, setSelectedCommercialId] = useState("");
+
+	useEffect(() => {
+		let ignore = false;
+
+		async function loadCommercials() {
+			try {
+				setLoadingCommercials(true);
+				const data = await fetchAdminCommercialOptions();
+
+				if (!ignore) {
+					setCommercials(data);
+				}
+			} catch (err) {
+				if (!ignore) {
+					setError(
+						err instanceof Error
+							? err.message
+							: "Error al cargar los comerciales",
+					);
+				}
+			} finally {
+				if (!ignore) {
+					setLoadingCommercials(false);
+				}
+			}
+		}
+
+		void loadCommercials();
+
+		return () => {
+			ignore = true;
+		};
+	}, []);
 
 	// ENVÍO DEL FORMULARIO
 	// Recoge los datos introducidos, realiza validaciones básicas en cliente
@@ -42,6 +83,8 @@ export default function AdminRegisterUserPage() {
 		const password = String(formData.get("password") ?? "");
 		const confirmPassword = String(formData.get("confirm_password") ?? "");
 		const type = userType;
+		const commercialId =
+			type === "cliente" ? selectedCommercialId.trim() : null;
 
 		// VALIDACIÓN BÁSICA
 		// Comprueba que los campos obligatorios estén presentes antes de enviar.
@@ -55,6 +98,14 @@ export default function AdminRegisterUserPage() {
 		// Verifica localmente que la contraseña y su confirmación coincidan.
 		if (password !== confirmPassword) {
 			setError("Las contraseñas no coinciden");
+			setLoading(false);
+			return;
+		}
+
+		// VALIDACIÓN DE COMERCIAL ASIGNADO
+		// Si el usuario a crear es un cliente, debe indicarse su comercial.
+		if (type === "cliente" && !commercialId) {
+			setError("Debes seleccionar el comercial asignado para el cliente");
 			setLoading(false);
 			return;
 		}
@@ -73,6 +124,7 @@ export default function AdminRegisterUserPage() {
 					phone,
 					password,
 					type,
+					commercialId,
 				}),
 			});
 
@@ -90,6 +142,7 @@ export default function AdminRegisterUserPage() {
 			setSuccess("Usuario registrado correctamente.");
 			form.reset();
 			setUserType("comercial");
+			setSelectedCommercialId("");
 		} catch {
 			setError("Error al procesar el registro");
 		} finally {
@@ -115,12 +168,52 @@ export default function AdminRegisterUserPage() {
 					<select
 						name="type"
 						value={userType}
-						onChange={(e) => setUserType(e.target.value)}
+						onChange={(e) => {
+							const nextType = e.target.value;
+							setUserType(nextType);
+
+							if (nextType !== "cliente") {
+								setSelectedCommercialId("");
+							}
+						}}
 						className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black"
 					>
 						<option value="comercial">Comercial</option>
 						<option value="cliente">Cliente</option>
 					</select>
+
+					{/* COMERCIAL ASIGNADO */}
+					{/* Solo es obligatorio cuando el usuario a crear es un cliente. */}
+					{userType === "cliente" ? (
+						<div className="flex flex-col gap-2">
+							<label className="text-sm font-medium text-gray-700">
+								Comercial asignado
+							</label>
+
+							<select
+								name="commercialId"
+								value={selectedCommercialId}
+								onChange={(e) => setSelectedCommercialId(e.target.value)}
+								disabled={loadingCommercials}
+								className="w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-100"
+							>
+								<option value="">
+									{loadingCommercials
+										? "Cargando comerciales..."
+										: "Selecciona un comercial"}
+								</option>
+								{commercials.map((commercial) => (
+									<option key={commercial.id} value={commercial.id}>
+										{getAdminCommercialLabel(commercial)}
+									</option>
+								))}
+							</select>
+
+							<p className="text-xs text-gray-500">
+								Cada cliente debe quedar asociado a un único comercial.
+							</p>
+						</div>
+					) : null}
 
 					{/* DATOS DEL USUARIO */}
 					<input

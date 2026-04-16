@@ -6,8 +6,12 @@ type Context = {
 	params: Promise<{ id: string }>;
 };
 
+type ApproveUserRequestBody = {
+	commercialId?: string | null;
+};
+
 // Aprueba una solicitud concreta y crea el usuario asociado.
-export async function POST(_: Request, context: Context) {
+export async function POST(request: Request, context: Context) {
 	try {
 		const session = await auth();
 
@@ -20,8 +24,15 @@ export async function POST(_: Request, context: Context) {
 		}
 
 		const { id } = await context.params;
+		const body = (await request
+			.json()
+			.catch(() => ({}))) as ApproveUserRequestBody;
 
-		const result = await approveUserRequest(id, session.user.id);
+		const result = await approveUserRequest(
+			id,
+			session.user.id,
+			body.commercialId ?? null,
+		);
 
 		return NextResponse.json(result);
 	} catch (error) {
