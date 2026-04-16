@@ -9,6 +9,10 @@ import { UserManagementLog } from "@/lib/typeorm/entities/UserManagementLog";
 import { UserRequest } from "@/lib/typeorm/entities/UserRequest";
 import { createClientFromUser } from "@/lib/typeorm/services/commercial/client-internal";
 import type { EntityManager } from "typeorm";
+import {
+	assignClientToCommercialInternal,
+	AssignClientToCommercialInternalError,
+} from "@/lib/typeorm/services/commercial/client-commercial-assignment-internal";
 import { createCommercialFromUser } from "@/lib/typeorm/services/commercial/commercial-internal";
 import {
 	REQUEST_SOURCE_TYPE_IDS,
@@ -76,6 +80,7 @@ type RegisterUserByAdminInput = {
 	phone?: string | null;
 	roleId: number;
 	performedByUserId: string;
+	commercialId?: string | null;
 };
 
 // Input para actualizar los datos de un usuario
@@ -350,12 +355,21 @@ export async function registerUserByAdmin(input: RegisterUserByAdminInput) {
 	const company = normalizeText(input.company) || null;
 	const phone = normalizeText(input.phone) || null;
 	const roleId = Number(input.roleId);
+	const commercialId = normalizeText(input.commercialId) || null;
 
 	if (!name || !email || !password || !roleId) {
 		throw new RegisterUserByAdminError(
 			"Faltan campos obligatorios",
 			400,
 			"INVALID_DATA",
+		);
+	}
+
+	if (roleId === ROLE_IDS.CLIENT && !commercialId) {
+		throw new RegisterUserByAdminError(
+			"Debes indicar el comercial asignado para crear un cliente",
+			400,
+			"COMMERCIAL_REQUIRED_FOR_CLIENT",
 		);
 	}
 
@@ -431,6 +445,30 @@ export async function registerUserByAdmin(input: RegisterUserByAdminInput) {
 			company,
 		});
 
+		// --------------------------------------------------------------------------
+		// Asignación comercial obligatoria para clientes creados por admin
+		// --------------------------------------------------------------------------
+		if (roleId === ROLE_IDS.CLIENT && commercialId) {
+			try {
+				await assignClientToCommercialInternal(manager, {
+					clientId: createdUser.id,
+					commercialId,
+					assignedByUserId: input.performedByUserId,
+					notes:
+						"Asignación creada automáticamente durante el alta del cliente",
+				});
+			} catch (error) {
+				if (error instanceof AssignClientToCommercialInternalError) {
+					throw new RegisterUserByAdminError(
+						error.message,
+						error.status,
+						error.code,
+					);
+				}
+
+				throw error;
+			}
+		}
 		const reviewedAt = new Date();
 
 		const createdRequest = await userRequestRepo.save(

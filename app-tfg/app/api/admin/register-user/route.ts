@@ -13,6 +13,7 @@ type RegisterUserBody = {
 	company?: string | null;
 	phone?: string | null;
 	type?: string;
+	commercialId?: string | null;
 };
 
 function resolveRoleIdFromType(type: string | undefined) {
@@ -20,7 +21,7 @@ function resolveRoleIdFromType(type: string | undefined) {
 		return ROLE_IDS.COMMERCIAL;
 	}
 
-	if (type === "cliente") {	
+	if (type === "cliente") {
 		return ROLE_IDS.CLIENT;
 	}
 
@@ -39,6 +40,13 @@ export async function POST(request: Request) {
 
 		const roleId = resolveRoleIdFromType(body.type);
 
+		if (roleId === ROLE_IDS.CLIENT && !String(body.commercialId ?? "").trim()) {
+			return NextResponse.json(
+				{ error: "Debes indicar el comercial asignado para crear un cliente" },
+				{ status: 400 },
+			);
+		}
+
 		const createdUser = await registerUserByAdmin({
 			name: String(body.name ?? ""),
 			email: String(body.email ?? ""),
@@ -46,6 +54,7 @@ export async function POST(request: Request) {
 			company: body.company ?? null,
 			phone: body.phone ?? null,
 			roleId,
+			commercialId: body.commercialId ?? null,
 			performedByUserId: session.user.id,
 		});
 
